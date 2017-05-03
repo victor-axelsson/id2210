@@ -59,4 +59,34 @@ class MakeOperationTest extends FlatSpec {
     assert(mut.isInstanceOf[Delete])
   }
 
+  "An Evaluator" should "increase the id after an operation was created" in {
+    val doc = Expr.Doc()
+    val key = RootMapT(doc)
+    val keys = scala.collection.immutable.List()
+    var cursor = new Cursor(keys, key)
+
+    val value = language.Val.Str("stuff")
+
+    val evaluator = new Evaluator(1)
+
+    val (id, _, _, _) = evaluator.makeInsert(cursor, value)
+    val (id2, _, _, _) = evaluator.makeInsert(cursor, value)
+    assert(id == 1)
+    assert(id2 > id)
+  }
+
+
+  "An Evaluator" should " not create an id that is 0" in {
+    val doc = Expr.Doc()
+    val key = RootMapT(doc)
+    val keys = scala.collection.immutable.List()
+    var cursor = new Cursor(keys, key)
+
+    val value = language.Val.Str("stuff")
+
+    val evaluator = new Evaluator(1)
+
+    val (id, _, _, _) = evaluator.makeInsert(cursor, value)
+    assert(id != 0)
+  }
 }

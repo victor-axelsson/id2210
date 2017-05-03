@@ -9,13 +9,27 @@ import app.document.language.Val
   */
 class Evaluator(replicaId : Int) {
 
-  private var counter = 1
+  private var counter = 0
   private val executedOperations = List.empty[Int]
 
   private def getId() : Int = counter * replicaId
 
   private def makeOperation(cursor : Cursor, mutation: Mutation) = {
-    (getId(), executedOperations, cursor, mutation)
+    counter += 1;
+    var tuple = (getId(), executedOperations, cursor, mutation)
+    applyLocal(tuple._1, tuple._2, tuple._3, tuple._4)
+    tuple
+  }
+
+  private def applyLocal(id :Int, deps:List[Int], cursor: Cursor, mutation:Mutation) = {
+    //1, modify local state
+
+
+    //2, add to operation queue
+    
+
+    //3, add id to set of processed operations
+    executedOperations :+ id
   }
 
   def makeInsert(cursor : Cursor, value : Val) = makeOperation(cursor, Insert(value))
