@@ -1,5 +1,5 @@
 import app.document.cursor.Cursor
-import app.document.cursor.Key.{RootMapT, listT}
+import app.document.cursor.Key.{RootMapT, listT, mapT}
 import app.document.language.Cmd.Let
 import app.document.language.{Expr, Var}
 import org.scalatest.FlatSpec
@@ -22,5 +22,23 @@ class CursorTest extends FlatSpec {
     assert(cursor.getKeys().size == 1)
     assert(cursor.getKeys().head == key)
     assert(cursor.getTail() == addList)
+  }
+  "A Cursor" should " keep the keys in the same order as appended " in {
+    val doc = Expr.Doc()
+    val key = RootMapT(doc)
+    val keys = scala.collection.immutable.List()
+    var cursor = new Cursor(keys, key)
+
+    val addList = listT("myList")
+    val addMap = mapT("myMap1");
+    val addMap2 = mapT("myMap2");
+
+    cursor = cursor.append(addMap)
+    cursor = cursor.append(addList)
+    cursor = cursor.append(addMap2)
+
+    assert(cursor.getKeys().size == 3)
+    assert(cursor.getKeys().head == key)
+    assert(cursor.getTail() == addMap2)
   }
 }
