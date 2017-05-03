@@ -11,7 +11,10 @@ class TReg(var value: Any) extends DocItem{
   }
 
 
-  override def toString: String = value.toString
+  override def toString: String = {
+    if (value == "[]") return value.toString()
+    else return "\"" + value.toString + "\""
+  }
 
   override def getType(): String = "treg"
 }

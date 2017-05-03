@@ -16,10 +16,12 @@ class Doc extends TMap {
 
     //if (content.nonEmpty)
     //  result.append("\n")
-
+    var counter = 0
     for ((k,v) <- content) {
       result.append("\"").append(k).append("\": ")
-      result.append("\"").append(v.toString()).append("\"")
+      result.append(v.toString())
+      counter+=1
+      if (counter > 0 && counter < content.size) result.append(", ")
       //result.append("\n")
     }
     result.append("}")
