@@ -1,4 +1,4 @@
-[info] Updating {file:/D:/KTH/Distributed%20Computing,%20P2P%20and%20GRIDS/project/id2210/crdt/project/}crdt-build...
+[info] Updating {file:/Users/victoraxelsson/Desktop/intellijProjects/id2210/crdt/project/}crdt-build...
 [debug] :: resolving dependencies :: default#crdt-build;0.1-SNAPSHOT
 [debug] 	confs: [compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, sources, docs, pom, scala-tool]
 [debug] 	validate = true
@@ -6009,19 +6009,19 @@
 [debug] 	[NOT REQUIRED] org.scala-sbt#template-resolver;0.1!template-resolver.jar
 [debug] 	[NOT REQUIRED] org.scala-lang#jline;2.10.6!jline.jar
 [debug] 	[NOT REQUIRED] org.fusesource.jansi#jansi;1.4!jansi.jar
-[debug] :: resolution report :: resolve 2905ms :: artifacts dl 38ms
-[debug] 	report for default#crdt-build;0.1-SNAPSHOT compile produced in D:\KTH\Distributed Computing, P2P and GRIDS\project\id2210\crdt\project\target\resolution-cache\reports\default-crdt-build-compile.xml
-[debug] 	report for default#crdt-build;0.1-SNAPSHOT runtime produced in D:\KTH\Distributed Computing, P2P and GRIDS\project\id2210\crdt\project\target\resolution-cache\reports\default-crdt-build-runtime.xml
-[debug] 	report for default#crdt-build;0.1-SNAPSHOT test produced in D:\KTH\Distributed Computing, P2P and GRIDS\project\id2210\crdt\project\target\resolution-cache\reports\default-crdt-build-test.xml
-[debug] 	report for default#crdt-build;0.1-SNAPSHOT provided produced in D:\KTH\Distributed Computing, P2P and GRIDS\project\id2210\crdt\project\target\resolution-cache\reports\default-crdt-build-provided.xml
-[debug] 	report for default#crdt-build;0.1-SNAPSHOT optional produced in D:\KTH\Distributed Computing, P2P and GRIDS\project\id2210\crdt\project\target\resolution-cache\reports\default-crdt-build-optional.xml
-[debug] 	report for default#crdt-build;0.1-SNAPSHOT compile-internal produced in D:\KTH\Distributed Computing, P2P and GRIDS\project\id2210\crdt\project\target\resolution-cache\reports\default-crdt-build-compile-internal.xml
-[debug] 	report for default#crdt-build;0.1-SNAPSHOT runtime-internal produced in D:\KTH\Distributed Computing, P2P and GRIDS\project\id2210\crdt\project\target\resolution-cache\reports\default-crdt-build-runtime-internal.xml
-[debug] 	report for default#crdt-build;0.1-SNAPSHOT test-internal produced in D:\KTH\Distributed Computing, P2P and GRIDS\project\id2210\crdt\project\target\resolution-cache\reports\default-crdt-build-test-internal.xml
-[debug] 	report for default#crdt-build;0.1-SNAPSHOT plugin produced in D:\KTH\Distributed Computing, P2P and GRIDS\project\id2210\crdt\project\target\resolution-cache\reports\default-crdt-build-plugin.xml
-[debug] 	report for default#crdt-build;0.1-SNAPSHOT sources produced in D:\KTH\Distributed Computing, P2P and GRIDS\project\id2210\crdt\project\target\resolution-cache\reports\default-crdt-build-sources.xml
-[debug] 	report for default#crdt-build;0.1-SNAPSHOT docs produced in D:\KTH\Distributed Computing, P2P and GRIDS\project\id2210\crdt\project\target\resolution-cache\reports\default-crdt-build-docs.xml
-[debug] 	report for default#crdt-build;0.1-SNAPSHOT pom produced in D:\KTH\Distributed Computing, P2P and GRIDS\project\id2210\crdt\project\target\resolution-cache\reports\default-crdt-build-pom.xml
-[debug] 	report for default#crdt-build;0.1-SNAPSHOT scala-tool produced in D:\KTH\Distributed Computing, P2P and GRIDS\project\id2210\crdt\project\target\resolution-cache\reports\default-crdt-build-scala-tool.xml
-[debug] 	resolve done (2905ms resolve - 38ms download)
+[debug] :: resolution report :: resolve 9121ms :: artifacts dl 93ms
+[debug] 	report for default#crdt-build;0.1-SNAPSHOT compile produced in /Users/victoraxelsson/Desktop/intellijProjects/id2210/crdt/project/target/resolution-cache/reports/default-crdt-build-compile.xml
+[debug] 	report for default#crdt-build;0.1-SNAPSHOT runtime produced in /Users/victoraxelsson/Desktop/intellijProjects/id2210/crdt/project/target/resolution-cache/reports/default-crdt-build-runtime.xml
+[debug] 	report for default#crdt-build;0.1-SNAPSHOT test produced in /Users/victoraxelsson/Desktop/intellijProjects/id2210/crdt/project/target/resolution-cache/reports/default-crdt-build-test.xml
+[debug] 	report for default#crdt-build;0.1-SNAPSHOT provided produced in /Users/victoraxelsson/Desktop/intellijProjects/id2210/crdt/project/target/resolution-cache/reports/default-crdt-build-provided.xml
+[debug] 	report for default#crdt-build;0.1-SNAPSHOT optional produced in /Users/victoraxelsson/Desktop/intellijProjects/id2210/crdt/project/target/resolution-cache/reports/default-crdt-build-optional.xml
+[debug] 	report for default#crdt-build;0.1-SNAPSHOT compile-internal produced in /Users/victoraxelsson/Desktop/intellijProjects/id2210/crdt/project/target/resolution-cache/reports/default-crdt-build-compile-internal.xml
+[debug] 	report for default#crdt-build;0.1-SNAPSHOT runtime-internal produced in /Users/victoraxelsson/Desktop/intellijProjects/id2210/crdt/project/target/resolution-cache/reports/default-crdt-build-runtime-internal.xml
+[debug] 	report for default#crdt-build;0.1-SNAPSHOT test-internal produced in /Users/victoraxelsson/Desktop/intellijProjects/id2210/crdt/project/target/resolution-cache/reports/default-crdt-build-test-internal.xml
+[debug] 	report for default#crdt-build;0.1-SNAPSHOT plugin produced in /Users/victoraxelsson/Desktop/intellijProjects/id2210/crdt/project/target/resolution-cache/reports/default-crdt-build-plugin.xml
+[debug] 	report for default#crdt-build;0.1-SNAPSHOT sources produced in /Users/victoraxelsson/Desktop/intellijProjects/id2210/crdt/project/target/resolution-cache/reports/default-crdt-build-sources.xml
+[debug] 	report for default#crdt-build;0.1-SNAPSHOT docs produced in /Users/victoraxelsson/Desktop/intellijProjects/id2210/crdt/project/target/resolution-cache/reports/default-crdt-build-docs.xml
+[debug] 	report for default#crdt-build;0.1-SNAPSHOT pom produced in /Users/victoraxelsson/Desktop/intellijProjects/id2210/crdt/project/target/resolution-cache/reports/default-crdt-build-pom.xml
+[debug] 	report for default#crdt-build;0.1-SNAPSHOT scala-tool produced in /Users/victoraxelsson/Desktop/intellijProjects/id2210/crdt/project/target/resolution-cache/reports/default-crdt-build-scala-tool.xml
+[debug] 	resolve done (9121ms resolve - 93ms download)
 [info] Done updating.
