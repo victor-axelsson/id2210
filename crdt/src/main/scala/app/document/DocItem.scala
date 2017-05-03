@@ -20,7 +20,7 @@ abstract class DocItem {
     null
   }
 
-  def insertAfter(key:String) = {
+  def insertAfter(key:TReg) = {
     println("insert after")
     null
   }
