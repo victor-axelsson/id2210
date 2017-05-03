@@ -8,7 +8,7 @@ import org.scalatest.FlatSpec
 class LetTest extends FlatSpec {
   "A Let command" should "assign a Doc to a Var" in {
     val x = new Var.VarString("x")
-    val cmd = Let(x, Expr.Doc)
+    val cmd = Let(x, Expr.Doc())
     println(x.toString())
     println(cmd.toString())
   }
