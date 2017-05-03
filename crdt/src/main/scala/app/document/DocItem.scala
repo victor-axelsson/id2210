@@ -4,7 +4,7 @@ package app.document
   * Created by victoraxelsson on 2017-05-03.
   */
 abstract class DocItem {
-  abstract def getType(): String
+  def getType(): String
 
   def assign(tReg:TReg) = {
     println("Assigning")
