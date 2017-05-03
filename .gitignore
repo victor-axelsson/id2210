@@ -1,2 +1,6 @@
 .DS_Store
 .idea
+/crdt/project
+/crdt/target
+/crdt/crdt.iml
+/crdt/.idea
