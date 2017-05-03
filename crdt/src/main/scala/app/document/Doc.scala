@@ -1,35 +1,30 @@
 package app.document
 
+import scala.collection.mutable
+
+
 /**
   * Created by victoraxelsson on 2017-05-03.
   */
-class Doc{
-  def get(key:String) : TReg = {
-    println("getting key")
-    null
-  }
+class Doc extends TMap {
 
-  def idx(i:Int) : TReg = {
-    println("Idx")
-    null
-  }
+  override def getType(): String = "doc"
 
-  def insertAfter(key:TReg) = {
-    println("insert after")
-    null
-  }
+  override def toString: String = {
+    val result = new mutable.StringBuilder()
+    result.append("{")
 
-  def delete(key:String) = {
-    println("delete");
-  }
-
-  def getKeys(): List[String] = {
-    println("get keys")
-    null
-  }
-
-  def getValues(): List[TReg] = {
-    println("Getting values")
-    null
+    //if (content.nonEmpty)
+    //  result.append("\n")
+    var counter = 0
+    for ((k,v) <- content) {
+      result.append("\"").append(k).append("\": ")
+      result.append(v.toString())
+      counter+=1
+      if (counter > 0 && counter < content.size) result.append(", ")
+      //result.append("\n")
+    }
+    result.append("}")
+    return result.toString()
   }
 }
