@@ -10,7 +10,7 @@ abstract class DocItem {
     println("Assigning")
   }
 
-  def get(key:String) : TReg = {
+  def get(key:String) : DocItem = {
     println("getting key")
     null
   }
@@ -39,7 +39,5 @@ abstract class DocItem {
     null
   }
 
-  override def toString : String = {
-    "Hello"
-  }
+  override def toString : String = {""}
 }
