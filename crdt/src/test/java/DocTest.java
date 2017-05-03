@@ -1,9 +1,3 @@
-import app.document.Doc;
-import app.document.DocItem;
-import app.document.TMap;
-import app.document.TReg;
-import com.sun.tools.doclets.formats.html.markup.DocType;
-import junit.framework.Assert;
 import org.junit.Test;
 
 /**

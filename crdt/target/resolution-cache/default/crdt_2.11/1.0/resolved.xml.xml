@@ -4,7 +4,7 @@
 		module="crdt_2.11"
 		revision="1.0"
 		status="integration"
-		publication="20170502195546"
+		publication="20170503145102"
 	>
 		<description>
 		crdt
@@ -36,5 +36,6 @@
 		<dependency org="org.scala-lang" name="scala-library" rev="2.11.8" conf="scala-tool->default,optional(default);compile->default(compile)"/>
 		<dependency org="se.sics.kompics" name="kompics-scala_2.11" rev="0.9.2-SNAPSHOT" conf="compile->default(compile)"/>
 		<dependency org="ch.qos.logback" name="logback-classic" rev="0.9.28" conf="compile->default(compile)"/>
+		<dependency org="org.scalatest" name="scalatest_2.11" rev="3.0.1" conf="test->default(compile)"/>
 	</dependencies>
 </ivy-module>

@@ -8,7 +8,7 @@ import scala.collection.mutable
 class TMap extends DocItem{
   var content : mutable.Map[String, DocItem] = new mutable.HashMap[String, DocItem]()
 
-  override def get(key: String): DocItem = {
+  override def get(key: String): TReg = {
 
     if (content.contains(key)) {
       var elem = content(key)
@@ -17,12 +17,12 @@ class TMap extends DocItem{
         case map : TMap => { println("map") }
         case list : TList => { println("list") }
       }
-      return elem
+      return elem.asInstanceOf[TReg]
     }
     else {
       val newElement = new TReg()
       content.put(key, newElement.asInstanceOf[DocItem])
-      return newElement.asInstanceOf[DocItem]
+      return newElement
     }
   }
 }

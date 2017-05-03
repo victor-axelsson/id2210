@@ -28,7 +28,7 @@ class DocItem  {
 
     Cmd.Let(null,null)
 
-    Cmd.Let(Var.VarString())
+    //Cmd.Let(Var.VarString())
   }
 
   def get(key:String) : TReg = {
