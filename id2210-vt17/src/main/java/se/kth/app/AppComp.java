@@ -22,6 +22,7 @@ import java.util.List;
 import app.TestingOut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scala.util.parsing.json.JSONObject;
 import se.kth.app.broadcast.BEB.BEB_Deliver;
 import se.kth.app.broadcast.BEB.BestEffortBroadcast;
 import se.kth.app.broadcast.CB.CB_Broadcast;
@@ -70,7 +71,6 @@ public class AppComp extends ComponentDefinition {
     selfAdr = init.selfAdr;
     logPrefix = "<nid:" + selfAdr.getId() + ">";
     LOG.info("{}initiating...", logPrefix);
-
 
 
     subscribe(handleStart, control);
