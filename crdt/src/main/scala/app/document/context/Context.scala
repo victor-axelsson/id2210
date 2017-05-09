@@ -65,8 +65,18 @@ class Context(var doc:Node) {
       }
     }
   }
-  
 
+  //PRESENCE
+  def presence(context: Context, id : Int) : Context = {
+    val node = context.getDoc()
+    if (node.getPres().contains(id)) {
+      context
+    } else {
+      null
+    }
+  }
+
+  //DESCEND
   def descend(context: Context): Context = {
     var keys:List[Key] = context.op.getCursor().getKeys()
     var tail = context.op.getCursor().getTail()
