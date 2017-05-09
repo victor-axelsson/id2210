@@ -2,6 +2,7 @@ package app.document.context
 
 import app.document.cursor.{Cursor, Key}
 import app.document.evaluator.Mutation
+import app.document.evaluator.Mutation.Delete
 
 /**
   * Created by victoraxelsson on 2017-05-06.
@@ -22,13 +23,13 @@ class Context(doc:Node) {
     cursor = _cursor
     mutation = _mutation
 
+    var newContext = this
+
     if(cursor.getKeys().size > 0){
-      var c:Context = descend(this)
-      println(c.cursor.getKeys())
-      return c
+      newContext = descend(copyCtor(id, deps, cursor, mutation, doc))
     }
 
-    this
+    newContext
   }
 
   private def copyCtor(_id :Int, _deps:List[Int], _cursor: Cursor, _mutation:Mutation, _doc:Node): Context = {
@@ -40,49 +41,70 @@ class Context(doc:Node) {
     instance
   }
 
+
+  def childGet(tail:Key) = {
+    //Find new doc
+    var newDoc:Node = null;
+    for(node <- getDoc().getChildren()){
+      if(node.getName().equals(tail.getKey())){
+        newDoc = node
+      }
+    }
+    newDoc
+  }
+
+
+  def childMap(key:String) :Node= {
+    new NodeMap(key, Set.empty)
+  }
+
+  def childList(key:String) :Node= {
+    new NodeList(key, Set.empty)
+  }
+
+  def addId(key:String, mutation: Mutation, node: Node) = {
+    mutation match {
+      case Delete() => {
+        node.removeKeyPresence(key)
+      }
+      case _ => {
+        node.addKeyPresence(key)
+      }
+    }
+  }
+
+
+
   def descend(context: Context): Context = {
     var keys:List[Key] = context.cursor.getKeys()
     var tail = context.cursor.getTail()
 
-    //TODO: implemented add
+
 
     if(keys.size > 0){
       var newCursor = new Cursor(keys.tail, tail);
 
-      println(newCursor.getKeys())
+      var node:Node = childGet(tail)
 
+      if(node == null){
 
-      //Find new doc
-      var newDoc:Node = null;
-      for(node <- context.getDoc().getChildren()){
-        if(node.getName().equals(tail.getKey())){
-          newDoc = node
+        keys.head match {
+          case mapT => {
+            println(keys.head.getKey())
+            node = childMap(keys.head.getKey())
+          }
+          case listT => {
+            node = childList(keys.head.getKey())
+          }
+          case regT => {
+            throw new Exception("There should not be a reg in he middle of the cursor")
+          }
         }
       }
-
-      return descend(copyCtor(id, deps, newCursor, mutation, newDoc))
-
-
-      /*
-      keys.head match {
-          case RootMapT(_) => {
-
-          }
-          case mapT(_) => {
-            var s:String = keys.head.asInstanceOf[mapT].key
-
-          }
-          case listT(_) => {
-            var s:String = keys.head.asInstanceOf[listT].key
-
-          }
-          case _ => {
-            throw new Exception("Not matched any class")
-          }
-      }
-      */
-
+      addId(keys.head.getKey(), context.mutation, node)
+      return descend(copyCtor(id, deps, newCursor, mutation, node))
     }
+
 
     context
   }

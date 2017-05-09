@@ -16,7 +16,7 @@ class ContextTest extends FlatSpec{
   "A context" should "be able to perform DESCEND" in {
 
     var nodeDoc:NodeDoc = new NodeDoc(null)
-    var context = new Context(nodeDoc);
+    var context = new Context(nodeDoc)
     var eval:Evaluator = new Evaluator(1)
 
     val doc = Expr.Doc()
@@ -34,13 +34,15 @@ class ContextTest extends FlatSpec{
 
     var (id :Int, deps:List[Int], cursorRes: Cursor, mutation:Mutation) = eval.makeAssign(cursor, new Val.Str("someVal4"))
 
-    var newContext:Context = context.apply(id, deps, cursorRes, mutation);
+    var newContext:Context = context.apply(id, deps, cursorRes, mutation)
+
+    println(newContext.getDoc().getPres().contains("someVar2"))
+
 
     //Maybe one, not sure
     assert(newContext.cursor.getKeys().size == 0)
     //assert(!newContext.getJson().equals(json))
-    println(newContext.cursor.getTail())
-    println(newContext.cursor.getKeys())
     assert(newContext.cursor.getTail().equals(addMap3))
+   // assert()
   }
 }
