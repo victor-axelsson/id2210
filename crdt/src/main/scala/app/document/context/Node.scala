@@ -15,4 +15,6 @@ abstract class Node(name:String, var pres:Set[String]) {
   }
 
   def getChildren() :List[Node]
+
+  override def toString() : String
 }

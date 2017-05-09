@@ -38,7 +38,8 @@ class ContextTest extends FlatSpec{
 
     println(newContext.getDoc().getPres().contains("someVar2"))
 
-
+    println(newContext.getDoc().toString())
+    println(context.getDoc().toString())
     //Maybe one, not sure
     assert(newContext.cursor.getKeys().size == 0)
     //assert(!newContext.getJson().equals(json))

@@ -13,4 +13,18 @@ class NodeDoc(pres:Set[String]) extends Node("doc", pres){
     children.values.toSeq.toList
   }
 
+  override def toString: String = {
+    var builder : mutable.StringBuilder = new mutable.StringBuilder()
+    builder.append("{\n")
+    var counter = 0
+    for (child <- children.values) {
+      counter += 1
+
+      builder.append(child.toString())
+
+      if (counter < children.size) builder.append(",\n")
+    }
+    builder.append("\n}")
+    builder.toString()
+  }
 }

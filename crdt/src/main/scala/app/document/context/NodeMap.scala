@@ -13,4 +13,18 @@ class NodeMap(name:String, pres:Set[String]) extends Node(name, pres){
     children.values.toSeq.toList
   }
 
+  override def toString: String = {
+    val builder : mutable.StringBuilder = new mutable.StringBuilder()
+    builder.append('"').append(name).append('"').append("{\n")
+    var counter = 0
+    for (child <- children.values) {
+      counter += 1
+
+      builder.append(child.toString())
+
+      if (counter < children.size) builder.append(", ")
+    }
+    builder.append("\n}")
+    builder.toString()
+  }
 }
