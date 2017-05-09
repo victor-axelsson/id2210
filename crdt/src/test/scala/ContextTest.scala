@@ -1,4 +1,4 @@
-import app.document.context.Context
+import app.document.context.{Context, NodeDoc}
 import app.document.cursor.Cursor
 import app.document.cursor.Key.{RootMapT, mapT}
 import app.document.evaluator.{Evaluator, Mutation}
@@ -7,24 +7,16 @@ import org.scalatest.FlatSpec
 
 
 
+
+
 /**
   * Created by victoraxelsson on 2017-05-06.
   */
 class ContextTest extends FlatSpec{
-  "A context" should "be able to intialize a default json object" in {
-      var context = new Context();
-
-      assert(context.getJson().equals("{}"));
-  }
-  "A context" should "be able to intialize a given json object from a string" in {
-    var json:String = "{\"someVar1\":{\"someVar2\":{\"someVar3\":\"someval\"}}}"
-    var context = new Context(json);
-    assert(context.getJson().equals(json));
-  }
   "A context" should "be able to perform DESCEND" in {
-    var json:String = "{\"someVar1\":{\"someVar2\":{\"someVar3\":\"someval\"}}}"
 
-    var context = new Context(json)
+    var nodeDoc:NodeDoc = new NodeDoc(null)
+    var context = new Context(nodeDoc);
     var eval:Evaluator = new Evaluator(1)
 
     val doc = Expr.Doc()
