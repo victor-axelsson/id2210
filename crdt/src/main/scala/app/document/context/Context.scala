@@ -1,18 +1,18 @@
 package app.document.context
 
 import app.document.cursor.{Cursor, Key}
-import app.document.evaluator.{Mutation, Operation}
 import app.document.evaluator.Mutation.Delete
+import app.document.evaluator.Operation
 
 /**
   * Created by victoraxelsson on 2017-05-06.
   */
-class Context(doc:Node) {
+class Context(var doc:Node) {
 
   var op : Operation = null
+  var child:Node = doc
 
   def getDoc() :Node = doc
-
 
   def apply(_op : Operation) : Context = {
     op = _op
@@ -21,6 +21,8 @@ class Context(doc:Node) {
 
     if(op.getCursor().getKeys().size > 0){
       newContext = descend(copyCtor(op, doc))
+      child = newContext.doc
+      newContext.doc = doc;
     }
 
     newContext
@@ -63,8 +65,7 @@ class Context(doc:Node) {
       }
     }
   }
-
-
+  
 
   def descend(context: Context): Context = {
     var keys:List[Key] = context.op.getCursor().getKeys()

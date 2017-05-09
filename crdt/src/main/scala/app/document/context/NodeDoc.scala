@@ -16,17 +16,26 @@ class NodeDoc(pres:Map[Int, Operation]) extends Node("doc", pres){
   }
 
   override def toString: String = {
-    var builder : mutable.StringBuilder = new mutable.StringBuilder()
-    builder.append("{\n")
+
+    println(children.size)
+
+    val builder : mutable.StringBuilder = new mutable.StringBuilder()
+    builder.append("{").append('"').append("doc").append('"').append(":").append("{");
+    if(children.size > 0){
+      builder.append("\n")
+    }
     var counter = 0
     for (child <- children.values) {
       counter += 1
 
       builder.append(child.toString())
 
-      if (counter < children.size) builder.append(",\n")
+      if (counter < children.size) builder.append(", ")
     }
-    builder.append("\n}")
+    if(children.size > 0){
+      builder.append("\n")
+    }
+    builder.append("}}")
     builder.toString()
   }
 }

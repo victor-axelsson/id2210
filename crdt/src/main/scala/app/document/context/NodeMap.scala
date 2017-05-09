@@ -16,8 +16,14 @@ class NodeMap(name:String, pres:Map[Int, Operation]) extends Node(name, pres){
   }
 
   override def toString: String = {
+
+    println(children.size)
+
     val builder : mutable.StringBuilder = new mutable.StringBuilder()
-    builder.append('"').append(name).append('"').append("{\n")
+    builder.append("{").append('"').append("doc").append('"').append(":").append("{");
+    if(children.size > 0){
+      builder.append("\n")
+    }
     var counter = 0
     for (child <- children.values) {
       counter += 1
@@ -26,7 +32,10 @@ class NodeMap(name:String, pres:Map[Int, Operation]) extends Node(name, pres){
 
       if (counter < children.size) builder.append(", ")
     }
-    builder.append("\n}")
+    if(children.size > 0){
+      builder.append("\n")
+    }
+    builder.append("}}")
     builder.toString()
   }
 }
