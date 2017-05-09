@@ -8,7 +8,13 @@ import scala.collection.mutable
 /**
   * Created by victoraxelsson on 2017-05-09.
   */
-class NodeReg(name:String, values : List[Val], pres:Map[Int, Operation]) extends Node(name, pres){
+class NodeReg(name:String, var values : List[Val], pres:Map[Int, Operation]) extends Node(name, pres){
+
+
+  def getValues() = values
+  def addValues(newVal:Val) = {
+   values = values :+ newVal
+  }
 
   override def getChildren(): List[Node] = {
     null

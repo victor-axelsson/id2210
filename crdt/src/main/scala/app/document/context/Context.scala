@@ -3,6 +3,7 @@ package app.document.context
 import app.document.cursor.{Cursor, Key}
 import app.document.evaluator.Mutation.{Assign, Delete, Insert}
 import app.document.evaluator.Operation
+import app.document.language.Val.{EmptyList, EmptyMap}
 
 /**
   * Created by victoraxelsson on 2017-05-06.
@@ -28,7 +29,21 @@ class Context(var doc:Node) {
     //Do shiet
     op.getMutation() match {
       case Assign(_) => {
-        assign(newContext)
+
+        var ass:Assign = newContext.op.getMutation().asInstanceOf[Assign]
+
+        ass.value match {
+          case EmptyMap => {
+            emptyMap(newContext)
+          }
+          case EmptyList => {
+            emptyList(newContext)
+          }
+          case _ => {
+            assign(newContext)
+          }
+        }
+
       }
       case Insert(_) => {
         insert(newContext)
@@ -41,16 +56,37 @@ class Context(var doc:Node) {
     newContext
   }
 
-  private def delete(context: Context) = {
+  private def emptyMap(context: Context) = {
+    //TODO: shiet
+  }
 
+  private def emptyList(context: Context) = {
+    //TODO: shiet
+  }
+
+  private def clearReg(deps:List[Int], regT:NodeReg) = {
+    //TODO: shiet
+  }
+
+  private def delete(context: Context) = {
+    //TODO: shiet
   }
 
   private def insert(context: Context) = {
-
+    //TODO: shiet
   }
 
   private def assign(context: Context) = {
-  
+    if(!child.isInstanceOf[NodeReg]){
+      throw new Exception("Assign is only for NodeReg")
+    }
+
+    var regT = child.asInstanceOf[NodeReg]
+
+    clearReg(context.op.getDeps(), regT)
+
+    var assign:Assign = context.op.getMutation().asInstanceOf[Assign]
+    regT.addValues(assign.value)
   }
 
   private def copyCtor(_op : Operation, _doc:Node): Context = {
