@@ -1,7 +1,7 @@
 package app.document.context
 
 import app.document.cursor.{Cursor, Key}
-import app.document.evaluator.Mutation.Delete
+import app.document.evaluator.Mutation.{Assign, Delete, Insert}
 import app.document.evaluator.Operation
 
 /**
@@ -25,7 +25,32 @@ class Context(var doc:Node) {
       newContext.doc = doc;
     }
 
+    //Do shiet
+    op.getMutation() match {
+      case Assign(_) => {
+        assign(newContext)
+      }
+      case Insert(_) => {
+        insert(newContext)
+      }
+      case Delete() => {
+        delete(newContext)
+      }
+    }
+
     newContext
+  }
+
+  private def delete(context: Context) = {
+
+  }
+
+  private def insert(context: Context) = {
+
+  }
+
+  private def assign(context: Context) = {
+  
   }
 
   private def copyCtor(_op : Operation, _doc:Node): Context = {
