@@ -1,7 +1,7 @@
 package app.document.context
 
 import app.document.cursor.{Cursor, Key}
-import app.document.evaluator.Mutation
+import app.document.evaluator.{Mutation, Operation}
 import app.document.evaluator.Mutation.Delete
 
 /**
@@ -9,35 +9,26 @@ import app.document.evaluator.Mutation.Delete
   */
 class Context(doc:Node) {
 
-  var id :Int = -1
-  var deps:List[Int] = null
-  var cursor: Cursor = null
-  var mutation:Mutation = null
+  var op : Operation = null
 
   def getDoc() :Node = doc
 
 
-  def apply(_id :Int, _deps:List[Int], _cursor: Cursor, _mutation:Mutation) : Context = {
-    id = _id
-    deps = _deps
-    cursor = _cursor
-    mutation = _mutation
+  def apply(_op : Operation) : Context = {
+    op = _op
 
     var newContext = this
 
-    if(cursor.getKeys().size > 0){
-      newContext = descend(copyCtor(id, deps, cursor, mutation, doc))
+    if(op.getCursor().getKeys().size > 0){
+      newContext = descend(copyCtor(op, doc))
     }
 
     newContext
   }
 
-  private def copyCtor(_id :Int, _deps:List[Int], _cursor: Cursor, _mutation:Mutation, _doc:Node): Context = {
+  private def copyCtor(_op : Operation, _doc:Node): Context = {
     var instance:Context = new Context(_doc)
-    instance.id = _id
-    instance.deps = _deps
-    instance.cursor = _cursor
-    instance.mutation = _mutation
+    instance.op = _op
     instance
   }
 
@@ -55,20 +46,20 @@ class Context(doc:Node) {
 
 
   def childMap(key:String) :Node= {
-    new NodeMap(key, Set.empty)
+    new NodeMap(key, Map.empty)
   }
 
   def childList(key:String) :Node= {
-    new NodeList(key, Set.empty)
+    new NodeList(key, Map.empty)
   }
 
-  def addId(key:String, mutation: Mutation, node: Node) = {
-    mutation match {
+  def addId(key:String, operation : Operation, node: Node) = {
+    operation.getMutation() match {
       case Delete() => {
-        node.removeKeyPresence(key)
+        node.removeKeyPresence(operation.getId())
       }
       case _ => {
-        node.addKeyPresence(key)
+        node.addKeyPresence(operation)
       }
     }
   }
@@ -76,8 +67,8 @@ class Context(doc:Node) {
 
 
   def descend(context: Context): Context = {
-    var keys:List[Key] = context.cursor.getKeys()
-    var tail = context.cursor.getTail()
+    var keys:List[Key] = context.op.getCursor().getKeys()
+    var tail = context.op.getCursor().getTail()
 
 
 
@@ -101,8 +92,8 @@ class Context(doc:Node) {
           }
         }
       }
-      addId(keys.head.getKey(), context.mutation, node)
-      return descend(copyCtor(id, deps, newCursor, mutation, node))
+      addId(keys.head.getKey(), context.op, node)
+      return descend(copyCtor(new Operation(op.getId(), op.getDeps(), newCursor, op.getMutation()), node))
     }
 
 

@@ -1,9 +1,11 @@
 package app.document.context
 
+import app.document.evaluator.Operation
+
 /**
   * Created by victoraxelsson on 2017-05-09.
   */
-class NodeList(name:String, pres:Set[String]) extends Node(name, pres){
+class NodeList(name:String, pres:Map[Int, Operation]) extends Node(name, pres){
 
 
   override def getChildren(): List[Node] = {

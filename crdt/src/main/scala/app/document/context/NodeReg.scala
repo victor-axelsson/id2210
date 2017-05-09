@@ -1,5 +1,6 @@
 package app.document.context
 
+import app.document.evaluator.Operation
 import app.document.language.Val
 
 import scala.collection.mutable
@@ -7,7 +8,7 @@ import scala.collection.mutable
 /**
   * Created by victoraxelsson on 2017-05-09.
   */
-class NodeReg(name:String, values : List[Val], pres:Set[String]) extends Node(name, pres){
+class NodeReg(name:String, values : List[Val], pres:Map[Int, Operation]) extends Node(name, pres){
 
   override def getChildren(): List[Node] = {
     null

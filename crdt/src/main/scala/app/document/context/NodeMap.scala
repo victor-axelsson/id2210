@@ -1,11 +1,13 @@
 package app.document.context
 
+import app.document.evaluator.Operation
+
 import scala.collection.mutable
 
 /**
   * Created by victoraxelsson on 2017-05-09.
   */
-class NodeMap(name:String, pres:Set[String]) extends Node(name, pres){
+class NodeMap(name:String, pres:Map[Int, Operation]) extends Node(name, pres){
 
   var children:mutable.HashMap[String, Node] = new mutable.HashMap[String, Node]()
 

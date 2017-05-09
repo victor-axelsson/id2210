@@ -34,16 +34,16 @@ class ContextTest extends FlatSpec{
 
     var op = eval.makeAssign(cursor, new Val.Str("someVal4"))
 
-    var newContext:Context = context.apply(op.getId(), op.getDeps(), op.getCursor(), op.getMutation())
+    var newContext:Context = context.apply(op)
 
-    println(newContext.getDoc().getPres().contains("someVar2"))
+  //  println(newContext.getDoc().getPres().contains())
 
     println(newContext.getDoc().toString())
     println(context.getDoc().toString())
     //Maybe one, not sure
-    assert(newContext.cursor.getKeys().size == 0)
+    assert(newContext.op.getCursor().getKeys().size == 0)
     //assert(!newContext.getJson().equals(json))
-    assert(newContext.cursor.getTail().equals(addMap3))
+    assert(newContext.op.getCursor().getTail().equals(addMap3))
    // assert()
   }
 }
