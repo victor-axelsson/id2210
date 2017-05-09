@@ -16,7 +16,7 @@ class NodeReg(name:String, values : List[Val], pres:Map[Int, Operation]) extends
 
   override def toString: String = {
     val builder : mutable.StringBuilder = new mutable.StringBuilder()
-    builder.append('"').append(name).append('"').append(" : ").append('"')
+    builder.append('"').append(name).append('"').append(":").append('"')
     for (value <- values) {
       builder.append(value)
       if (!value.eq(values.last)) {
