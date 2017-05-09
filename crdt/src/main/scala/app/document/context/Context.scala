@@ -68,7 +68,7 @@ class Context(var doc:Node) {
 
   //PRESENCE
   def presence(context: Context, id : Int) : Context = {
-    val node = context.getDoc()
+    val node = context.child
     if (node.getPres().contains(id)) {
       context
     } else {
