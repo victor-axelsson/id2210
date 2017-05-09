@@ -24,10 +24,7 @@ class ContextTest extends FlatSpec{
   "A context" should "be able to perform DESCEND" in {
     var json:String = "{\"someVar1\":{\"someVar2\":{\"someVar3\":\"someval\"}}}"
 
-    //The expected output might be formatted in a different way though, just make sure the json was added
-    var expectedOutput:String = "{\"someVar1\":{\"someVar2\":{\"someVar3\":\"someval\"},someVar4:\"someVal4\"}}"
     var context = new Context(json)
-
     var eval:Evaluator = new Evaluator(1)
 
     val doc = Expr.Doc()
@@ -49,6 +46,9 @@ class ContextTest extends FlatSpec{
 
     //Maybe one, not sure
     assert(newContext.cursor.getKeys().size == 0)
-    assert(newContext.getJson().equals(expectedOutput))
+    //assert(!newContext.getJson().equals(json))
+    println(newContext.cursor.getTail())
+    println(newContext.cursor.getKeys())
+    assert(newContext.cursor.getTail().equals(addMap3))
   }
 }
