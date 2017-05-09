@@ -32,9 +32,9 @@ class ContextTest extends FlatSpec{
     cursor = cursor.append(addMap2)
     cursor = cursor.append(addMap3)
 
-    var (id :Int, deps:List[Int], cursorRes: Cursor, mutation:Mutation) = eval.makeAssign(cursor, new Val.Str("someVal4"))
+    var op = eval.makeAssign(cursor, new Val.Str("someVal4"))
 
-    var newContext:Context = context.apply(id, deps, cursorRes, mutation)
+    var newContext:Context = context.apply(op.getId(), op.getDeps(), op.getCursor(), op.getMutation())
 
     println(newContext.getDoc().getPres().contains("someVar2"))
 

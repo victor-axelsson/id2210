@@ -20,11 +20,11 @@ class MakeOperationTest extends FlatSpec {
 
     val evaluator = new Evaluator(1)
 
-    val (id, deps, cur, mut) = evaluator.makeInsert(cursor, value)
-    assert(id == 1)
-    assert(deps == List.empty[Int])
-    assert(cur == cursor)
-    assert(mut.isInstanceOf[Insert])
+    val op = evaluator.makeInsert(cursor, value)
+    assert(op.getId() == 1)
+    assert(op.getDeps() == List.empty[Int])
+    assert(op.getCursor() == cursor)
+    assert(op.getMutation().isInstanceOf[Insert])
   }
 
   "An Evaluator" should "create operations for assign" in {
@@ -37,11 +37,11 @@ class MakeOperationTest extends FlatSpec {
 
     val evaluator = new Evaluator(1)
 
-    val (id, deps, cur, mut) = evaluator.makeAssign(cursor, value)
-    assert(id == 1)
-    assert(deps == List.empty[Int])
-    assert(cur == cursor)
-    assert(mut.isInstanceOf[Assign])
+    val op = evaluator.makeAssign(cursor, value)
+    assert(op.getId() == 1)
+    assert(op.getDeps() == List.empty[Int])
+    assert(op.getCursor() == cursor)
+    assert(op.getMutation().isInstanceOf[Assign])
   }
 
   "An Evaluator" should "create operations for delete" in {
@@ -52,11 +52,11 @@ class MakeOperationTest extends FlatSpec {
 
     val evaluator = new Evaluator(1)
 
-    val (id, deps, cur, mut) = evaluator.makeDelete(cursor)
-    assert(id == 1)
-    assert(deps == List.empty[Int])
-    assert(cur == cursor)
-    assert(mut.isInstanceOf[Delete])
+    val op = evaluator.makeDelete(cursor)
+    assert(op.getId() == 1)
+    assert(op.getDeps() == List.empty[Int])
+    assert(op.getCursor() == cursor)
+    assert(op.getMutation().isInstanceOf[Delete])
   }
 
   "An Evaluator" should "increase the id after an operation was created" in {
@@ -69,10 +69,10 @@ class MakeOperationTest extends FlatSpec {
 
     val evaluator = new Evaluator(1)
 
-    val (id, _, _, _) = evaluator.makeInsert(cursor, value)
-    val (id2, _, _, _) = evaluator.makeInsert(cursor, value)
-    assert(id == 1)
-    assert(id2 > id)
+    val op1 = evaluator.makeInsert(cursor, value)
+    val op2 = evaluator.makeInsert(cursor, value)
+    assert(op1.getId() == 1)
+    assert(op2.getId() > op1.getId())
   }
 
 
@@ -86,7 +86,7 @@ class MakeOperationTest extends FlatSpec {
 
     val evaluator = new Evaluator(1)
 
-    val (id, _, _, _) = evaluator.makeInsert(cursor, value)
-    assert(id != 0)
+    val op = evaluator.makeInsert(cursor, value)
+    assert(op.getId() != 0)
   }
 }

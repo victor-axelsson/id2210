@@ -14,11 +14,11 @@ class Evaluator(replicaId : Int) {
 
   private def getId() : Int = counter * replicaId
 
-  private def makeOperation(cursor : Cursor, mutation: Mutation) = {
+  private def makeOperation(cursor : Cursor, mutation: Mutation) : Operation = {
     counter += 1;
-    var tuple = (getId(), executedOperations, cursor, mutation)
-    applyLocal(tuple._1, tuple._2, tuple._3, tuple._4)
-    tuple
+    var op = new Operation(getId(), executedOperations, cursor, mutation)
+    applyLocal(op.getId(), op.getDeps(), op.getCursor(), op.getMutation())
+    op
   }
 
   private def applyLocal(id :Int, deps:List[Int], cursor: Cursor, mutation:Mutation) = {
