@@ -1,7 +1,8 @@
 package app.document.evaluator
 
-import app.document.context.{Context, NodeDoc}
+import app.document.context.{Context, Node, NodeDoc}
 import app.document.cursor.Cursor
+import app.document.cursor.Key.RootMapT
 import app.document.evaluator.Mutation.{Assign, Delete, Insert}
 import app.document.language.Expr.{Get, Idx, Keys, Values}
 import app.document.language.{Expr, Val}
@@ -16,6 +17,13 @@ class Evaluator(replicaId : Int) {
   private var localStateAp:Context = new Context(new NodeDoc(new scala.collection.immutable.HashMap[Int, Operation]()))
   private var queue = List.empty[Operation]
 
+  var cursor:Cursor = getNewCursor()
+  var node:Node = null;
+
+  private def getNewCursor() :Cursor = {
+    new Cursor(scala.collection.immutable.List(), RootMapT(Expr.Doc()))
+  }
+
   private def getId() : Int = counter * replicaId
 
   def evalExpr(expr: Expr):Cursor = {
@@ -23,6 +31,17 @@ class Evaluator(replicaId : Int) {
     expr match {
       case Get(nextExpr, key) => {
         //TODO: stuff
+
+
+        //cursor = cursor.append(addMap2)
+
+        for(node:Node <- localStateAp.child.getChildren()){
+          if(node == nextExpr){
+
+          }
+        }
+
+        //
         null
       }
       case Idx(nextExpr, index) => {
