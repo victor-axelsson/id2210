@@ -65,6 +65,29 @@ class Context(var doc:Node) {
     //TODO: implement
   }
 
+  def clearMap(ints: List[Int], t: mapT) = {
+
+  }
+
+  def clearList(ints: List[Int], t: listT) = {
+    
+  }
+
+  def clear(deps: List[Int], key: Key) = {
+    key match {
+      case RootMapT(_) => { throw new Exception("You cannot clear a doc")}
+      case mapT(_) => {
+        clearMap(deps, key.asInstanceOf[mapT])
+      }
+      case listT(_) => {
+        clearList(deps, key.asInstanceOf[listT])
+      }
+      case regT(_) => {
+        clearReg(deps, key.asInstanceOf[regT])
+      }
+    }
+  }
+
   private def emptyMap(context: Context) = {
 
     if(!context.op.getCursor().getTail().isInstanceOf[mapT]){
@@ -72,7 +95,7 @@ class Context(var doc:Node) {
     }
 
     val mapT = context.op.getCursor().getTail().asInstanceOf[mapT]
-    clearElem(context.op.getDeps(), mapT)
+    clear(context.op.getDeps(), mapT)
 
     var nMap:NodeMap = childGet(mapT).asInstanceOf[NodeMap]
 
@@ -92,7 +115,7 @@ class Context(var doc:Node) {
     }
 
     val listT = context.op.getCursor().getTail().asInstanceOf[listT]
-    clearElem(context.op.getDeps(), listT)
+    clear(context.op.getDeps(), listT)
 
     var nList = childGet(listT).asInstanceOf[NodeList]
 
@@ -127,7 +150,7 @@ class Context(var doc:Node) {
     }
 
     var regT = context.op.getCursor().getTail().asInstanceOf[regT]
-    clearReg(context.op.getDeps(), regT)
+    clear(context.op.getDeps(), regT)
     var assign:Assign = context.op.getMutation().asInstanceOf[Assign]
 
 
