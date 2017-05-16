@@ -1,6 +1,6 @@
 package app.document.context
 
-import app.document.cursor.Key.{RootMapT, regT}
+import app.document.cursor.Key.{RootMapT, listT, mapT, regT}
 import app.document.cursor.{Cursor, Key}
 import app.document.evaluator.Mutation.{Assign, Delete, Insert}
 import app.document.evaluator.Operation
@@ -61,12 +61,51 @@ class Context(var doc:Node) {
     newContext
   }
 
+  def clearElem(ints: List[Int], key: Key) = {
+    //TODO: implement
+  }
+
   private def emptyMap(context: Context) = {
-    //TODO: shiet
+
+    if(!context.op.getCursor().getTail().isInstanceOf[mapT]){
+      throw new Exception("Assign EmptyMap is only for mapT")
+    }
+
+    val mapT = context.op.getCursor().getTail().asInstanceOf[mapT]
+    clearElem(context.op.getDeps(), mapT)
+
+    var nMap:NodeMap = childGet(mapT).asInstanceOf[NodeMap]
+
+    if(nMap == null){
+      nMap = new NodeMap(mapT.key, new scala.collection.immutable.HashMap[Int, Operation]())
+    }else{
+        throw new Exception("I'm not sure what to do here")
+    }
+
+    context.child.addChild(nMap)
+    addId(mapT.key, context.op, context.child)
   }
 
   private def emptyList(context: Context) = {
-    //TODO: shiet
+    if(!context.op.getCursor().getTail().isInstanceOf[listT]){
+      throw new Exception("Assign EmptyList is only for listT")
+    }
+
+    val listT = context.op.getCursor().getTail().asInstanceOf[listT]
+    clearElem(context.op.getDeps(), listT)
+
+    var nList = childGet(listT).asInstanceOf[NodeList]
+
+
+    if(nList == null){
+      //name:String, pres:Map[Int, Operation]
+      nList = new NodeList(listT.key, new scala.collection.immutable.HashMap[Int, Operation]())
+    }else{
+      throw new Exception("I'm not sure what to do here")
+    }
+
+    context.child.addChild(nList)
+    addId(listT.key, context.op, context.child)
   }
 
   private def clearReg(deps:List[Int], regT:regT) = {
@@ -84,14 +123,13 @@ class Context(var doc:Node) {
   private def assign(context: Context) = {
 
     if(!context.op.getCursor().getTail().isInstanceOf[regT]){
-      throw new Exception("Assign is only for NodeReg")
+      throw new Exception("Assign is only for regT")
     }
 
     var regT = context.op.getCursor().getTail().asInstanceOf[regT]
     clearReg(context.op.getDeps(), regT)
     var assign:Assign = context.op.getMutation().asInstanceOf[Assign]
 
-    //name:String, var values : List[Val], pres:Map[Int, Operation]
 
     var nReg:NodeReg = childGet(regT).asInstanceOf[NodeReg]
 
