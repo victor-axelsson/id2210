@@ -65,7 +65,34 @@ class ContextTest extends FlatSpec{
 
     var expectedOutput = "{\"doc\":{\"someVar1\":{\"someVar2\":{\"someVar4\":\"someVal4\"}}}}"
 
-    println(newContext.getDoc().toString())
+    assert(newContext.op.getCursor().getKeys().size == 0)
+    assert(newContext.op.getCursor().getTail().equals(reg3))
+    assert(newContext.getDoc().toString() == expectedOutput)
+  }
+  "A context" should "be able to perform EMPTY-MAP" in {
+
+    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.immutable.HashMap[Int, Operation]())
+    var context = new Context(nodeDoc)
+    var eval:Evaluator = new Evaluator(1)
+
+    val doc = Expr.Doc()
+    val key = RootMapT(doc)
+    val keys = scala.collection.immutable.List()
+    var cursor = new Cursor(keys, key)
+
+    val addMap1 = mapT("someVar1")
+    val addMap2 = mapT("someVar2")
+    val reg3 = regT("someVar4")
+
+    cursor = cursor.append(addMap1)
+    cursor = cursor.append(addMap2)
+    cursor = cursor.append(reg3)
+
+    var op = eval.makeAssign(cursor, Val.EmptyMap);
+    var newContext:Context = context.apply(op)
+
+
+    var expectedOutput = "{\"doc\":{\"someVar1\":{\"someVar2\":{}}}}"
 
     assert(newContext.op.getCursor().getKeys().size == 0)
     assert(newContext.op.getCursor().getTail().equals(reg3))

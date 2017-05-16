@@ -26,13 +26,6 @@ class NodeReg(name:String, var values : List[Val], pres:Map[Int, Operation]) ext
     builder.append('"').append(name).append('"').append(":").append('"')
     for (value <- values) {
 
-      /*
-      *   case object True extends Val
-  case object False extends Val
-  case object Null extends Val
-  case object EmptyMap extends Val
-  case object EmptyList extends Val
-      * */
       value match {
         case Str(_) => {
           builder.append(value.asInstanceOf[Str].getVal())
