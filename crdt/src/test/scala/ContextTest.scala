@@ -91,10 +91,7 @@ class ContextTest extends FlatSpec{
     var op = eval.makeAssign(cursor, Val.EmptyMap);
     var newContext:Context = context.apply(op)
 
-
     var expectedOutput = "{\"doc\":{\"someVar1\":{\"someVar2\":{\"someVar4\":{}}}}}"
-
-    println(newContext.getDoc().toString())
 
     assert(newContext.op.getCursor().getKeys().size == 0)
     assert(newContext.op.getCursor().getTail().equals(addMap3))
@@ -123,8 +120,6 @@ class ContextTest extends FlatSpec{
     var newContext:Context = context.apply(op)
 
     var expectedOutput = "{\"doc\":{\"someVar1\":{\"someVar2\":{\"someVar4\":[]}}}}"
-
-    println(newContext.getDoc().toString())
 
     assert(newContext.op.getCursor().getKeys().size == 0)
     assert(newContext.op.getCursor().getTail().equals(addList))
