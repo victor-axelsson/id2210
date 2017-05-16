@@ -1,8 +1,10 @@
 package app.document.context
 
+import app.document.cursor.Key.{RootMapT, regT}
 import app.document.cursor.{Cursor, Key}
 import app.document.evaluator.Mutation.{Assign, Delete, Insert}
 import app.document.evaluator.Operation
+import app.document.language.Val
 import app.document.language.Val.{EmptyList, EmptyMap}
 
 /**
@@ -12,6 +14,7 @@ class Context(var doc:Node) {
 
   var op : Operation = null
   var child:Node = doc
+  var prev:Node = null
 
   def getDoc() :Node = doc
 
@@ -21,7 +24,9 @@ class Context(var doc:Node) {
     var newContext = this
 
     if(op.getCursor().getKeys().size > 0){
+      prev = null
       newContext = descend(copyCtor(op, doc))
+      //the doc is used for descending, now swap it back
       child = newContext.doc
       newContext.doc = doc;
     }
@@ -64,7 +69,7 @@ class Context(var doc:Node) {
     //TODO: shiet
   }
 
-  private def clearReg(deps:List[Int], regT:NodeReg) = {
+  private def clearReg(deps:List[Int], regT:regT) = {
     //TODO: shiet
   }
 
@@ -77,16 +82,30 @@ class Context(var doc:Node) {
   }
 
   private def assign(context: Context) = {
-    if(!child.isInstanceOf[NodeReg]){
+
+    if(!context.op.getCursor().getTail().isInstanceOf[regT]){
       throw new Exception("Assign is only for NodeReg")
     }
 
-    var regT = child.asInstanceOf[NodeReg]
-
+    var regT = context.op.getCursor().getTail().asInstanceOf[regT]
     clearReg(context.op.getDeps(), regT)
-
     var assign:Assign = context.op.getMutation().asInstanceOf[Assign]
-    regT.addValues(assign.value)
+
+    //name:String, var values : List[Val], pres:Map[Int, Operation]
+
+    var nReg:NodeReg = childGet(regT).asInstanceOf[NodeReg]
+
+    if(nReg == null){
+      var values = List[Val]()
+      values = values :+ assign.value
+      nReg = new NodeReg(regT.key, values, new scala.collection.immutable.HashMap[Int, Operation]());
+    }else{
+      nReg.addValues(assign.value)
+    }
+
+    context.child.addChild(nReg)
+    addId(regT.key, context.op, context.child)
+
   }
 
   private def copyCtor(_op : Operation, _doc:Node): Context = {
@@ -96,7 +115,7 @@ class Context(var doc:Node) {
   }
 
 
-  def childGet(tail:Key) = {
+  def childGet(tail:Key):Node = {
     //Find new doc
     var newDoc:Node = null;
     for(node <- getDoc().getChildren()){
@@ -141,19 +160,18 @@ class Context(var doc:Node) {
   def descend(context: Context): Context = {
     var keys:List[Key] = context.op.getCursor().getKeys()
     var tail = context.op.getCursor().getTail()
-
+    var node:Node = childGet(tail)
 
 
     if(keys.size > 0){
-      var newCursor = new Cursor(keys.tail, tail);
-
-      var node:Node = childGet(tail)
-
       if(node == null){
 
         keys.head match {
+          case RootMapT(_) => {
+            //Keep the doc as node if we are at first iteration
+            node = context.doc
+          }
           case mapT => {
-            println(keys.head.getKey())
             node = childMap(keys.head.getKey())
           }
           case listT => {
@@ -164,10 +182,17 @@ class Context(var doc:Node) {
           }
         }
       }
+
+      if(prev != null){
+        prev.addChild(node)
+      }
+
+      val newCursor = new Cursor(keys.tail, tail);
+
       addId(keys.head.getKey(), context.op, node)
+      prev = node
       return descend(copyCtor(new Operation(op.getId(), op.getDeps(), newCursor, op.getMutation()), node))
     }
-
 
     context
   }

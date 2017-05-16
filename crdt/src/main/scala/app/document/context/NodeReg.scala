@@ -2,6 +2,7 @@ package app.document.context
 
 import app.document.evaluator.Operation
 import app.document.language.Val
+import app.document.language.Val.{False, Null, Number, Str, True}
 
 import scala.collection.mutable
 
@@ -24,11 +25,44 @@ class NodeReg(name:String, var values : List[Val], pres:Map[Int, Operation]) ext
     val builder : mutable.StringBuilder = new mutable.StringBuilder()
     builder.append('"').append(name).append('"').append(":").append('"')
     for (value <- values) {
-      builder.append(value)
+
+      /*
+      *   case object True extends Val
+  case object False extends Val
+  case object Null extends Val
+  case object EmptyMap extends Val
+  case object EmptyList extends Val
+      * */
+      value match {
+        case Str(_) => {
+          builder.append(value.asInstanceOf[Str].getVal())
+        }
+        case Number(_) => {
+          builder.append(value.asInstanceOf[Number].getVal())
+        }
+        case True => {
+          builder.append("true")
+        }
+        case False => {
+          builder.append("false")
+        }
+        case Null => {
+          builder.append("null")
+        }
+        case _ => {
+         throw new Exception("Node reg should noe be able to be anything else")
+        }
+      }
+
+
       if (!value.eq(values.last)) {
         builder.append(",")
       }
     }
     builder.append('"').toString()
+  }
+
+  override def addChild(node: Node) = {
+    throw new Exception("You cannot add children to a register")
   }
 }

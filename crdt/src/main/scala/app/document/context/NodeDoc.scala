@@ -35,4 +35,8 @@ class NodeDoc(pres:Map[Int, Operation]) extends Node("doc", pres){
     builder.append("}}")
     builder.toString()
   }
+
+  override def addChild(node: Node) = {
+    children += node.getName() -> node
+  }
 }

@@ -7,6 +7,8 @@ import app.document.evaluator.Operation
   */
 abstract class Node(name:String, var pres:Map[Int, Operation]) {
 
+
+
   def getName() = name
   def getPres() = pres
   def removeKeyPresence(id : Int) = {
@@ -17,6 +19,7 @@ abstract class Node(name:String, var pres:Map[Int, Operation]) {
   }
 
   def getChildren() :List[Node]
+  def addChild(node: Node)
 
   override def toString() : String
 }
