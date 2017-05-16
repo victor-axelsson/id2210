@@ -18,7 +18,7 @@ class NodeTest extends FlatSpec {
     doc.children += map.getName() -> map
     doc.children += reg.getName() -> reg
 
-    val expected = "{\"doc\":{\"list\":[],\"reg\":\"Number(5)\",\"map\":{}}}"
+    val expected = "{\"doc\":{\"list\":[],\"reg\":5,\"map\":{}}}"
     println(expected)
     println(doc.toString())
     assert(doc.toString() == expected)
@@ -43,7 +43,7 @@ class NodeTest extends FlatSpec {
     list.children = list.children :+ map
     doc.children += list.getName() -> list
 
-    val expected = "{\"doc\":{\"list\":[\"map\":{\"reg2\":\"Number(2)\",\"reg1\":\"Number(5)\"}]}}"
+    val expected = "{\"doc\":{\"list\":[\"map\":{\"reg2\":2,\"reg1\":5}]}}"
     println(expected)
     println(doc.toString())
     assert(doc.toString() == expected)

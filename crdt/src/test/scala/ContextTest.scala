@@ -125,4 +125,28 @@ class ContextTest extends FlatSpec{
     assert(newContext.op.getCursor().getTail().equals(addList))
     assert(newContext.getDoc().toString() == expectedOutput)
   }
+  "A context" should "clear out old stuff from deps when using a regT" in {
+
+    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.immutable.HashMap[Int, Operation]())
+    var context = new Context(nodeDoc)
+    var eval:Evaluator = new Evaluator(1)
+
+    val doc = Expr.Doc()
+    val key = RootMapT(doc)
+    val keys = scala.collection.immutable.List()
+    var cursor = new Cursor(keys, key)
+
+    val addMap1 = mapT("someVar1")
+    val addMap2 = mapT("someVar2")
+    val addReg = regT("someVar4")
+
+    cursor = cursor.append(addMap1)
+    cursor = cursor.append(addMap2)
+    cursor = cursor.append(addReg)
+
+    var op = eval.makeAssign(cursor, new Val.Str("someVal4"));
+    var newContext:Context = context.apply(op)
+
+    println(newContext.getDoc().toString())
+  }
 }

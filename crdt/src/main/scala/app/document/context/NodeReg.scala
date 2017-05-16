@@ -23,12 +23,14 @@ class NodeReg(name:String, var values : List[Val], pres:Map[Int, Operation]) ext
 
   override def toString: String = {
     val builder : mutable.StringBuilder = new mutable.StringBuilder()
-    builder.append('"').append(name).append('"').append(":").append('"')
+    builder.append('"').append(name).append('"').append(":")
     for (value <- values) {
 
       value match {
         case Str(_) => {
+          builder.append('"')
           builder.append(value.asInstanceOf[Str].getVal())
+          builder.append('"')
         }
         case Number(_) => {
           builder.append(value.asInstanceOf[Number].getVal())
@@ -52,7 +54,7 @@ class NodeReg(name:String, var values : List[Val], pres:Map[Int, Operation]) ext
         builder.append(",")
       }
     }
-    builder.append('"').toString()
+    builder.toString()
   }
 
   override def addChild(node: Node) = {

@@ -70,7 +70,7 @@ class Context(var doc:Node) {
   }
 
   def clearList(ints: List[Int], t: listT) = {
-    
+
   }
 
   def clear(deps: List[Int], key: Key) = {
