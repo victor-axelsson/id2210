@@ -7,6 +7,8 @@ import app.document.evaluator.Operation
 import app.document.language.Val
 import app.document.language.Val.{EmptyList, EmptyMap}
 
+import scala.annotation.tailrec
+
 /**
   * Created by victoraxelsson on 2017-05-06.
   */
@@ -66,11 +68,11 @@ class Context(var doc:Node) {
   }
 
   def clearMap(ints: List[Int], t: mapT) = {
-
+    //TODO: implement
   }
 
   def clearList(ints: List[Int], t: listT) = {
-
+    //TODO: implement
   }
 
   def clear(deps: List[Int], key: Key) = {

@@ -1,4 +1,5 @@
 import app.document.language.Cmd.Let
+import app.document.language.Expr.{Doc, Get}
 import app.document.language.{Expr, Var}
 import org.scalatest.FlatSpec
 
@@ -11,5 +12,11 @@ class LetTest extends FlatSpec {
     val cmd = Let(x, Expr.Doc())
     println(x.toString())
     println(cmd.toString())
+
+
+    var sv1 = Get(Doc(), "someVar1")
+    var sv2 = Get(sv1, "someVar2")
+
+
   }
 }
