@@ -201,11 +201,82 @@ class ExpressionEvaluationTest extends FlatSpec{
     val expr3:Expr = Get(expr2, "someVar4")
     var expr4:Expr = Values(expr3)
 
-    var v = eval.evalExpr(expr1).evalExpr(expr2).evalExpr(expr3).evalExpr(expr4).toVals()
+    val v:List[Val] = eval.evalExpr(expr1).evalExpr(expr2).evalExpr(expr3).evalExpr(expr4).toVals()
 
     assert(v.size == 1)
     assert(v.head.isInstanceOf[Str])
     assert(v.head.asInstanceOf[Str].getVal() == "someVal4")
-    
+
+  }
+  "A VAL2 expression" should " return the values in a given regT from a cursor with only a key" in {
+
+    //// Build up the document ////
+    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.immutable.HashMap[Int, Operation]())
+    var context = new Context(nodeDoc)
+    var eval:Evaluator = new Evaluator(1)
+
+    val doc = Expr.Doc()
+    val key = RootMapT(doc)
+    val keys = scala.collection.immutable.List()
+    var cursor = new Cursor(keys, key)
+
+    val addMap1 = mapT("someVar1")
+    val addMap2 = mapT("someVar2")
+    val reg3 = regT("someVar4")
+
+    cursor = cursor.append(addMap1)
+    cursor = cursor.append(addMap2)
+    cursor = cursor.append(reg3)
+    val op = eval.makeAssign(cursor, new Val.Str("someVal4"))
+    val context2:Context = context.apply(op)
+
+    var searchCursor:Cursor = new Cursor(scala.collection.immutable.List(), reg3)
+
+    //Check that the cursor has elements, since we are testing VAL2
+    assert(searchCursor.getKeys().size <= 0)
+
+    //Give the context and query for the values
+    val v:List[Val] = searchCursor.values(context2)
+
+    //Check that is was found
+    assert(v.size == 1)
+    assert(v.head.isInstanceOf[Str])
+    assert(v.head.asInstanceOf[Str].getVal() == "someVal4")
+  }
+  "A VAL3 expression" should " return the values in a given regT from a cursor" in {
+
+
+    //// Build up the document ////
+    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.immutable.HashMap[Int, Operation]())
+    var context = new Context(nodeDoc)
+    var eval:Evaluator = new Evaluator(1)
+
+    val doc = Expr.Doc()
+    val key = RootMapT(doc)
+    val keys = scala.collection.immutable.List()
+    var cursor = new Cursor(keys, key)
+
+    val addMap1 = mapT("someVar1")
+    val addMap2 = mapT("someVar2")
+    val reg3 = regT("someVar4")
+
+    cursor = cursor.append(addMap1)
+    cursor = cursor.append(addMap2)
+    cursor = cursor.append(reg3)
+    val op = eval.makeAssign(cursor, new Val.Str("someVal4"))
+    val context2:Context = context.apply(op)
+
+
+    //Check that the cursor has elements, since we are testing VAL2
+    assert(cursor.getKeys().size > 0)
+
+
+    //Give the context and query for the values
+    val v:List[Val] = cursor.values(context2)
+
+    //Check that is was found
+    assert(v.size == 1)
+    assert(v.head.isInstanceOf[Str])
+    assert(v.head.asInstanceOf[Str].getVal() == "someVal4")
   }
 }
