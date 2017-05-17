@@ -23,6 +23,7 @@ case class Evaluator(replicaId : Int) {
   private var cursor:Cursor = getNewCursor()
   var node:Node = null;
 
+
   private def getNewCursor() :Cursor = {
     new Cursor(scala.collection.immutable.List(), RootMapT(Expr.Doc()))
   }
@@ -40,6 +41,28 @@ case class Evaluator(replicaId : Int) {
 
   def toCursor() = {
     cursor
+  }
+
+  def toKeys():scala.collection.mutable.Set[String] = {
+
+    @tailrec
+    def find(keys:scala.collection.mutable.Set[String], childs:List[Node]):scala.collection.mutable.Set[String] = {
+
+      if(childs.size <= 0){
+        return keys
+      }
+
+      keys += childs.head.getName()
+
+      find(keys, childs.tail)
+    }
+
+    //If no cursor, return empty set
+    if(node == null){
+      return scala.collection.mutable.Set[String]()
+    }
+
+    find(scala.collection.mutable.Set[String](), node.getChildren())
   }
 
   private def getId() : Int = counter * replicaId
@@ -86,7 +109,6 @@ case class Evaluator(replicaId : Int) {
         }else{
           throw new Exception("Key was not of right type")
         }
-
 
         eval
       }
