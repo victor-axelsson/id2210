@@ -15,6 +15,8 @@ import scala.annotation.tailrec
   */
 case class Evaluator(replicaId : Int) {
 
+
+
   private var counter = 0
   private var executedOperations = List.empty[Int]
   private var localStateAp:Context = new Context(new NodeDoc(new scala.collection.immutable.HashMap[Int, Operation]()))
@@ -63,6 +65,15 @@ case class Evaluator(replicaId : Int) {
     }
 
     find(scala.collection.mutable.Set[String](), node.getChildren())
+  }
+
+  def toVals():List[Val] = {
+
+    if(!node.isInstanceOf[NodeReg]){
+      throw new Exception("You can only use values() on a regT");
+    }
+
+    node.asInstanceOf[NodeReg].getValues()
   }
 
   private def getId() : Int = counter * replicaId
@@ -122,7 +133,7 @@ case class Evaluator(replicaId : Int) {
       }
       case Values(nextExpr) => {
         //TODO: stuff
-        null
+        eval
       }
       case _ => {
         //TODO: stuff

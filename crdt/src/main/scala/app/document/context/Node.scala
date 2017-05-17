@@ -7,8 +7,6 @@ import app.document.evaluator.Operation
   */
 abstract class Node(name:String, var pres:Map[Int, Operation]) {
 
-
-
   def getName() = name
   def getPres() = pres
   def removeKeyPresence(id : Int) = {
