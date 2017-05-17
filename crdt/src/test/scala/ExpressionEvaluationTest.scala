@@ -10,7 +10,7 @@ import org.scalatest.FlatSpec
   * Created by victoraxelsson on 2017-05-16.
   */
 class ExpressionEvaluationTest extends FlatSpec{
-  "A get expression" should " create the context for an evaluator" in {
+  "A get expression" should " create a cursor without side effects" in {
 
     //// Build up the document ////
     var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.immutable.HashMap[Int, Operation]())
@@ -34,34 +34,22 @@ class ExpressionEvaluationTest extends FlatSpec{
 
     //// END Build up the document ////
 
-
     val expr1:Expr = Get(Doc(), "someVar1")
     val expr2:Expr = Get(expr1, "someVar2")
     val expr3:Expr = Get(expr2, "someVar4")
 
-    var cursor1:Cursor = eval.evalExpr(expr1)
-    var cursor2:Cursor = eval.evalExpr(expr2)
-    var cursor3:Cursor = eval.evalExpr(expr3)
+    var c:Cursor = eval.evalExpr(expr1).evalExpr(expr2).evalExpr(expr3).toCursor()
 
-    assert(cursor1.getKeys().size == 1)
-    assert(cursor1.getKeys().size == 2)
-    assert(cursor1.getKeys().size == 3)
-    /*
-    val epxr1:Expr = Get(Doc(), "someVar1")
-    val epxr2:Expr = Get(epxr1, "someVar2")
-    val epxr3:Expr = Get(epxr2, "someVar3")
+    //Check for right structure
+    assert(c.getKeys().size == 3)
+    assert(c.getKeys().head.isInstanceOf[RootMapT])
+    assert(c.getKeys().tail.head.isInstanceOf[mapT])
+    assert(c.getKeys().tail.tail.head.isInstanceOf[mapT])
+    assert(c.getTail().isInstanceOf[regT])
 
-    var cursor:Cursor = eval.evalExpr(epxr1)
-    var cursor2:Cursor = eval.evalExpr(epxr2)
-    var cursor3:Cursor = eval.evalExpr(epxr3)
-    */
-
-    /*
-    var cursor:Cursor = eval.evalExpr(Get(Doc(), "someVar1")).evalExpr(Get(Doc(), "someVar2")).commitExpr()
-    var eval2:Evaluator = eval.evalExpr(Get(Doc(), "someVar1")).evalExpr(Get(Doc(), "someVar1"))
-    eval.commitExpr()
-    */
-    //eval.evalExpresssion()
+    //Check for side effects on the original cursor
+    assert(eval.toCursor().getKeys().size == 0)
+    assert(eval.node == null)
 
   }
 }
