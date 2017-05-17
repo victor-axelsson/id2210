@@ -90,4 +90,39 @@ class ExpressionEvaluationTest extends FlatSpec{
     assert(eval.toKeys().size == 0)
 
   }
+  "A KEY2 expression" should " return the keys in a given map from a size = 0 cursor, given a context" in {
+
+    //// Build up the document ////
+    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.immutable.HashMap[Int, Operation]())
+    var context = new Context(nodeDoc)
+    var eval:Evaluator = new Evaluator(1)
+
+    val doc = Expr.Doc()
+    val key = RootMapT(doc)
+    val keys = scala.collection.immutable.List()
+    var cursor = new Cursor(keys, key)
+
+    val addMap1 = mapT("someVar1")
+    val addMap2 = mapT("someVar2")
+    val reg3 = regT("someVar4")
+
+    cursor = cursor.append(addMap1)
+    cursor = cursor.append(addMap2)
+    cursor = cursor.append(reg3)
+    val op = eval.makeAssign(cursor, new Val.Str("someVal4"))
+    val newContext:Context = context.apply(op)
+
+    // We are looking for: someVar2
+    val searchCursor:Cursor = new Cursor(scala.collection.immutable.List(), addMap2)
+
+    //Give the context and query for the keys
+    val k:scala.collection.mutable.Set[String] = searchCursor.keys(newContext)
+
+    //Check that the key was found
+    assert(k.size == 1)
+    assert(k.contains("someVar4"))
+
+    //Check for side effects
+    assert(eval.toKeys().size == 0)
+  }
 }
