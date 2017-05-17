@@ -99,7 +99,7 @@ class Context(var doc:Node) {
     val mapT = context.op.getCursor().getTail().asInstanceOf[mapT]
     clear(context.op.getDeps(), mapT)
 
-    var nMap:NodeMap = childGet(mapT).asInstanceOf[NodeMap]
+    var nMap:NodeMap = childGet(mapT, context).asInstanceOf[NodeMap]
 
     if(nMap == null){
       nMap = new NodeMap(mapT.key, new scala.collection.immutable.HashMap[Int, Operation]())
@@ -119,7 +119,7 @@ class Context(var doc:Node) {
     val listT = context.op.getCursor().getTail().asInstanceOf[listT]
     clear(context.op.getDeps(), listT)
 
-    var nList = childGet(listT).asInstanceOf[NodeList]
+    var nList = childGet(listT, context).asInstanceOf[NodeList]
 
 
     if(nList == null){
@@ -156,7 +156,7 @@ class Context(var doc:Node) {
     var assign:Assign = context.op.getMutation().asInstanceOf[Assign]
 
 
-    var nReg:NodeReg = childGet(regT).asInstanceOf[NodeReg]
+    var nReg:NodeReg = childGet(regT, context).asInstanceOf[NodeReg]
 
     if(nReg == null){
       var values = List[Val]()
@@ -178,15 +178,31 @@ class Context(var doc:Node) {
   }
 
 
-  def childGet(tail:Key):Node = {
-    //Find new doc
-    var newDoc:Node = null;
+  def childGet(key:Key, context: Context):Node = {
+
+    @tailrec
+    def find(childs:List[Node]):Node = {
+
+      if(childs.size <= 0){
+        return null
+      }
+
+      if(childs.head.getName() == key.getKey()){
+        return childs.head
+      }
+
+      find(childs.tail)
+    }
+
+    return find(context.getDoc().getChildren())
+
+    /*
     for(node <- getDoc().getChildren()){
       if(node.getName().equals(tail.getKey())){
         newDoc = node
       }
     }
-    newDoc
+    */
   }
 
 
@@ -223,8 +239,11 @@ class Context(var doc:Node) {
   def descend(context: Context): Context = {
     var keys:List[Key] = context.op.getCursor().getKeys()
     var tail = context.op.getCursor().getTail()
-    var node:Node = childGet(tail)
 
+    var node:Node = null
+    if(keys.size > 0){
+      node = childGet(keys.head, context: Context)
+    }
 
     if(keys.size > 0){
       if(node == null){
@@ -255,6 +274,49 @@ class Context(var doc:Node) {
       addId(keys.head.getKey(), context.op, node)
       prev = node
       return descend(copyCtor(new Operation(op.getId(), op.getDeps(), newCursor, op.getMutation()), node))
+    }
+
+    context
+  }
+
+  //DESCEND with a given cursor
+  def descend(c: Cursor, context: Context): Context = {
+    var keys:List[Key] = c.getKeys()
+    var tail = c.getTail()
+    var node:Node = null
+
+    if(keys.size > 0){
+      node = childGet(keys.head, context)
+    }
+
+    if(keys.size > 0){
+      if(node == null){
+
+        keys.head match {
+          case RootMapT(_) => {
+            //Keep the doc as node if we are at first iteration
+            node = context.doc
+          }
+          case mapT => {
+            node = childMap(keys.head.getKey())
+          }
+          case listT => {
+            node = childList(keys.head.getKey())
+          }
+          case regT => {
+            throw new Exception("There should not be a reg in he middle of the cursor")
+          }
+        }
+      }
+
+      if(prev != null){
+        prev.addChild(node)
+      }
+
+      val newCursor = new Cursor(keys.tail, tail);
+
+      prev = node
+      return descend(newCursor, copyCtor(new Operation(op.getId(), op.getDeps(), newCursor, op.getMutation()), node))
     }
 
     context

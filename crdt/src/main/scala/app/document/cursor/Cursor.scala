@@ -8,6 +8,8 @@ import scala.annotation.tailrec
   * Created by Nick on 5/3/2017.
   */
 class Cursor(keys : List[Key], id : Key) {
+  def getId() = id
+
 
   def keys(ctx: Context): scala.collection.mutable.Set[String] = {
     @tailrec
@@ -27,8 +29,29 @@ class Cursor(keys : List[Key], id : Key) {
       return scala.collection.mutable.Set[String]()
     }
 
-    find(scala.collection.mutable.Set[String](), ctx.child.getChildren())
+    //We might need to descend first (KEY2 vs KEY3)
+    if(this.getKeys().size > 0){
 
+      //KEY3
+      var newCtx = ctx.descend(this, ctx)
+      //Swap back the propagated nodes
+      newCtx.child = newCtx.doc
+      newCtx.doc = ctx.doc
+
+      //Step to the child key, otherwise you will get siblings
+      var node:Node = null
+      for(n:Node <- newCtx.child.getChildren()){
+        if(n.getName() == newCtx.op.getCursor().getId().getKey()){
+          node = n
+        }
+      }
+
+      find(scala.collection.mutable.Set[String](), node.getChildren())
+    }else{
+
+      //KEY2
+      find(scala.collection.mutable.Set[String](), ctx.child.getChildren())
+    }
   }
 
   def append(key : Key) : Cursor = {
