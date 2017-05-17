@@ -92,11 +92,20 @@ class Context(var doc:Node) {
 
   private def emptyMap(context: Context) = {
 
-    if(!context.op.getCursor().getTail().isInstanceOf[mapT]){
-      throw new Exception("Assign EmptyMap is only for mapT")
+    //if(!context.op.getCursor().getTail().isInstanceOf[mapT]){
+      //throw new Exception("Assign EmptyMap is only for mapT")
+    //}
+
+    var mapT:mapT = null
+
+    if(context.op.getCursor().getTail().isInstanceOf[mapT]){
+      mapT = context.op.getCursor().getTail().asInstanceOf[mapT]
+    }else{
+      mapT = new mapT(context.op.getCursor().getId().getKey())
     }
 
-    val mapT = context.op.getCursor().getTail().asInstanceOf[mapT]
+    //val mapT = context.op.getCursor().getTail().asInstanceOf[mapT]
+
     clear(context.op.getDeps(), mapT)
 
     var nMap:NodeMap = childGet(mapT, context).asInstanceOf[NodeMap]

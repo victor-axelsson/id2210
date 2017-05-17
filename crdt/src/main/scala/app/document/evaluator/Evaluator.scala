@@ -3,10 +3,10 @@ package app.document.evaluator
 
 import app.document.context._
 import app.document.cursor.Cursor
-import app.document.cursor.Key.{RootMapT, listT, mapT, regT}
+import app.document.cursor.Key._
 import app.document.evaluator.Mutation.{Assign, Delete, Insert}
 import app.document.language.Expr._
-import app.document.language.{Expr, Val}
+import app.document.language.{Cmd, Expr, Val}
 
 import scala.annotation.tailrec
 
@@ -14,8 +14,6 @@ import scala.annotation.tailrec
   * Created by Nick on 5/3/2017.
   */
 case class Evaluator(replicaId : Int) {
-
-
 
   private var counter = 0
   private var executedOperations = List.empty[Int]
@@ -82,12 +80,10 @@ case class Evaluator(replicaId : Int) {
 
     var eval:Evaluator = getClone()
 
-
     expr match {
       case Get(nextExpr, key) => {
 
         if(nextExpr.isInstanceOf[Doc]){
-         // eval.cursor = eval.cursor.append(new RootMapT(nextExpr.asInstanceOf[Doc]))
           eval.node = eval.localStateAp.doc
         }
 
@@ -108,10 +104,8 @@ case class Evaluator(replicaId : Int) {
         eval.node = find(eval.node.getChildren())
 
         if(eval.node == null){
-          throw new Exception("Key now found")
-        }
-
-        if(eval.node.isInstanceOf[NodeMap]){
+          eval.cursor = eval.cursor.append(new identifierT(key))
+        }else if(eval.node.isInstanceOf[NodeMap]){
           eval.cursor = eval.cursor.append(new mapT(key))
         }else if(eval.node.isInstanceOf[NodeList]) {
           eval.cursor = eval.cursor.append(new listT(key))
@@ -142,6 +136,28 @@ case class Evaluator(replicaId : Int) {
     }
   }
 
+  def evalCmd(cmd: Cmd) = {
+    cmd match {
+      case Cmd.Let(_, _) => {
+
+      }
+      case Cmd.Assign(_, value) => {
+        makeAssign(cursor, value)
+      }
+      case Cmd.InsertAfter(_, _) => {
+
+      }
+      case Cmd.Delete(_) => {
+
+      }
+      case Cmd.Yield() => {
+
+      }
+    }
+
+  }
+
+
   private def makeOperation(cursor : Cursor, mutation: Mutation) : Operation = {
     counter += 1
     val op = new Operation(getId(), executedOperations, cursor, mutation)
@@ -167,4 +183,5 @@ case class Evaluator(replicaId : Int) {
 
   def makeDelete(cursor : Cursor) = makeOperation(cursor, Delete())
 
+  def toJsonString():String = localStateAp.doc.toString()
 }

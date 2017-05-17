@@ -19,4 +19,7 @@ object Key{
   final case class regT(key: String) extends Key {
     override def getKey(): String = key
   }
+  final case class identifierT(key: String) extends Key {
+    override def getKey(): String = key
+  }
 }

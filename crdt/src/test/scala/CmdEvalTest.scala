@@ -1,24 +1,26 @@
-import app.document.context.{Context, NodeDoc}
-import app.document.cursor.Cursor
-import app.document.cursor.Key.{RootMapT, mapT, regT}
-import app.document.evaluator.{Evaluator, Operation}
-import app.document.language.Cmd.{Assign, Let}
-import app.document.language.Val.Str
-import app.document.language.{Expr, Val, Var}
+import app.document.evaluator.Evaluator
+import app.document.language.Cmd.Assign
+import app.document.language.Expr
+import app.document.language.Expr.Get
+import app.document.language.Val.EmptyMap
 import org.scalatest.FlatSpec
 
 /**
   * Created by victoraxelsson on 2017-05-16.
   */
 class CmdEvalTest extends FlatSpec{
-  "A context" should "be able to perform DESCEND" in {
+  "An assign cmd " should " set the state of the eval Ap" in {
 
     val eval = new Evaluator(1)
-    val x = new Var.VarString("asd")
-    val cmd = Let(x, Expr.Doc())
+    var cmd1 = Assign(Expr.Doc(), EmptyMap)
 
-    var cmd1 = Assign(Expr.Doc(), new Str("someKey"))
-    //eval.evalCmd(cmd1)
+    
+    eval.evalExpr(Get(Expr.Doc(), "someVar")).evalExpr(Get(Expr.Doc(), "someVar2")).evalCmd(cmd1)
+
+    val s:String = eval.toJsonString()
+    val expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":{}}}}"
+
+    assert(s == expectedOutput)
   }
 }
 
