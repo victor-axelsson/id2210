@@ -35,4 +35,8 @@ class NodeMap(name:String, pres:Map[Int, Operation]) extends Node(name, pres){
     builder.append("}")
     builder.toString()
   }
+
+  override def addChild(node: Node) = {
+    children += node.getName() -> node
+  }
 }

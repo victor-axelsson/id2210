@@ -1,9 +1,13 @@
 package app.document.context
 
+import app.document.cursor.Key.{RootMapT, listT, mapT, regT}
 import app.document.cursor.{Cursor, Key}
 import app.document.evaluator.Mutation.{Assign, Delete, Insert}
 import app.document.evaluator.Operation
+import app.document.language.Val
 import app.document.language.Val.{EmptyList, EmptyMap}
+
+import scala.annotation.tailrec
 
 /**
   * Created by victoraxelsson on 2017-05-06.
@@ -12,6 +16,7 @@ class Context(var doc:Node) {
 
   var op : Operation = null
   var child:Node = doc
+  var prev:Node = null
 
   def getDoc() :Node = doc
 
@@ -21,7 +26,9 @@ class Context(var doc:Node) {
     var newContext = this
 
     if(op.getCursor().getKeys().size > 0){
+      prev = null
       newContext = descend(copyCtor(op, doc))
+      //the doc is used for descending, now swap it back
       child = newContext.doc
       newContext.doc = doc;
     }
@@ -56,15 +63,81 @@ class Context(var doc:Node) {
     newContext
   }
 
+  def clearElem(ints: List[Int], key: Key) = {
+    //TODO: implement
+  }
+
+  def clearMap(ints: List[Int], t: mapT) = {
+    //TODO: implement
+  }
+
+  def clearList(ints: List[Int], t: listT) = {
+    //TODO: implement
+  }
+
+  def clear(deps: List[Int], key: Key) = {
+    key match {
+      case RootMapT(_) => { throw new Exception("You cannot clear a doc")}
+      case mapT(_) => {
+        clearMap(deps, key.asInstanceOf[mapT])
+      }
+      case listT(_) => {
+        clearList(deps, key.asInstanceOf[listT])
+      }
+      case regT(_) => {
+        clearReg(deps, key.asInstanceOf[regT])
+      }
+    }
+  }
+
   private def emptyMap(context: Context) = {
-    //TODO: shiet
+
+    var mapT:mapT = null
+
+    if(context.op.getCursor().getTail().isInstanceOf[mapT]){
+      mapT = context.op.getCursor().getTail().asInstanceOf[mapT]
+    }else{
+      mapT = new mapT(context.op.getCursor().getId().getKey())
+    }
+
+    clear(context.op.getDeps(), mapT)
+
+    var nMap:NodeMap = childGet(mapT, context).asInstanceOf[NodeMap]
+
+    if(nMap == null){
+      nMap = new NodeMap(mapT.key, new scala.collection.immutable.HashMap[Int, Operation]())
+    }else{
+        throw new Exception("I'm not sure what to do here")
+    }
+
+    context.child.addChild(nMap)
+    addId(mapT.key, context.op, context.child)
   }
 
   private def emptyList(context: Context) = {
-    //TODO: shiet
+    var listT:listT = null
+
+    if(context.op.getCursor().getTail().isInstanceOf[listT]){
+      listT = context.op.getCursor().getTail().asInstanceOf[listT]
+    }else{
+      listT = new listT(context.op.getCursor().getId().getKey())
+    }
+
+    clear(context.op.getDeps(), listT)
+
+    var nList = childGet(listT, context).asInstanceOf[NodeList]
+
+    if(nList == null){
+      nList = new NodeList(listT.key, new scala.collection.immutable.HashMap[Int, Operation]())
+    }else{
+      throw new Exception("I'm not sure what to do here")
+    }
+
+    context.child.addChild(nList)
+    addId(listT.key, context.op, context.child)
   }
 
-  private def clearReg(deps:List[Int], regT:NodeReg) = {
+  private def clearReg(deps:List[Int], regT:regT) = {
     //TODO: shiet
   }
 
@@ -73,20 +146,61 @@ class Context(var doc:Node) {
   }
 
   private def insert(context: Context) = {
-    //TODO: shiet
+    var listT:listT = null
+
+    if(context.op.getCursor().getTail().isInstanceOf[listT]){
+      listT = context.op.getCursor().getTail().asInstanceOf[listT]
+    }else{
+      listT = new listT(context.op.getCursor().getId().getKey())
+    }
+
+    clear(context.op.getDeps(), listT)
+
+    val insert:Insert = context.op.getMutation().asInstanceOf[Insert]
+
+    throw new NotImplementedError("We need to add the value drom insert into the array")
+
+    var nList = childGet(listT, context).asInstanceOf[NodeList]
+
+    if(nList == null){
+      nList = new NodeList(listT.key, new scala.collection.immutable.HashMap[Int, Operation]())
+      //nList.insertAfter(insert.value, )
+    }else{
+      throw new Exception("I'm not sure what to do here")
+    }
+
+    context.child.addChild(nList)
+    addId(listT.key, context.op, context.child)
   }
 
   private def assign(context: Context) = {
-    if(!child.isInstanceOf[NodeReg]){
-      throw new Exception("Assign is only for NodeReg")
+
+    var regT:regT = null
+
+    if(context.op.getCursor().getTail().isInstanceOf[regT]){
+      regT = context.op.getCursor().getTail().asInstanceOf[regT]
+    }else{
+      regT = new regT(context.op.getCursor().getId().getKey())
     }
 
-    var regT = child.asInstanceOf[NodeReg]
+    //var regT = context.op.getCursor().getTail().asInstanceOf[regT]
+    clear(context.op.getDeps(), regT)
+    val assign:Assign = context.op.getMutation().asInstanceOf[Assign]
 
-    clearReg(context.op.getDeps(), regT)
 
-    var assign:Assign = context.op.getMutation().asInstanceOf[Assign]
-    regT.addValues(assign.value)
+    var nReg:NodeReg = childGet(regT, context).asInstanceOf[NodeReg]
+
+    if(nReg == null){
+      var values = List[Val]()
+      values = values :+ assign.value
+      nReg = new NodeReg(regT.key, values, new scala.collection.immutable.HashMap[Int, Operation]());
+    }else{
+      nReg.addValues(assign.value)
+    }
+
+    context.child.addChild(nReg)
+    addId(regT.key, context.op, context.child)
+
   }
 
   private def copyCtor(_op : Operation, _doc:Node): Context = {
@@ -96,15 +210,23 @@ class Context(var doc:Node) {
   }
 
 
-  def childGet(tail:Key) = {
-    //Find new doc
-    var newDoc:Node = null;
-    for(node <- getDoc().getChildren()){
-      if(node.getName().equals(tail.getKey())){
-        newDoc = node
+  def childGet(key:Key, context: Context):Node = {
+
+    @tailrec
+    def find(childs:List[Node]):Node = {
+
+      if(childs.size <= 0){
+        return null
       }
+
+      if(childs.head.getName() == key.getKey()){
+        return childs.head
+      }
+
+      find(childs.tail)
     }
-    newDoc
+
+    return find(context.getDoc().getChildren())
   }
 
 
@@ -142,18 +264,20 @@ class Context(var doc:Node) {
     var keys:List[Key] = context.op.getCursor().getKeys()
     var tail = context.op.getCursor().getTail()
 
-
+    var node:Node = null
+    if(keys.size > 0){
+      node = childGet(keys.head, context: Context)
+    }
 
     if(keys.size > 0){
-      var newCursor = new Cursor(keys.tail, tail);
-
-      var node:Node = childGet(tail)
-
       if(node == null){
 
         keys.head match {
+          case RootMapT(_) => {
+            //Keep the doc as node if we are at first iteration
+            node = context.doc
+          }
           case mapT => {
-            println(keys.head.getKey())
             node = childMap(keys.head.getKey())
           }
           case listT => {
@@ -164,10 +288,60 @@ class Context(var doc:Node) {
           }
         }
       }
+
+      if(prev != null){
+        prev.addChild(node)
+      }
+
+      val newCursor = new Cursor(keys.tail, tail);
+
       addId(keys.head.getKey(), context.op, node)
+      prev = node
       return descend(copyCtor(new Operation(op.getId(), op.getDeps(), newCursor, op.getMutation()), node))
     }
 
+    context
+  }
+
+  //DESCEND with a given cursor
+  def descend(c: Cursor, context: Context): Context = {
+    var keys:List[Key] = c.getKeys()
+    var tail = c.getTail()
+    var node:Node = null
+
+    if(keys.size > 0){
+      node = childGet(keys.head, context)
+    }
+
+    if(keys.size > 0){
+      if(node == null){
+
+        keys.head match {
+          case RootMapT(_) => {
+            //Keep the doc as node if we are at first iteration
+            node = context.doc
+          }
+          case mapT => {
+            node = childMap(keys.head.getKey())
+          }
+          case listT => {
+            node = childList(keys.head.getKey())
+          }
+          case regT => {
+            throw new Exception("There should not be a reg in he middle of the cursor")
+          }
+        }
+      }
+
+      if(prev != null){
+        prev.addChild(node)
+      }
+
+      val newCursor = new Cursor(keys.tail, tail);
+
+      prev = node
+      return descend(newCursor, copyCtor(new Operation(op.getId(), op.getDeps(), newCursor, op.getMutation()), node))
+    }
 
     context
   }

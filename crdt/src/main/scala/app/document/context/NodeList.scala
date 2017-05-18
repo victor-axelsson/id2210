@@ -27,4 +27,8 @@ class NodeList(name:String, pres:Map[Int, Operation]) extends Node(name, pres){
     builder.append("]")
     builder.toString()
   }
+
+  override def addChild(node: Node) = {
+    throw new NotImplementedError("Adding children to nodelist is not implemented yet")
+  }
 }
