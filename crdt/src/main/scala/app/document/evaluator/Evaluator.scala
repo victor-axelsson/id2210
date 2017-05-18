@@ -83,9 +83,9 @@ case class Evaluator(replicaId : Int) {
     var eval:Evaluator = getClone()
 
     expr match {
-      case Get(nextExpr, key) => {
+      case Get(key) => {
 
-        if(nextExpr.isInstanceOf[Doc]){
+        if(eval.node == null){
           eval.node = eval.localStateAp.doc
         }
 
@@ -119,15 +119,15 @@ case class Evaluator(replicaId : Int) {
 
         eval
       }
-      case Idx(nextExpr, index) => {
+      case Idx(index) => {
         //TODO: stuff
         eval
       }
-      case Keys(nextExpr) => {
+      case Keys() => {
         //TODO: stuff
         eval
       }
-      case Values(nextExpr) => {
+      case Values() => {
         //TODO: stuff
         eval
       }
@@ -144,19 +144,19 @@ case class Evaluator(replicaId : Int) {
 
   def evalCmd(cmd: Cmd) = {
     cmd match {
-      case Cmd.Let(name, _) => {
+      case Cmd.Let(name) => {
 
         //Take a snapshot if the state
         val eval = getClone()
         variables += name.getName() -> eval
       }
-      case Cmd.Assign(_, value) => {
+      case Cmd.Assign(value) => {
         makeAssign(cursor, value)
       }
-      case Cmd.InsertAfter(_, value) => {
+      case Cmd.InsertAfter(value) => {
         makeInsert(cursor, value)
       }
-      case Cmd.Delete(_) => {
+      case Cmd.Delete() => {
 
       }
       case Cmd.Yield() => {

@@ -1,6 +1,6 @@
 import app.document.language.Cmd.Let
-import app.document.language.Expr.{Doc, Get}
-import app.document.language.{Expr, Var}
+import app.document.language.Expr.Get
+import app.document.language.Var
 import org.scalatest.FlatSpec
 
 /**
@@ -9,13 +9,13 @@ import org.scalatest.FlatSpec
 class LetTest extends FlatSpec {
   "A Let command" should "assign a Doc to a Var" in {
     val x = new Var.VarString("x")
-    val cmd = Let(x, Expr.Doc())
+    val cmd = Let(x)
     println(x.toString())
     println(cmd.toString())
 
 
-    var sv1 = Get(Doc(), "someVar1")
-    var sv2 = Get(sv1, "someVar2")
+    var sv1 = Get("someVar1")
+    var sv2 = Get("someVar2")
 
 
   }
