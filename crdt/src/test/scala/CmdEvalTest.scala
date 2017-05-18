@@ -1,7 +1,7 @@
 import app.document.evaluator.Evaluator
 import app.document.language.Cmd.{Assign, InsertAfter}
 import app.document.language.Expr
-import app.document.language.Expr.Get
+import app.document.language.Expr.{Get, Idx}
 import app.document.language.Val.{EmptyList, EmptyMap, Str}
 import org.scalatest.FlatSpec
 
@@ -59,7 +59,7 @@ class CmdEvalTest extends FlatSpec{
     var cmd1 = InsertAfter(Expr.Doc(), new Str("someIndex"))
 
 
-    eval.evalExpr(Get(Expr.Doc(), "someVar")).evalExpr(Get(Expr.Doc(), "someVar2")).evalCmd(cmd1)
+    eval.evalExpr(Get(Expr.Doc(), "someVar")).evalExpr(Get(Expr.Doc(), "someVar2")).evalExpr(Idx(Expr.Doc(), 0)).evalCmd(cmd1)
 
     val s:String = eval.toJsonString()
     val expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":\"MyVal\"}}}"

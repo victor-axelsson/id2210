@@ -162,6 +162,7 @@ class Context(var doc:Node) {
 
     if(nList == null){
       nList = new NodeList(listT.key, new scala.collection.immutable.HashMap[Int, Operation]())
+      //nList.insertAfter(insert.value, )
     }else{
       throw new Exception("I'm not sure what to do here")
     }
