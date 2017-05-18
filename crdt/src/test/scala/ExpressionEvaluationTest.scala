@@ -35,9 +35,9 @@ class ExpressionEvaluationTest extends FlatSpec{
 
     //// END Build up the document ////
 
-    val expr1:Expr = Get(Doc(), "someVar1")
-    val expr2:Expr = Get(expr1, "someVar2")
-    val expr3:Expr = Get(expr2, "someVar4")
+    val expr1:Expr = Get("someVar1")
+    val expr2:Expr = Get("someVar2")
+    val expr3:Expr = Get("someVar4")
 
     var c:Cursor = eval.evalExpr(expr1).evalExpr(expr2).evalExpr(expr3).toCursor()
 
@@ -77,9 +77,9 @@ class ExpressionEvaluationTest extends FlatSpec{
 
     //// END Build up the document ////
 
-    val expr1:Expr = Get(Doc(), "someVar1")
-    val expr2:Expr = Get(expr1, "someVar2")
-    val expr3:Expr = Keys(expr2)
+    val expr1:Expr = Get("someVar1")
+    val expr2:Expr = Get( "someVar2")
+    val expr3:Expr = Keys()
 
     val k:scala.collection.mutable.Set[String] = eval.evalExpr(expr1).evalExpr(expr2).evalExpr(expr3).toKeys()
 
@@ -196,10 +196,10 @@ class ExpressionEvaluationTest extends FlatSpec{
     val context2:Context = context.apply(op)
     /// END building the doc
 
-    val expr1:Expr = Get(Doc(), "someVar1")
-    val expr2:Expr = Get(expr1, "someVar2")
-    val expr3:Expr = Get(expr2, "someVar4")
-    var expr4:Expr = Values(expr3)
+    val expr1:Expr = Get("someVar1")
+    val expr2:Expr = Get("someVar2")
+    val expr3:Expr = Get("someVar4")
+    var expr4:Expr = Values()
 
     val v:List[Val] = eval.evalExpr(expr1).evalExpr(expr2).evalExpr(expr3).evalExpr(expr4).toVals()
 

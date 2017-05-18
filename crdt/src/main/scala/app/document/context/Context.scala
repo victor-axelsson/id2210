@@ -92,11 +92,14 @@ class Context(var doc:Node) {
 
   private def emptyMap(context: Context) = {
 
-    if(!context.op.getCursor().getTail().isInstanceOf[mapT]){
-      throw new Exception("Assign EmptyMap is only for mapT")
+    var mapT:mapT = null
+
+    if(context.op.getCursor().getTail().isInstanceOf[mapT]){
+      mapT = context.op.getCursor().getTail().asInstanceOf[mapT]
+    }else{
+      mapT = new mapT(context.op.getCursor().getId().getKey())
     }
 
-    val mapT = context.op.getCursor().getTail().asInstanceOf[mapT]
     clear(context.op.getDeps(), mapT)
 
     var nMap:NodeMap = childGet(mapT, context).asInstanceOf[NodeMap]
@@ -112,18 +115,19 @@ class Context(var doc:Node) {
   }
 
   private def emptyList(context: Context) = {
-    if(!context.op.getCursor().getTail().isInstanceOf[listT]){
-      throw new Exception("Assign EmptyList is only for listT")
+    var listT:listT = null
+
+    if(context.op.getCursor().getTail().isInstanceOf[listT]){
+      listT = context.op.getCursor().getTail().asInstanceOf[listT]
+    }else{
+      listT = new listT(context.op.getCursor().getId().getKey())
     }
 
-    val listT = context.op.getCursor().getTail().asInstanceOf[listT]
     clear(context.op.getDeps(), listT)
 
     var nList = childGet(listT, context).asInstanceOf[NodeList]
 
-
     if(nList == null){
-      //name:String, pres:Map[Int, Operation]
       nList = new NodeList(listT.key, new scala.collection.immutable.HashMap[Int, Operation]())
     }else{
       throw new Exception("I'm not sure what to do here")
@@ -142,18 +146,46 @@ class Context(var doc:Node) {
   }
 
   private def insert(context: Context) = {
-    //TODO: shiet
+    var listT:listT = null
+
+    if(context.op.getCursor().getTail().isInstanceOf[listT]){
+      listT = context.op.getCursor().getTail().asInstanceOf[listT]
+    }else{
+      listT = new listT(context.op.getCursor().getId().getKey())
+    }
+
+    clear(context.op.getDeps(), listT)
+
+    val insert:Insert = context.op.getMutation().asInstanceOf[Insert]
+
+    var nList = childGet(listT, context).asInstanceOf[NodeList]
+
+    if(nList == null){
+      nList = new NodeList(listT.key, new scala.collection.immutable.HashMap[Int, Operation]())
+      //nList.insertAfter(insert.value, )
+    }else{
+      throw new Exception("I'm not sure what to do here")
+    }
+
+
+
+    context.child.addChild(nList)
+    addId(listT.key, context.op, context.child)
   }
 
   private def assign(context: Context) = {
 
-    if(!context.op.getCursor().getTail().isInstanceOf[regT]){
-      throw new Exception("Assign is only for regT")
+    var regT:regT = null
+
+    if(context.op.getCursor().getTail().isInstanceOf[regT]){
+      regT = context.op.getCursor().getTail().asInstanceOf[regT]
+    }else{
+      regT = new regT(context.op.getCursor().getId().getKey())
     }
 
-    var regT = context.op.getCursor().getTail().asInstanceOf[regT]
+    //var regT = context.op.getCursor().getTail().asInstanceOf[regT]
     clear(context.op.getDeps(), regT)
-    var assign:Assign = context.op.getMutation().asInstanceOf[Assign]
+    val assign:Assign = context.op.getMutation().asInstanceOf[Assign]
 
 
     var nReg:NodeReg = childGet(regT, context).asInstanceOf[NodeReg]
@@ -195,14 +227,6 @@ class Context(var doc:Node) {
     }
 
     return find(context.getDoc().getChildren())
-
-    /*
-    for(node <- getDoc().getChildren()){
-      if(node.getName().equals(tail.getKey())){
-        newDoc = node
-      }
-    }
-    */
   }
 
 

@@ -1,5 +1,8 @@
 package app.document.cursor
 
+import app.document.context.{Context, Node, NodeReg}
+import app.document.cursor.Key.{identifierT, mapT}
+import app.document.language.Val
 import app.document.context.{Context, Node, NodeList, NodeReg}
 import app.document.cursor.Key.RootMapT
 import app.document.language.{Expr, Val}
@@ -137,12 +140,18 @@ class Cursor(keys : List[Key], id : Key) {
   }
 
   def append(key : Key) : Cursor = {
-    new Cursor(keys :+ id, key)
+
+    //If you try and append when there is a identifier it will be shuffled to a mapT
+    var shuffleId = id
+    if(id.isInstanceOf[identifierT]){
+      shuffleId = new mapT(id.getKey())
+    }
+
+    new Cursor(keys :+ shuffleId, key)
   }
 
   def getKeys() : List[Key] = keys
 
   def getTail() : Key = id
-
 
 }

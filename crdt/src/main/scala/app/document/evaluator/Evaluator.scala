@@ -3,10 +3,10 @@ package app.document.evaluator
 
 import app.document.context._
 import app.document.cursor.Cursor
-import app.document.cursor.Key.{RootMapT, listT, mapT, regT}
+import app.document.cursor.Key._
 import app.document.evaluator.Mutation.{Assign, Delete, Insert}
 import app.document.language.Expr._
-import app.document.language.{Expr, Val}
+import app.document.language.{Cmd, Expr, Val}
 
 import scala.annotation.tailrec
 
@@ -15,12 +15,11 @@ import scala.annotation.tailrec
   */
 case class Evaluator(replicaId : Int) {
 
-
-
   private var counter = 0
   private var executedOperations = List.empty[Int]
   private var localStateAp:Context = new Context(new NodeDoc(new scala.collection.immutable.HashMap[Int, Operation]()))
   private var queue = List.empty[Operation]
+  private var variables = new scala.collection.mutable.HashMap[String, Evaluator]()
 
   private var cursor:Cursor = getNewCursor()
   var node:Node = null;
@@ -38,6 +37,7 @@ case class Evaluator(replicaId : Int) {
     eval.queue = this.queue
     eval.cursor = this.cursor
     eval.node = this.node
+    eval.variables = this.variables
     eval
   }
 
@@ -82,12 +82,10 @@ case class Evaluator(replicaId : Int) {
 
     var eval:Evaluator = getClone()
 
-
     expr match {
-      case Get(nextExpr, key) => {
+      case Get(key) => {
 
-        if(nextExpr.isInstanceOf[Doc]){
-         // eval.cursor = eval.cursor.append(new RootMapT(nextExpr.asInstanceOf[Doc]))
+        if(eval.node == null){
           eval.node = eval.localStateAp.doc
         }
 
@@ -108,10 +106,8 @@ case class Evaluator(replicaId : Int) {
         eval.node = find(eval.node.getChildren())
 
         if(eval.node == null){
-          throw new Exception("Key now found")
-        }
-
-        if(eval.node.isInstanceOf[NodeMap]){
+          eval.cursor = eval.cursor.append(new identifierT(key))
+        }else if(eval.node.isInstanceOf[NodeMap]){
           eval.cursor = eval.cursor.append(new mapT(key))
         }else if(eval.node.isInstanceOf[NodeList]) {
           eval.cursor = eval.cursor.append(new listT(key))
@@ -123,17 +119,21 @@ case class Evaluator(replicaId : Int) {
 
         eval
       }
-      case Idx(nextExpr, index) => {
+      case Idx(index) => {
         //TODO: stuff
         eval
       }
-      case Keys(nextExpr) => {
+      case Keys() => {
         //TODO: stuff
         eval
       }
-      case Values(nextExpr) => {
+      case Values() => {
         //TODO: stuff
         eval
+      }
+      case Var(name) => {
+        //TODO: stuff
+        variables(name)
       }
       case _ => {
         //TODO: stuff
@@ -141,6 +141,31 @@ case class Evaluator(replicaId : Int) {
       }
     }
   }
+
+  def evalCmd(cmd: Cmd) = {
+    cmd match {
+      case Cmd.Let(name) => {
+
+        //Take a snapshot if the state
+        val eval = getClone()
+        variables += name -> eval
+      }
+      case Cmd.Assign(value) => {
+        makeAssign(cursor, value)
+      }
+      case Cmd.InsertAfter(value) => {
+        makeInsert(cursor, value)
+      }
+      case Cmd.Delete() => {
+
+      }
+      case Cmd.Yield() => {
+
+      }
+    }
+
+  }
+
 
   private def makeOperation(cursor : Cursor, mutation: Mutation) : Operation = {
     counter += 1
@@ -167,4 +192,5 @@ case class Evaluator(replicaId : Int) {
 
   def makeDelete(cursor : Cursor) = makeOperation(cursor, Delete())
 
+  def toJsonString():String = localStateAp.doc.toString()
 }
