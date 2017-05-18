@@ -131,9 +131,9 @@ case class Evaluator(replicaId : Int) {
         //TODO: stuff
         eval
       }
-      case Var(varItem) => {
+      case Var(name) => {
         //TODO: stuff
-        variables(varItem.getName())
+        variables(name)
       }
       case _ => {
         //TODO: stuff
@@ -148,7 +148,7 @@ case class Evaluator(replicaId : Int) {
 
         //Take a snapshot if the state
         val eval = getClone()
-        variables += name.getName() -> eval
+        variables += name -> eval
       }
       case Cmd.Assign(value) => {
         makeAssign(cursor, value)

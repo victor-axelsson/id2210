@@ -2,7 +2,6 @@ import app.document.evaluator.Evaluator
 import app.document.language.Cmd.{Assign, Let}
 import app.document.language.Expr.{Get, Var}
 import app.document.language.Val.{EmptyList, EmptyMap, Str}
-import app.document.language.Var.VarString
 import org.scalatest.FlatSpec
 
 /**
@@ -76,19 +75,16 @@ class CmdEvalTest extends FlatSpec{
 
 
     //You can also use this kind of syntax instead:
-    val let = Let(new VarString("x"))
-    eval evalExpr Get("someVar") evalExpr Get("someVar2") evalCmd let
+
+    eval evalExpr Get("someVar") evalExpr Get("someVar2") evalCmd Let("x")
 
     //Check for side effects on the original cursor
     assert(eval.toCursor().getKeys().size == 0)
     assert(eval.node == null)
 
-    val assignCmd = Assign(EmptyMap)
 
     //we should be able to get the snapshot of the state from the eval with a var
-    eval evalExpr new Var(new VarString("x")) evalCmd assignCmd
-
-    //eval.evalExpr(new Var(new VarString("x"))).evalCmd(assignCmd)
+    eval evalExpr new Var("x") evalCmd Assign(EmptyMap)
 
     val s:String = eval.toJsonString()
     val expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":{}}}}"
