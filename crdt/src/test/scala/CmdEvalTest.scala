@@ -70,7 +70,7 @@ class CmdEvalTest extends FlatSpec{
     assert(s == expectedOutput)
   }
   */
-  "A LET cmd " should " take a named snapshot of the eval" in {
+  "A LET cmd " should " take a named snapshot of the eval and VAR should be able to return it" in {
 
     val eval = new Evaluator(1)
     val letX = Let(new VarString("x"), Expr.Doc())
