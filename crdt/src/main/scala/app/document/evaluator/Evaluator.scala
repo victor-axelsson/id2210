@@ -126,15 +126,14 @@ case class Evaluator(replicaId : Int) {
         eval
       }
       case Keys() => {
-        //TODO: stuff
+        //this is handled by the toKeys function
         eval
       }
       case Values() => {
-        //TODO: stuff
+        //this is handled by the toValues function
         eval
       }
       case Var(name) => {
-        //TODO: stuff
         variables(name)
       }
       case Doc() => {

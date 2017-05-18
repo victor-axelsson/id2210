@@ -63,6 +63,11 @@ class Context(var doc:Node) {
     newContext
   }
 
+
+  private def clearReg(deps:List[Int], regT:regT) = {
+    //TODO: shiet
+  }
+
   def clearElem(ints: List[Int], key: Key) = {
     //TODO: implement
   }
@@ -137,9 +142,6 @@ class Context(var doc:Node) {
     addId(listT.key, context.op, context.child)
   }
 
-  private def clearReg(deps:List[Int], regT:regT) = {
-    //TODO: shiet
-  }
 
   private def delete(context: Context) = {
     //TODO: shiet
@@ -158,7 +160,7 @@ class Context(var doc:Node) {
 
     val insert:Insert = context.op.getMutation().asInstanceOf[Insert]
 
-    throw new NotImplementedError("We need to add the value drom insert into the array")
+    throw new NotImplementedError("We need to add the value from insert into the array")
 
     var nList = childGet(listT, context).asInstanceOf[NodeList]
 
@@ -228,6 +230,7 @@ class Context(var doc:Node) {
 
     return find(context.getDoc().getChildren())
   }
+
 
 
   def childMap(key:String) :Node= {
