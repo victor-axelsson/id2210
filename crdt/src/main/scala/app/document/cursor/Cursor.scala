@@ -1,7 +1,8 @@
 package app.document.cursor
 
-import app.document.context.{Context, Node, NodeReg}
-import app.document.language.Val
+import app.document.context.{Context, Node, NodeList, NodeReg}
+import app.document.cursor.Key.RootMapT
+import app.document.language.{Expr, Val}
 
 import scala.annotation.tailrec
 
@@ -84,6 +85,55 @@ class Cursor(keys : List[Key], id : Key) {
       //KEY2
       find(scala.collection.mutable.Set[String](), ctx.child.getChildren())
     }
+  }
+
+  def idx(ctx: Context, i: Int): Node = {
+
+    //If no cursor, return null
+    if(ctx.child == null){
+      return null
+    }
+
+    //IDx1 seems to do some weird stuff with cursor tail, switching it to the head of the list - don't see reason to do it
+
+    //IDx2 descends until we are at the needed Node
+    var newCtx = ctx
+    if(this.getKeys().size > 0){
+      newCtx = descendInContext(ctx)
+    }
+
+    //We need to store the key from this because it changes closure later
+    val key:String = this.id.getKey()
+
+    var node:NodeList = null
+    // Find the list node
+    for(n:Node <- newCtx.child.getChildren()){
+      if(n.getName() == this.id.getKey()){
+        node = n.asInstanceOf[NodeList]
+      }
+    }
+
+    // If node is null then we didn't find it. Return null
+    if (node == null) {
+      return null
+    }
+    else {
+      var counter = i
+      for (child <- node.getChildren()) {
+        // IDx4
+        if (!child.isTombstone()) { //figure out how to check for tombstone - node shouldn't be a tombstone
+          // IDx3
+         if (counter > 0) {
+           counter -= 1
+         }
+         // IDx5
+         else {
+          return child
+         }
+        }
+      }
+    }
+    null
   }
 
   def append(key : Key) : Cursor = {
