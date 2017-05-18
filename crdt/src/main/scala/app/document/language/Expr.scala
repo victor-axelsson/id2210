@@ -1,12 +1,15 @@
 package app.document.language
 
+import app.document.language.Var.VarString
+
 
 sealed trait Expr extends Product with Serializable
 
 object Expr{
   final case class Doc() extends Expr
-  final case class Var (name: Var) extends Expr
-
+  final case class Var (name: VarString) extends Expr {
+    def getName() = name.getName()
+  }
   final case class Get (expr: Expr, key:String) extends Expr {
     def getTheExpr() :Expr = expr
   }

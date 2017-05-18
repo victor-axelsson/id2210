@@ -19,6 +19,7 @@ case class Evaluator(replicaId : Int) {
   private var executedOperations = List.empty[Int]
   private var localStateAp:Context = new Context(new NodeDoc(new scala.collection.immutable.HashMap[Int, Operation]()))
   private var queue = List.empty[Operation]
+  private var variables = new scala.collection.mutable.HashMap[String, Evaluator]()
 
   private var cursor:Cursor = getNewCursor()
   var node:Node = null;
@@ -36,6 +37,7 @@ case class Evaluator(replicaId : Int) {
     eval.queue = this.queue
     eval.cursor = this.cursor
     eval.node = this.node
+    eval.variables = this.variables
     eval
   }
 
@@ -129,6 +131,10 @@ case class Evaluator(replicaId : Int) {
         //TODO: stuff
         eval
       }
+      case Var(varItem) => {
+        //TODO: stuff
+        variables(varItem.getName())
+      }
       case _ => {
         //TODO: stuff
         eval
@@ -138,8 +144,11 @@ case class Evaluator(replicaId : Int) {
 
   def evalCmd(cmd: Cmd) = {
     cmd match {
-      case Cmd.Let(_, _) => {
+      case Cmd.Let(name, _) => {
 
+        //Take a snapshot if the state
+        val eval = getClone()
+        variables += name.getName() -> eval
       }
       case Cmd.Assign(_, value) => {
         makeAssign(cursor, value)
