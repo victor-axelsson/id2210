@@ -3,7 +3,7 @@ package app.document.evaluator
 
 import app.document.context._
 import app.document.cursor.Cursor
-import app.document.cursor.Key._
+import app.document.cursor.Key.{mapT, _}
 import app.document.evaluator.Mutation.{Assign, Delete, Insert}
 import app.document.language.Expr._
 import app.document.language.{Cmd, Expr, Val}
@@ -122,7 +122,26 @@ case class Evaluator(replicaId : Int) {
         eval
       }
       case Idx(index) => {
-        //TODO: stuff
+
+        if(eval.node == null){
+          throw new Exception("you need to select the doc first")
+        }
+
+        eval.cursor.getId() match  {
+          case mapT(_) => {
+            throw new Exception("You cannot assign an index to a map")
+          }
+          case regT(_) => {
+            throw new Exception("You cannot assign an index to a register")
+          }
+          case identifierT(key) => {
+            eval.cursor = eval.cursor.appendAsList(new identifierT(index + ""))
+          }
+          case listT(key) => {
+            throw new NotImplementedError("Don't know yet")
+          }
+        }
+
         eval
       }
       case Keys() => {

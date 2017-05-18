@@ -148,6 +148,7 @@ class Context(var doc:Node) {
   }
 
   private def insert(context: Context) = {
+    /*
     var listT:listT = null
 
     if(context.op.getCursor().getTail().isInstanceOf[listT]){
@@ -155,13 +156,42 @@ class Context(var doc:Node) {
     }else{
       listT = new listT(context.op.getCursor().getId().getKey())
     }
+    */
 
-    clear(context.op.getDeps(), listT)
+
+
+    //clear(context.op.getDeps(), listT)
 
     val insert:Insert = context.op.getMutation().asInstanceOf[Insert]
+    val index:Int = context.op.getCursor().getId().getKey().toInt
 
-    throw new NotImplementedError("We need to add the value from insert into the array")
+    var key:Key = null;
+    val name:String = "[" + index + "]"
 
+    val node:Node = insert.value match {
+      case s @ EmptyMap => {
+        key = mapT(name)
+        new NodeMap(name, new scala.collection.immutable.HashMap[Int, Operation]())
+      }
+      case s @ EmptyList => {
+        key = listT(name)
+        new NodeList(name, new scala.collection.immutable.HashMap[Int, Operation]())
+      }
+      case s @ _ => {
+        key = regT(name)
+        var values = List[Val]()
+        values = values :+ s
+        new NodeReg(name, values, new scala.collection.immutable.HashMap[Int, Operation]())
+      }
+    }
+
+    clear(context.op.getDeps(), key)
+
+    context.child.asInstanceOf[NodeList].insertAt(index, node)
+    addId(key.getKey(), context.op, context.child)
+
+
+    /*
     var nList = childGet(listT, context).asInstanceOf[NodeList]
 
     if(nList == null){
@@ -173,6 +203,7 @@ class Context(var doc:Node) {
 
     context.child.addChild(nList)
     addId(listT.key, context.op, context.child)
+    */
   }
 
   private def assign(context: Context) = {
@@ -274,19 +305,18 @@ class Context(var doc:Node) {
 
     if(keys.size > 0){
       if(node == null){
-
         keys.head match {
           case RootMapT(_) => {
             //Keep the doc as node if we are at first iteration
             node = context.doc
           }
-          case mapT => {
+          case mapT(_) => {
             node = childMap(keys.head.getKey())
           }
-          case listT => {
+          case listT(_) => {
             node = childList(keys.head.getKey())
           }
-          case regT => {
+          case regT(_) => {
             throw new Exception("There should not be a reg in he middle of the cursor")
           }
         }
@@ -324,13 +354,13 @@ class Context(var doc:Node) {
             //Keep the doc as node if we are at first iteration
             node = context.doc
           }
-          case mapT => {
+          case mapT(_) => {
             node = childMap(keys.head.getKey())
           }
-          case listT => {
+          case listT(_) => {
             node = childList(keys.head.getKey())
           }
-          case regT => {
+          case regT(_) => {
             throw new Exception("There should not be a reg in he middle of the cursor")
           }
         }

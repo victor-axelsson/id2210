@@ -1,11 +1,8 @@
 package app.document.cursor
 
-import app.document.context.{Context, Node, NodeReg}
-import app.document.cursor.Key.{identifierT, mapT}
-import app.document.language.Val
 import app.document.context.{Context, Node, NodeList, NodeReg}
-import app.document.cursor.Key.RootMapT
-import app.document.language.{Expr, Val}
+import app.document.cursor.Key.{identifierT, listT, mapT}
+import app.document.language.Val
 
 import scala.annotation.tailrec
 
@@ -148,6 +145,10 @@ class Cursor(keys : List[Key], id : Key) {
     }
 
     new Cursor(keys :+ shuffleId, key)
+  }
+
+  def appendAsList(key : Key) : Cursor = {
+    new Cursor(keys :+ new listT(id.getKey()), key)
   }
 
   def getKeys() : List[Key] = keys
