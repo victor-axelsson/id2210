@@ -86,7 +86,7 @@ case class Evaluator(replicaId : Int) {
       case Get(key) => {
 
         if(eval.node == null){
-          eval.node = eval.localStateAp.doc
+          throw new Exception("you need to select the doc first")
         }
 
         @tailrec
@@ -103,10 +103,12 @@ case class Evaluator(replicaId : Int) {
           }
         }
 
+        val prevN = eval.node
         eval.node = find(eval.node.getChildren())
 
         if(eval.node == null){
           eval.cursor = eval.cursor.append(new identifierT(key))
+          eval.node = prevN
         }else if(eval.node.isInstanceOf[NodeMap]){
           eval.cursor = eval.cursor.append(new mapT(key))
         }else if(eval.node.isInstanceOf[NodeList]) {
@@ -134,6 +136,11 @@ case class Evaluator(replicaId : Int) {
       case Var(name) => {
         //TODO: stuff
         variables(name)
+      }
+      case Doc() => {
+        val newEval:Evaluator = getClone()
+        newEval.node = eval.localStateAp.doc
+        newEval
       }
       case _ => {
         //TODO: stuff
