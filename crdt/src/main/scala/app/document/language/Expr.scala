@@ -1,8 +1,5 @@
 package app.document.language
 
-import app.document.language.Var.VarString
-
-
 sealed trait Expr extends Product with Serializable
 
 object Expr{
