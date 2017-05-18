@@ -1,6 +1,6 @@
 import app.document.evaluator.Evaluator
 import app.document.language.Cmd.{Assign, Let}
-import app.document.language.Expr.{Get, Var}
+import app.document.language.Expr.{Doc, Get, Var}
 import app.document.language.Val.{EmptyList, EmptyMap, Str}
 import org.scalatest.FlatSpec
 
@@ -19,7 +19,9 @@ class CmdEvalTest extends FlatSpec{
     var cmd1 = Assign(EmptyMap)
 
 
-    eval.evalExpr(Get("someVar")).evalExpr(Get("someVar2")).evalCmd(cmd1)
+    //eval.evalExpr(Get("someVar")).evalExpr(Get("someVar2")).evalCmd(cmd1)
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalCmd Assign(EmptyMap)
 
     val s:String = eval.toJsonString()
     val expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":{}}}}"
@@ -32,7 +34,7 @@ class CmdEvalTest extends FlatSpec{
     var cmd1 = Assign( EmptyList)
 
 
-    eval.evalExpr(Get("someVar")).evalExpr(Get("someVar2")).evalCmd(cmd1)
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalCmd(cmd1)
 
     val s:String = eval.toJsonString()
     val expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[]}}}"
@@ -45,7 +47,7 @@ class CmdEvalTest extends FlatSpec{
     var cmd1 = Assign(new Str("MyVal"))
 
 
-    eval.evalExpr(Get("someVar")).evalExpr(Get("someVar2")).evalCmd(cmd1)
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalCmd(cmd1)
 
     val s:String = eval.toJsonString()
     val expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":\"MyVal\"}}}"
@@ -70,13 +72,10 @@ class CmdEvalTest extends FlatSpec{
   */
   "A LET cmd " should " take a named snapshot of the eval and VAR should be able to return it" in {
 
-
     val eval = new Evaluator(1)
 
-
-    //You can also use this kind of syntax instead:
-
-    eval evalExpr Get("someVar") evalExpr Get("someVar2") evalCmd Let("x")
+    //Execute the let command
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalCmd Let("x")
 
     //Check for side effects on the original cursor
     assert(eval.toCursor().getKeys().size == 0)

@@ -158,6 +158,8 @@ class Context(var doc:Node) {
 
     val insert:Insert = context.op.getMutation().asInstanceOf[Insert]
 
+    throw new NotImplementedError("We need to add the value drom insert into the array")
+
     var nList = childGet(listT, context).asInstanceOf[NodeList]
 
     if(nList == null){
@@ -166,8 +168,6 @@ class Context(var doc:Node) {
     }else{
       throw new Exception("I'm not sure what to do here")
     }
-
-
 
     context.child.addChild(nList)
     addId(listT.key, context.op, context.child)
