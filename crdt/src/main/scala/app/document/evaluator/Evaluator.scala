@@ -144,8 +144,8 @@ case class Evaluator(replicaId : Int) {
       case Cmd.Assign(_, value) => {
         makeAssign(cursor, value)
       }
-      case Cmd.InsertAfter(_, _) => {
-
+      case Cmd.InsertAfter(_, value) => {
+        makeInsert(cursor, value)
       }
       case Cmd.Delete(_) => {
 

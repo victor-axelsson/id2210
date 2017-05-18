@@ -1,5 +1,5 @@
 import app.document.evaluator.Evaluator
-import app.document.language.Cmd.Assign
+import app.document.language.Cmd.{Assign, InsertAfter}
 import app.document.language.Expr
 import app.document.language.Expr.Get
 import app.document.language.Val.{EmptyList, EmptyMap, Str}
@@ -44,6 +44,19 @@ class CmdEvalTest extends FlatSpec{
 
     val eval = new Evaluator(1)
     var cmd1 = Assign(Expr.Doc(), new Str("MyVal"))
+
+
+    eval.evalExpr(Get(Expr.Doc(), "someVar")).evalExpr(Get(Expr.Doc(), "someVar2")).evalCmd(cmd1)
+
+    val s:String = eval.toJsonString()
+    val expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":\"MyVal\"}}}"
+
+    assert(s == expectedOutput)
+  }
+  "An insertAfter cmd " should " set the state of the eval Ap" in {
+
+    val eval = new Evaluator(1)
+    var cmd1 = InsertAfter(Expr.Doc(), new Str("someIndex"))
 
 
     eval.evalExpr(Get(Expr.Doc(), "someVar")).evalExpr(Get(Expr.Doc(), "someVar2")).evalCmd(cmd1)
