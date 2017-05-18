@@ -86,7 +86,9 @@ class CmdEvalTest extends FlatSpec{
     val assignCmd = Assign(EmptyMap)
 
     //we should be able to get the snapshot of the state from the eval with a var
-    eval.evalExpr(new Var(new VarString("x"))).evalCmd(assignCmd)
+    eval evalExpr new Var(new VarString("x")) evalCmd assignCmd
+
+    //eval.evalExpr(new Var(new VarString("x"))).evalCmd(assignCmd)
 
     val s:String = eval.toJsonString()
     val expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":{}}}}"
