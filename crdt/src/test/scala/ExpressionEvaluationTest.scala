@@ -1,4 +1,4 @@
-import app.document.context.{Context, Node, NodeDoc}
+import app.document.context._
 import app.document.cursor.Cursor
 import app.document.cursor.Key.{RootMapT, listT, mapT, regT}
 import app.document.evaluator.{Evaluator, Operation}
@@ -307,6 +307,33 @@ class ExpressionEvaluationTest extends FlatSpec{
     val searchCursor:Cursor = new Cursor(scala.collection.immutable.List(), list1)
 
     assert(searchCursor.idx(context, 0) == null)
+  }
 
+  "An IDx expression" should " return the corresponding element by index" in {
+
+    //// Build up the document ////
+    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.immutable.HashMap[Int, Operation]())
+    var context = new Context(nodeDoc)
+    var eval:Evaluator = new Evaluator(1)
+
+    val doc = Expr.Doc()
+    val key = RootMapT(doc)
+    val keys = scala.collection.immutable.List()
+    var cursor = new Cursor(keys, key)
+
+    val list1 = listT("someVar4")
+
+    cursor = cursor.append(list1)
+    val op = eval.makeAssign(cursor, Val.EmptyList)
+    val context2:Context = context.apply(op)
+
+    //prepare the list
+    context2.doc.getChildren().last.asInstanceOf[NodeList].children =
+      context2.doc.getChildren().last.asInstanceOf[NodeList].children :+ new NodeReg("first", null, null) :+ new NodeReg("second", null, null)
+    /// END building the doc
+    // We are looking for: first
+
+    assert(context2.op.getCursor().idx(context, 0).getName().eq("first"))
+    assert(context2.op.getCursor().idx(context, 1).getName().eq("second"))
   }
 }
