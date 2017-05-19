@@ -1,7 +1,6 @@
 import app.document.cursor.Cursor
 import app.document.cursor.Key.{RootMapT, listT, mapT}
-import app.document.language.Cmd.Let
-import app.document.language.{Expr, Var}
+import app.document.language.Expr
 import org.scalatest.FlatSpec
 
 /**
