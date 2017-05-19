@@ -39,7 +39,7 @@ class ExpressionEvaluationTest extends FlatSpec{
     val expr2:Expr = Get("someVar2")
     val expr3:Expr = Get("someVar4")
 
-    var c:Cursor = eval.evalExpr(expr1).evalExpr(expr2).evalExpr(expr3).toCursor()
+    var c:Cursor = eval.evalExpr(Doc()).evalExpr(expr1).evalExpr(expr2).evalExpr(expr3).toCursor()
 
     //Check for right structure
     assert(c.getKeys().size == 3)
@@ -81,7 +81,7 @@ class ExpressionEvaluationTest extends FlatSpec{
     val expr2:Expr = Get( "someVar2")
     val expr3:Expr = Keys()
 
-    val k:scala.collection.mutable.Set[String] = eval.evalExpr(expr1).evalExpr(expr2).evalExpr(expr3).toKeys()
+    val k:scala.collection.mutable.Set[String] = eval.evalExpr(Doc()).evalExpr(expr1).evalExpr(expr2).evalExpr(expr3).toKeys()
 
     //Check that the key was found
     assert(k.size == 1)
@@ -201,7 +201,7 @@ class ExpressionEvaluationTest extends FlatSpec{
     val expr3:Expr = Get("someVar4")
     var expr4:Expr = Values()
 
-    val v:List[Val] = eval.evalExpr(expr1).evalExpr(expr2).evalExpr(expr3).evalExpr(expr4).toVals()
+    val v:List[Val] = eval.evalExpr(Doc()).evalExpr(expr1).evalExpr(expr2).evalExpr(expr3).evalExpr(expr4).toVals()
 
     assert(v.size == 1)
     assert(v.head.isInstanceOf[Str])
