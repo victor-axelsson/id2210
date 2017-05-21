@@ -138,7 +138,7 @@ case class Evaluator(replicaId : Int) {
             eval.cursor = eval.cursor.appendAsList(new identifierT(index + ""))
           }
           case listT(key) => {
-            throw new NotImplementedError("Don't know yet")
+            eval.cursor = eval.cursor.append(new identifierT(index + ""))
           }
         }
 
