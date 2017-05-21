@@ -1,7 +1,7 @@
 import app.document.evaluator.Evaluator
 import app.document.language.Cmd.{Assign, InsertAfter, Let}
 import app.document.language.Expr.{Doc, Get, Idx, Var}
-import app.document.language.Val.{EmptyList, EmptyMap, Str}
+import app.document.language.Val.{EmptyList, EmptyMap, Str, Number}
 import org.scalatest.FlatSpec
 
 /**
@@ -163,6 +163,41 @@ class CmdEvalTest extends FlatSpec{
     eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(1) evalCmd insertSomeIndex4
     s = eval.toJsonString()
     expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex1\",\"[1]\":\"someIndex4\",\"[1]\":\"someIndex2\",\"[2]\":\"someIndex3\"]}}}"
+    assert(s == expectedOutput)
+  }
+  "An insertAfter cmd with a mapT" should " set the state of the eval Ap" in {
+    val eval = new Evaluator(1)
+    val insertSomeIndex1 = InsertAfter(EmptyMap)
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalCmd insertSomeIndex1
+
+    var s:String = eval.toJsonString()
+    var expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":{}]}}}"
+    assert(s == expectedOutput)
+
+  }
+  "An insertAfter cmd with a mixed types" should " set the state of the eval Ap" in {
+    val eval = new Evaluator(1)
+    val insertSomeIndex1 = InsertAfter(EmptyMap)
+    val insertSomeIndex2 = InsertAfter(EmptyList)
+    val insertSomeIndex3 = InsertAfter(new Number(10))
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalCmd insertSomeIndex1 evalCmd insertSomeIndex2 evalCmd insertSomeIndex3
+
+    var s:String = eval.toJsonString()
+    var expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":10,\"[0]\":[],\"[0]\":{}]}}}"
+    assert(s == expectedOutput)
+  }
+  "An insertAfter cmd with a mapT" should " be able to grab an item and modify it" in {
+    val eval = new Evaluator(1)
+    val insertSomeIndex1 = InsertAfter(EmptyMap)
+    val insertreg= Assign(new Str("someVal"))
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalCmd insertSomeIndex1
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalExpr  Get("someVar3") evalCmd  insertreg
+
+    var s:String = eval.toJsonString()
+    var expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":10,\"[0]\":[],\"[0]\":{}]}}}"
     assert(s == expectedOutput)
   }
   "A LET cmd " should " take a named snapshot of the eval and VAR should be able to return it" in {

@@ -78,6 +78,8 @@ case class Evaluator(replicaId : Int) {
 
   private def getId() : Int = counter * replicaId
 
+  def isAllDigits(x: String) = x forall Character.isDigit
+
   def evalExpr(expr: Expr):Evaluator = {
 
     var eval:Evaluator = getClone()
@@ -188,6 +190,8 @@ case class Evaluator(replicaId : Int) {
 
       }
     }
+
+    this
 
   }
 

@@ -7,6 +7,7 @@ import app.document.evaluator.Operation
 import app.document.language.Val
 import app.document.language.Val.{EmptyList, EmptyMap}
 
+
 import scala.annotation.tailrec
 
 /**
@@ -50,7 +51,6 @@ class Context(var doc:Node) {
             assign(newContext)
           }
         }
-
       }
       case Insert(_) => {
         insert(newContext)
@@ -180,18 +180,40 @@ class Context(var doc:Node) {
 
   private def assign(context: Context) = {
 
-    var regT:regT = null
+    /*
+    if(context.child.isInstanceOf[NodeList]){
+      val index:Int = context.op.getCursor().getId().getKey().toInt
+      context.child = context.child.getChildren()(index)
 
+      context.op.getMutation().asInstanceOf[Assign].value match {
+        case EmptyMap => {
+          emptyMap(context)
+        }
+        case EmptyList => {
+          emptyList(context)
+        }
+        case _ => {
+          doAssign(context)
+        }
+      }
+    }else{
+      doAssign(context)
+    }
+    */
+    doAssign(context)
+  }
+
+  private def doAssign(context: Context) = {
+
+    var regT:regT = null
     if(context.op.getCursor().getTail().isInstanceOf[regT]){
       regT = context.op.getCursor().getTail().asInstanceOf[regT]
     }else{
       regT = new regT(context.op.getCursor().getId().getKey())
     }
 
-    //var regT = context.op.getCursor().getTail().asInstanceOf[regT]
     clear(context.op.getDeps(), regT)
     val assign:Assign = context.op.getMutation().asInstanceOf[Assign]
-
 
     var nReg:NodeReg = childGet(regT, context).asInstanceOf[NodeReg]
 
