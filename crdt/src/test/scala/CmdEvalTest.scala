@@ -99,6 +99,40 @@ class CmdEvalTest extends FlatSpec{
     expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex1\",\"[1]\":\"someIndex2\",\"[2]\":\"someIndex3\",\"[3]\":\"someIndex4\"]}}}"
     assert(s == expectedOutput)
   }
+  "An insertAfter cmd with insertion at the head" should " set the state of the eval Ap" in {
+
+
+    val eval = new Evaluator(1)
+    val insertSomeIndex1 = InsertAfter(new Str("someIndex1"))
+    val insertSomeIndex2 = InsertAfter(new Str("someIndex2"))
+    val insertSomeIndex3 = InsertAfter(new Str("someIndex3"))
+    val insertSomeIndex4 = InsertAfter(new Str("someIndex4"))
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalCmd insertSomeIndex1
+
+    var s:String = eval.toJsonString()
+    var expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex1\"]}}}"
+    assert(s == expectedOutput)
+    println(s)
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalCmd insertSomeIndex2
+
+
+    s = eval.toJsonString()
+    expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex2\",\"[0]\":\"someIndex1\"]}}}"
+    assert(s == expectedOutput)
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalCmd insertSomeIndex3
+
+    s = eval.toJsonString()
+    expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex3\",\"[0]\":\"someIndex2\",\"[0]\":\"someIndex1\"]}}}"
+    assert(s == expectedOutput)
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalCmd insertSomeIndex4
+    s = eval.toJsonString()
+    expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex4\",\"[0]\":\"someIndex3\",\"[0]\":\"someIndex2\",\"[0]\":\"someIndex1\"]}}}"
+    assert(s == expectedOutput)
+  }
   "A LET cmd " should " take a named snapshot of the eval and VAR should be able to return it" in {
 
     val eval = new Evaluator(1)

@@ -47,13 +47,15 @@ class NodeList(name:String, pres:Map[Int, Operation]) extends Node(name, pres){
          nextAcc = acc :+ n
 
          if(curr != null){
-            nextAcc = acc :+ curr
+            nextAcc = nextAcc :+ curr
          }
 
          nextI = i+1
          nextCounter = counter+1
       }else{
-        nextAcc = acc :+ curr
+        if(curr != null){
+          nextAcc = acc :+ curr
+        }
         nextI = i+1
         nextCounter = counter+1
       }

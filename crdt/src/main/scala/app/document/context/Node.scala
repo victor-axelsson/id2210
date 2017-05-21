@@ -14,6 +14,7 @@ abstract class Node(name:String, var pres:Map[Int, Operation]) {
   def setTombstone(t: Boolean) = tombstone = t
 
   def getName() = name
+
   def getPres() = pres
   def removeKeyPresence(id : Int) = {
     pres -= id
