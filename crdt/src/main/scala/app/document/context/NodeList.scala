@@ -3,11 +3,12 @@ package app.document.context
 import app.document.evaluator.Operation
 
 import scala.annotation.tailrec
+import scala.collection.mutable
 
 /**
   * Created by victoraxelsson on 2017-05-09.
   */
-class NodeList(theName:String, pres:Map[Int, Operation]) extends Node(theName, pres){
+class NodeList(theName:String, pres:mutable.Map[Int, Operation]) extends Node(theName, pres){
 
   var children : List[Node] = List.empty
 

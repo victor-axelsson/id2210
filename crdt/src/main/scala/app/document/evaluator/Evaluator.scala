@@ -17,9 +17,10 @@ case class Evaluator(replicaId : Int) {
 
   private var counter = 0
   private var executedOperations = List.empty[Int]
-  private var localStateAp:Context = new Context(new NodeDoc(new scala.collection.immutable.HashMap[Int, Operation]()))
+  private var localStateAp:Context = new Context(new NodeDoc(new scala.collection.mutable.HashMap[Int, Operation]()))
   private var queue = List.empty[Operation]
   private var variables = new scala.collection.mutable.HashMap[String, Evaluator]()
+  private var root:Evaluator = this
 
   private var cursor:Cursor = getNewCursor()
   var node:Node = null;
@@ -38,6 +39,7 @@ case class Evaluator(replicaId : Int) {
     eval.cursor = this.cursor
     eval.node = this.node
     eval.variables = this.variables
+    eval.root = this.root
     eval
   }
 
@@ -190,9 +192,17 @@ case class Evaluator(replicaId : Int) {
 
       }
     }
-
+    transferStateToRoot()
     this
 
+
+  }
+
+  private def transferStateToRoot(): Unit = {
+    root.executedOperations = this.executedOperations
+    root.queue = this.queue
+    root.localStateAp = this.localStateAp
+    root.counter = this.counter
   }
 
 

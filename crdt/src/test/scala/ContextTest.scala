@@ -15,7 +15,7 @@ import org.scalatest.FlatSpec
 class ContextTest extends FlatSpec{
   "A context" should "be able to perform DESCEND" in {
 
-    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.immutable.HashMap[Int, Operation]())
+    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Int, Operation]())
     var context = new Context(nodeDoc)
     var eval:Evaluator = new Evaluator(1)
 
@@ -43,7 +43,7 @@ class ContextTest extends FlatSpec{
 
 
 
-    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.immutable.HashMap[Int, Operation]())
+    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Int, Operation]())
     var context = new Context(nodeDoc)
     var eval:Evaluator = new Evaluator(1)
 
@@ -71,7 +71,7 @@ class ContextTest extends FlatSpec{
   }
   "A context" should "be able to perform EMPTY-MAP" in {
 
-    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.immutable.HashMap[Int, Operation]())
+    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Int, Operation]())
     var context = new Context(nodeDoc)
     var eval:Evaluator = new Evaluator(1)
 
@@ -99,7 +99,7 @@ class ContextTest extends FlatSpec{
   }
   "A context" should "be able to perform EMPTY-LIST" in {
 
-    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.immutable.HashMap[Int, Operation]())
+    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Int, Operation]())
     var context = new Context(nodeDoc)
     var eval:Evaluator = new Evaluator(1)
 
@@ -127,7 +127,7 @@ class ContextTest extends FlatSpec{
   }
   "A context" should "clear out old stuff from deps when using a regT" in {
 
-    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.immutable.HashMap[Int, Operation]())
+    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Int, Operation]())
     var context = new Context(nodeDoc)
     var eval:Evaluator = new Evaluator(1)
 

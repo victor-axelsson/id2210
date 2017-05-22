@@ -2,10 +2,12 @@ package app.document.context
 
 import app.document.evaluator.Operation
 
+import scala.collection.mutable
+
 /**
   * Created by victoraxelsson on 2017-05-09.
   */
-abstract class Node(var name:String, var pres:Map[Int, Operation]) {
+abstract class Node(var name:String, var pres:mutable.Map[Int, Operation]) {
   var tombstone = false
 
   def isTombstone() = tombstone
