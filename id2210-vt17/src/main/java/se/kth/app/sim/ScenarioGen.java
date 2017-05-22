@@ -17,8 +17,9 @@
  */
 package se.kth.app.sim;
 
+import se.kth.app.sim.behaviour.multiple_register_sim.PBehaviour;
+import se.kth.app.sim.behaviour.multiple_register_sim.QBehaviour;
 import se.kth.sim.compatibility.SimNodeIdExtractor;
-import se.kth.system.HostMngrComp;
 import se.sics.kompics.network.Address;
 import se.sics.kompics.simulator.SimulationScenario;
 import se.sics.kompics.simulator.adaptor.Operation;
@@ -29,9 +30,6 @@ import se.sics.kompics.simulator.events.system.StartNodeEvent;
 import se.sics.kompics.simulator.network.identifier.IdentifierExtractor;
 import se.sics.ktoolbox.omngr.bootstrap.BootstrapServerComp;
 import se.sics.ktoolbox.util.network.KAddress;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -79,44 +77,10 @@ public class ScenarioGen {
         }
     };
 
-    static Operation1<StartNodeEvent, Integer> startNodeOp = new Operation1<StartNodeEvent, Integer>() {
+    static Operation1<StartNodeEvent, Integer> startNodeOp = new NodeStarter(null);
+    static Operation1<StartNodeEvent, Integer> startAdderNode = new NodeStarter(new PBehaviour());
+    static Operation1<StartNodeEvent, Integer> startAssignerNode = new NodeStarter(new QBehaviour());
 
-        @Override
-        public StartNodeEvent generate(final Integer nodeId) {
-            return new StartNodeEvent() {
-                KAddress selfAdr;
-
-                {
-                    String nodeIp = "193.0.0." + nodeId;
-                    selfAdr = ScenarioSetup.getNodeAdr(nodeIp, nodeId);
-                }
-
-                @Override
-                public Address getNodeAddress() {
-                    return selfAdr;
-                }
-
-                @Override
-                public Class getComponentDefinition() {
-                    return HostMngrComp.class;
-                }
-
-                @Override
-                public HostMngrComp.Init getComponentInit() {
-                    return new HostMngrComp.Init(selfAdr, ScenarioSetup.bootstrapServer, ScenarioSetup.croupierOId);
-                }
-
-                @Override
-                public Map<String, Object> initConfigUpdate() {
-                    Map<String, Object> nodeConfig = new HashMap<>();
-                    nodeConfig.put("system.id", nodeId);
-                    nodeConfig.put("system.seed", ScenarioSetup.getNodeSeed(nodeId));
-                    nodeConfig.put("system.port", ScenarioSetup.appPort);
-                    return nodeConfig;
-                }
-            };
-        }
-    };
 
     public static SimulationScenario simpleBoot() {
         SimulationScenario scen = new SimulationScenario() {
@@ -144,6 +108,52 @@ public class ScenarioGen {
                 startBootstrapServer.startAfterTerminationOf(1000, systemSetup);
                 startPeers.startAfterTerminationOf(1000, startBootstrapServer);
                 terminateAfterTerminationOf(1000*1000, startPeers);
+            }
+        };
+
+        return scen;
+    }
+
+    public static SimulationScenario multipleRegisterSimulation() {
+        SimulationScenario scen = new SimulationScenario() {
+            {
+                StochasticProcess systemSetup = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(constant(1000));
+                        raise(1, systemSetupOp);
+                    }
+                };
+                StochasticProcess startBootstrapServer = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(constant(1000));
+                        raise(1, startBootstrapServerOp);
+                    }
+                };
+//                StochasticProcess startPeers = new StochasticProcess() {
+//                    {
+//                        eventInterArrivalTime(uniform(1000, 1100));
+//                        raise(100, startNodeOp, new BasicIntSequentialDistribution(1));
+//                    }
+//                };
+                StochasticProcess startAnAdder = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(uniform(1000, 1100));
+                        raise(1, startAdderNode, new BasicIntSequentialDistribution(1));
+                    }
+                };
+                StochasticProcess startAnAssigner = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(uniform(1000, 1100));
+                        raise(1, startAssignerNode, new BasicIntSequentialDistribution(2));
+                    }
+                };
+
+                systemSetup.start();
+                startBootstrapServer.startAfterTerminationOf(1000, systemSetup);
+             //   startPeers.startAfterTerminationOf(1000, startBootstrapServer);
+                startAnAdder.startAfterTerminationOf(1000, startBootstrapServer);
+                startAnAssigner.startAfterTerminationOf(1000, startBootstrapServer);
+                terminateAfterTerminationOf(1000*1000, startAnAssigner);
             }
         };
 

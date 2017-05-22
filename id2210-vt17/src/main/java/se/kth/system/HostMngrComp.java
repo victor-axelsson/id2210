@@ -17,10 +17,17 @@
  */
 package se.kth.system;
 
+import app.document.evaluator.Evaluator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.kth.app.mngr.AppMngrComp;
-import se.sics.kompics.*;
+import se.kth.app.sim.behaviour.Behaviour;
+import se.sics.kompics.Channel;
+import se.sics.kompics.Component;
+import se.sics.kompics.ComponentDefinition;
+import se.sics.kompics.Handler;
+import se.sics.kompics.Positive;
+import se.sics.kompics.Start;
 import se.sics.kompics.network.Network;
 import se.sics.kompics.timer.Timer;
 import se.sics.ktoolbox.cc.heartbeat.CCHeartbeatPort;
@@ -53,6 +60,8 @@ public class HostMngrComp extends ComponentDefinition {
     private Component overlayMngrComp;
     private Component appMngrComp;
 
+    private Behaviour behaviour;
+
     public HostMngrComp(Init init) {
         selfAdr = init.selfAdr;
         logPrefix = "<nid:" + selfAdr.getId() + ">";
@@ -60,6 +69,7 @@ public class HostMngrComp extends ComponentDefinition {
 
         bootstrapServer = init.bootstrapServer;
         croupierId = init.croupierId;
+        behaviour = init.behaviour;
 
         subscribe(handleStart, control);
     }
@@ -75,6 +85,10 @@ public class HostMngrComp extends ComponentDefinition {
             trigger(Start.event, bootstrapClientComp.control());
             trigger(Start.event, overlayMngrComp.control());
             trigger(Start.event, appMngrComp.control());
+
+            if(behaviour != null){
+                behaviour.actOnIt(new Evaluator(1));
+            }
         }
     };
 
@@ -102,11 +116,17 @@ public class HostMngrComp extends ComponentDefinition {
         public final KAddress selfAdr;
         public final KAddress bootstrapServer;
         public final OverlayId croupierId;
+        private final Behaviour behaviour;
 
         public Init(KAddress selfAdr, KAddress bootstrapServer, OverlayId croupierId) {
+            this(selfAdr, bootstrapServer, croupierId, null);
+        }
+
+        public Init(KAddress selfAdr, KAddress bootstrapServer, OverlayId croupierId, Behaviour behaviour) {
             this.selfAdr = selfAdr;
             this.bootstrapServer = bootstrapServer;
             this.croupierId = croupierId;
+            this.behaviour = behaviour;
         }
     }
 }
