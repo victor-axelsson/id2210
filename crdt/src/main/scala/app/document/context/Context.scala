@@ -71,7 +71,6 @@ class Context(var doc: Node) {
       for (dep <- deps) {
         child.removeKeyPresence(dep)
       }
-      println()
     }
   }
 

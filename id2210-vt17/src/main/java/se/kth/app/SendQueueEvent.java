@@ -2,6 +2,7 @@ package se.kth.app;
 
 import app.document.evaluator.Operation;
 import se.sics.kompics.KompicsEvent;
+import se.sics.ktoolbox.util.network.KAddress;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +12,11 @@ import java.util.List;
  */
 public class SendQueueEvent implements KompicsEvent {
     private final List<Operation> operations;
+    public final KAddress sender;
 
-    public SendQueueEvent(List<Operation> operations) {
+    public SendQueueEvent(List<Operation> operations, KAddress sender) {
         this.operations = operations;
+        this.sender = sender;
     }
 
     public List<Operation> getOperations() {

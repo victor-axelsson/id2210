@@ -14,8 +14,10 @@ import java.util.List;
  */
 public class QBehaviour implements Behaviour {
 
-    public void actOnIt(Evaluator eval) {
-        setup(eval);
+    @Override
+    public void setup(Evaluator eval) {
+        Cmd setup = new Cmd.Assign(new Val.Str("A"));
+        eval.evalExpr(new Expr.Doc()).evalExpr(new Expr.Get("key")).evalCmd(setup);
 
         //When used in conjunction with PBehaviour should produce a multiple register
         Cmd cmd = new Cmd.Assign(new Val.Str("C"));
@@ -24,16 +26,5 @@ public class QBehaviour implements Behaviour {
         String json = eval.toJsonString();
 
         System.out.println(json);
-    }
-
-    @Override
-    public void onSample(List<KAddress> addrs) {
-
-    }
-
-    @Override
-    public void setup(Evaluator eval) {
-        Cmd setup = new Cmd.Assign(new Val.Str("A"));
-        eval.evalExpr(new Expr.Doc()).evalExpr(new Expr.Get("key")).evalCmd(setup);
     }
 }

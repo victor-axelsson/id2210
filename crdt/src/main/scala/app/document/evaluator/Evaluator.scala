@@ -216,7 +216,12 @@ case class Evaluator(replicaId : Int) {
   }
 
   private def applyRemote(): Unit = {
-    //TODO
+    for (op <- receiveBuffer) {
+      if (!executedOperations.contains(op.getId())) {
+        applyLocal(op)
+        println(getId() + " " +this.toJsonString())
+      }
+    }
   }
 
   private def transferStateToRoot(): Unit = {
