@@ -85,10 +85,6 @@ public class HostMngrComp extends ComponentDefinition {
             trigger(Start.event, bootstrapClientComp.control());
             trigger(Start.event, overlayMngrComp.control());
             trigger(Start.event, appMngrComp.control());
-
-            if(behaviour != null){
-                behaviour.actOnIt(new Evaluator(1));
-            }
         }
     };
 
@@ -107,7 +103,7 @@ public class HostMngrComp extends ComponentDefinition {
     private void connectApp() {
         AppMngrComp.ExtPort extPorts = new AppMngrComp.ExtPort(timerPort, networkPort,
                 overlayMngrComp.getPositive(CroupierPort.class), overlayMngrComp.getNegative(OverlayViewUpdatePort.class));
-        appMngrComp = create(AppMngrComp.class, new AppMngrComp.Init(extPorts, selfAdr, croupierId));
+        appMngrComp = create(AppMngrComp.class, new AppMngrComp.Init(extPorts, selfAdr, croupierId, behaviour));
         connect(appMngrComp.getNegative(OverlayMngrPort.class), overlayMngrComp.getPositive(OverlayMngrPort.class), Channel.TWO_WAY);
     }
 

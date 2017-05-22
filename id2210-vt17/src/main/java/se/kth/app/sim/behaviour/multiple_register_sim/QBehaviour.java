@@ -5,12 +5,15 @@ import app.document.language.Cmd;
 import app.document.language.Expr;
 import app.document.language.Val;
 import se.kth.app.sim.behaviour.Behaviour;
+import se.sics.ktoolbox.util.network.KAddress;
+
+import java.util.List;
 
 /**
  * Created by Nick on 5/22/2017.
  */
 public class QBehaviour implements Behaviour {
-    @Override
+
     public void actOnIt(Evaluator eval) {
         setup(eval);
 
@@ -21,6 +24,11 @@ public class QBehaviour implements Behaviour {
         String json = eval.toJsonString();
 
         System.out.println(json);
+    }
+
+    @Override
+    public void onSample(List<KAddress> addrs) {
+
     }
 
     @Override

@@ -29,6 +29,7 @@ import se.kth.app.broadcast.RB.EagerReliableBroadcast;
 import se.kth.app.broadcast.RB.ReliableBroadcast;
 import se.kth.app.link.PerfectLink;
 import se.kth.app.link.PerfectLinkComponent;
+import se.kth.app.sim.behaviour.Behaviour;
 import se.kth.croupier.util.NoView;
 import se.sics.kompics.*;
 import se.sics.kompics.network.Network;
@@ -66,6 +67,7 @@ public class AppMngrComp extends ComponentDefinition {
   private OMngrCroupier.ConnectRequest pendingCroupierConnReq;
   //**************************************************************************
 
+  private Behaviour behaviour;
 
   public AppMngrComp(Init init) {
     selfAdr = init.selfAdr;
@@ -74,6 +76,7 @@ public class AppMngrComp extends ComponentDefinition {
 
     extPorts = init.extPorts;
     croupierId = init.croupierOId;
+    behaviour = init.behaviour;
 
     beb = create(BasicBroadcast.class, new BasicBroadcast.Init(selfAdr));
     pLink = create(PerfectLinkComponent.class, se.sics.kompics.Init.NONE);
@@ -109,7 +112,7 @@ public class AppMngrComp extends ComponentDefinition {
   };
 
   private void connectAppComp() {
-    appComp = create(AppComp.class, new AppComp.Init(selfAdr, croupierId));
+    appComp = create(AppComp.class, new AppComp.Init(selfAdr, croupierId, behaviour));
     connect(appComp.getNegative(Timer.class), extPorts.timerPort, Channel.TWO_WAY);
     connect(appComp.getNegative(Network.class), extPorts.networkPort, Channel.TWO_WAY);
     connect(appComp.getNegative(CroupierPort.class), extPorts.croupierPort, Channel.TWO_WAY);
@@ -137,11 +140,14 @@ public class AppMngrComp extends ComponentDefinition {
     public final ExtPort extPorts;
     public final KAddress selfAdr;
     public final OverlayId croupierOId;
+    public final Behaviour behaviour;
 
-    public Init(ExtPort extPorts, KAddress selfAdr, OverlayId croupierOId) {
+    public Init(ExtPort extPorts, KAddress selfAdr, OverlayId croupierOId, Behaviour behaviour) {
       this.extPorts = extPorts;
       this.selfAdr = selfAdr;
       this.croupierOId = croupierOId;
+      this.behaviour = behaviour;
+
     }
   }
 

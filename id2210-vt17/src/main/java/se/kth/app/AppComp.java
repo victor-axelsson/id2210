@@ -17,11 +17,13 @@
  */
 package se.kth.app;
 
+import app.document.evaluator.Evaluator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.kth.app.broadcast.CB.CB_Broadcast;
 import se.kth.app.broadcast.CB.CB_Deliver;
 import se.kth.app.broadcast.CB.CausalOrderReliableBroadcast;
+import se.kth.app.sim.behaviour.Behaviour;
 import se.kth.app.test.Ping;
 import se.kth.app.test.Pong;
 import se.kth.croupier.util.CroupierHelper;
@@ -56,11 +58,14 @@ public class AppComp extends ComponentDefinition {
   //**************************************************************************
   private KAddress selfAdr;
 
+  private Behaviour behaviour;
+
   public AppComp(Init init) {
     selfAdr = init.selfAdr;
     logPrefix = "<nid:" + selfAdr.getId() + ">";
     LOG.info("{}initiating...", logPrefix);
 
+    this.behaviour = init.behaviour;
 
     subscribe(handleStart, control);
     subscribe(handleCroupierSample, croupierPort);
@@ -74,6 +79,10 @@ public class AppComp extends ComponentDefinition {
     @Override
     public void handle(Start event) {
       LOG.info("{}starting...", logPrefix);
+
+      if(behaviour != null){
+        behaviour.setup(new Evaluator(1));
+      }
     }
   };
 
@@ -88,6 +97,11 @@ public class AppComp extends ComponentDefinition {
         KHeader header = new BasicHeader(selfAdr, peer, Transport.UDP);
         KContentMsg msg = new BasicContentMsg(header, new Ping());
         trigger(msg, networkPort);
+      }
+
+
+      if(behaviour != null){
+        behaviour.onSample(sample);
       }
 
       if(sample.size() > 3){
@@ -134,10 +148,12 @@ public class AppComp extends ComponentDefinition {
 
     public final KAddress selfAdr;
     public final Identifier gradientOId;
+    public final Behaviour behaviour;
 
-    public Init(KAddress selfAdr, Identifier gradientOId) {
+    public Init(KAddress selfAdr, Identifier gradientOId, Behaviour behaviour) {
       this.selfAdr = selfAdr;
       this.gradientOId = gradientOId;
+      this.behaviour = behaviour;
     }
   }
 }
