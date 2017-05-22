@@ -22,6 +22,7 @@ import java.util.Map;
 
 import app.document.evaluator.Evaluator;
 import se.kth.app.sim.behaviour.AdderBehaviour;
+import se.kth.app.sim.behaviour.AssignBehaviour;
 import se.kth.sim.compatibility.SimNodeIdExtractor;
 import se.kth.system.HostMngrComp;
 import se.sics.kompics.network.Address;
@@ -83,6 +84,7 @@ public class ScenarioGen {
 
     static Operation1<StartNodeEvent, Integer> startNodeOp = new NodeStarter(null);
     static Operation1<StartNodeEvent, Integer> startAdderNode = new NodeStarter(new AdderBehaviour());
+    static Operation1<StartNodeEvent, Integer> startAssignerNode = new NodeStarter(new AssignBehaviour());
 
 
     public static SimulationScenario simpleBoot() {
@@ -132,24 +134,31 @@ public class ScenarioGen {
                         raise(1, startBootstrapServerOp);
                     }
                 };
-                StochasticProcess startPeers = new StochasticProcess() {
-                    {
-                        eventInterArrivalTime(uniform(1000, 1100));
-                        raise(100, startNodeOp, new BasicIntSequentialDistribution(1));
-                    }
-                };
+//                StochasticProcess startPeers = new StochasticProcess() {
+//                    {
+//                        eventInterArrivalTime(uniform(1000, 1100));
+//                        raise(100, startNodeOp, new BasicIntSequentialDistribution(1));
+//                    }
+//                };
                 StochasticProcess startAnAdder = new StochasticProcess() {
                     {
                         eventInterArrivalTime(uniform(1000, 1100));
                         raise(1, startAdderNode, new BasicIntSequentialDistribution(1));
                     }
                 };
+                StochasticProcess startAnAssigner = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(uniform(1000, 1100));
+                        raise(1, startAssignerNode, new BasicIntSequentialDistribution(2));
+                    }
+                };
 
                 systemSetup.start();
                 startBootstrapServer.startAfterTerminationOf(1000, systemSetup);
-                startPeers.startAfterTerminationOf(1000, startBootstrapServer);
+             //   startPeers.startAfterTerminationOf(1000, startBootstrapServer);
                 startAnAdder.startAfterTerminationOf(1000, startBootstrapServer);
-                terminateAfterTerminationOf(1000*1000, startPeers);
+                startAnAssigner.startAfterTerminationOf(1000, startBootstrapServer);
+                terminateAfterTerminationOf(1000*1000, startAnAssigner);
             }
         };
 
