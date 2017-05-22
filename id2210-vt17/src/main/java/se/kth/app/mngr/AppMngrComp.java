@@ -19,8 +19,8 @@ package se.kth.app.mngr;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.kth.app.AppComp;
 import se.kth.app.broadcast.BEB.BasicBroadcast;
-import se.kth.app.broadcast.BEB.BestEffortBroadcast;
 import se.kth.app.broadcast.CB.CausalOrderReliableBroadcast;
 import se.kth.app.broadcast.CB.NoWaitingCausalBroadcast;
 import se.kth.app.broadcast.GBEB.GossipingBEBComponent;
@@ -30,7 +30,6 @@ import se.kth.app.broadcast.RB.ReliableBroadcast;
 import se.kth.app.link.PerfectLink;
 import se.kth.app.link.PerfectLinkComponent;
 import se.kth.croupier.util.NoView;
-import se.kth.app.AppComp;
 import se.sics.kompics.*;
 import se.sics.kompics.network.Network;
 import se.sics.kompics.timer.Timer;
@@ -42,9 +41,6 @@ import se.sics.ktoolbox.util.identifiable.overlay.OverlayId;
 import se.sics.ktoolbox.util.network.KAddress;
 import se.sics.ktoolbox.util.overlays.view.OverlayViewUpdate;
 import se.sics.ktoolbox.util.overlays.view.OverlayViewUpdatePort;
-import sun.nio.ch.ChannelInputStream;
-import sun.nio.ch.Net;
-import sun.nio.cs.ext.COMPOUND_TEXT;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

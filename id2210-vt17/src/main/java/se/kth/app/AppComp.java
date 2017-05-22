@@ -17,28 +17,15 @@
  */
 package se.kth.app;
 
-import java.util.List;
-
-import app.TestingOut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scala.util.parsing.json.JSONObject;
-import se.kth.app.broadcast.BEB.BEB_Deliver;
-import se.kth.app.broadcast.BEB.BestEffortBroadcast;
 import se.kth.app.broadcast.CB.CB_Broadcast;
 import se.kth.app.broadcast.CB.CB_Deliver;
 import se.kth.app.broadcast.CB.CausalOrderReliableBroadcast;
-import se.kth.app.broadcast.GBEB.GBEB_Deliver;
-import se.kth.app.broadcast.GBEB.GossipingBestEffortBroadcast;
-import se.kth.app.broadcast.RB.ReliableBroadcast;
-import se.kth.croupier.util.CroupierHelper;
 import se.kth.app.test.Ping;
 import se.kth.app.test.Pong;
-import se.sics.kompics.ClassMatchedHandler;
-import se.sics.kompics.ComponentDefinition;
-import se.sics.kompics.Handler;
-import se.sics.kompics.Positive;
-import se.sics.kompics.Start;
+import se.kth.croupier.util.CroupierHelper;
+import se.sics.kompics.*;
 import se.sics.kompics.network.Network;
 import se.sics.kompics.network.Transport;
 import se.sics.kompics.timer.Timer;
@@ -50,6 +37,8 @@ import se.sics.ktoolbox.util.network.KContentMsg;
 import se.sics.ktoolbox.util.network.KHeader;
 import se.sics.ktoolbox.util.network.basic.BasicContentMsg;
 import se.sics.ktoolbox.util.network.basic.BasicHeader;
+
+import java.util.List;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
@@ -117,7 +106,7 @@ public class AppComp extends ComponentDefinition {
   protected final Handler<CB_Deliver> cb_deliverHandler = new Handler<CB_Deliver>() {
       @Override
       public void handle(CB_Deliver cb_deliver) {
-        System.out.println("Got deliver in app comp: " + selfAdr);
+        //System.out.println("Got deliver in app comp: " + selfAdr);
       }
   };
 

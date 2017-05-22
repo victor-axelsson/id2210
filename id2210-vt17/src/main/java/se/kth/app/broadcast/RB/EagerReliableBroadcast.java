@@ -6,7 +6,8 @@ import se.kth.app.broadcast.GBEB.GossipingBestEffortBroadcast;
 import se.sics.kompics.*;
 import se.sics.ktoolbox.util.network.KAddress;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by victoraxelsson on 2017-04-28.

@@ -1,6 +1,5 @@
 package se.kth.app.broadcast.RB;
 
-import se.kth.app.broadcast.GBEB.HistoryElement;
 import se.sics.kompics.KompicsEvent;
 import se.sics.ktoolbox.util.network.KAddress;
 

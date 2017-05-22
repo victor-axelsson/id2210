@@ -17,8 +17,6 @@
  */
 package se.kth.app.sim;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import se.kth.system.SystemSetup;
 import se.sics.ktoolbox.util.identifiable.BasicBuilders;
 import se.sics.ktoolbox.util.identifiable.BasicIdentifiers;
@@ -27,6 +25,9 @@ import se.sics.ktoolbox.util.identifiable.overlay.OverlayId;
 import se.sics.ktoolbox.util.network.KAddress;
 import se.sics.ktoolbox.util.network.basic.BasicAddress;
 import se.sics.ktoolbox.util.network.nat.NatAwareAddressImpl;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

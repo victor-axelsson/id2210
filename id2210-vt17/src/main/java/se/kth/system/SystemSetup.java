@@ -17,7 +17,6 @@
  */
 package se.kth.system;
 
-import static se.kth.app.sim.ScenarioSetup.scenarioSeed;
 import se.sics.ktoolbox.util.identifiable.BasicBuilders;
 import se.sics.ktoolbox.util.identifiable.BasicIdentifiers;
 import se.sics.ktoolbox.util.identifiable.IdentifierFactory;
@@ -25,6 +24,8 @@ import se.sics.ktoolbox.util.identifiable.IdentifierRegistry;
 import se.sics.ktoolbox.util.identifiable.overlay.OverlayId;
 import se.sics.ktoolbox.util.identifiable.overlay.OverlayIdFactory;
 import se.sics.ktoolbox.util.identifiable.overlay.OverlayRegistry;
+
+import static se.kth.app.sim.ScenarioSetup.scenarioSeed;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

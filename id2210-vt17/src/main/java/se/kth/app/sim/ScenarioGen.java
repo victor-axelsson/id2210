@@ -17,8 +17,6 @@
  */
 package se.kth.app.sim;
 
-import java.util.HashMap;
-import java.util.Map;
 import se.kth.sim.compatibility.SimNodeIdExtractor;
 import se.kth.system.HostMngrComp;
 import se.sics.kompics.network.Address;
@@ -31,6 +29,9 @@ import se.sics.kompics.simulator.events.system.StartNodeEvent;
 import se.sics.kompics.simulator.network.identifier.IdentifierExtractor;
 import se.sics.ktoolbox.omngr.bootstrap.BootstrapServerComp;
 import se.sics.ktoolbox.util.network.KAddress;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
