@@ -12,7 +12,6 @@ import java.util.List;
  */
 public class PBehaviour implements Behaviour {
 
-
     public void actOnIt(Evaluator eval) {
         setup(eval);
 
@@ -34,4 +33,5 @@ public class PBehaviour implements Behaviour {
         eval.evalExpr(new Expr.Doc()).evalExpr(new Expr.Get("key")).evalCmd(setup);
         System.out.println(eval.toJsonString());
     }
+
 }

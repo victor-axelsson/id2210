@@ -1,6 +1,8 @@
 package app.document.evaluator
 
 
+import java.util
+
 import app.document.context._
 import app.document.cursor.Cursor
 import app.document.cursor.Key.{mapT, _}
@@ -21,6 +23,9 @@ case class Evaluator(replicaId : Int) {
   private var queue = List.empty[Operation]
   private var variables = new scala.collection.mutable.HashMap[String, Evaluator]()
   private var root:Evaluator = this
+
+  private var receiveBuffer = List.empty[Operation]
+  private var sendBuffer = List.empty[Operation]
 
   private var cursor:Cursor = getNewCursor()
   var node:Node = null;
@@ -198,11 +203,29 @@ case class Evaluator(replicaId : Int) {
 
   }
 
+  def receive(operation: Operation): Unit = {
+    receiveBuffer = receiveBuffer :+ operation
+    applyRemote()
+  }
+
+  def send(): java.util.List[Operation] = {
+    var ops: java.util.List[Operation] = new util.ArrayList[Operation]()
+    for (op <- sendBuffer)
+      ops.add(op)
+    return ops
+  }
+
+  private def applyRemote(): Unit = {
+    //TODO
+  }
+
   private def transferStateToRoot(): Unit = {
     root.executedOperations = this.executedOperations
     root.queue = this.queue
     root.localStateAp = this.localStateAp
     root.counter = this.counter
+    root.sendBuffer = this.sendBuffer
+    root.receiveBuffer = this.receiveBuffer
   }
 
 
@@ -223,6 +246,9 @@ case class Evaluator(replicaId : Int) {
 
     //3, add id to set of processed operations
     executedOperations = executedOperations :+ op.getId()
+
+    //4, add it to outgoing sendBuffer
+    sendBuffer = sendBuffer :+ op
   }
 
   def makeInsert(cursor : Cursor, value : Val) = makeOperation(cursor, Insert(value))

@@ -18,6 +18,7 @@
 package se.kth.app;
 
 import app.document.evaluator.Evaluator;
+import app.document.evaluator.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.kth.app.broadcast.CB.CB_Broadcast;
@@ -59,6 +60,7 @@ public class AppComp extends ComponentDefinition {
   private KAddress selfAdr;
 
   private Behaviour behaviour;
+  private Evaluator evaluator;
 
   public AppComp(Init init) {
     selfAdr = init.selfAdr;
@@ -66,6 +68,7 @@ public class AppComp extends ComponentDefinition {
     LOG.info("{}initiating...", logPrefix);
 
     this.behaviour = init.behaviour;
+    this.evaluator = new Evaluator(selfAdr.hashCode()); //should be unique
 
     subscribe(handleStart, control);
     subscribe(handleCroupierSample, croupierPort);
@@ -81,7 +84,7 @@ public class AppComp extends ComponentDefinition {
       LOG.info("{}starting...", logPrefix);
 
       if(behaviour != null){
-        behaviour.setup(new Evaluator(1));
+        behaviour.setup(evaluator);
       }
     }
   };
@@ -104,13 +107,15 @@ public class AppComp extends ComponentDefinition {
         behaviour.onSample(sample);
       }
 
+      trigger(new CB_Broadcast(new SendQueueEvent(evaluator.send())), cb);
+
       if(sample.size() > 3){
         //trigger(new GBEB_Broadcast(m), gbeb);
         //trigger(new GBEB_Broadcast(new Ping()), gbeb);
         //trigger(new RB_Broadcast(message), rb);
         // trigger(new RB_Broadcast(new Ping()), rb);
 
-        trigger(new CB_Broadcast(new Ping()), cb);
+        //trigger(new CB_Broadcast(new Ping()), cb);
 
       }
 
@@ -121,6 +126,12 @@ public class AppComp extends ComponentDefinition {
       @Override
       public void handle(CB_Deliver cb_deliver) {
         //System.out.println("Got deliver in app comp: " + selfAdr);
+        if (cb_deliver.m.getM() instanceof SendQueueEvent) {
+          SendQueueEvent e = (SendQueueEvent) cb_deliver.m.getM();
+          for (Operation op : e.getOperations()) {
+            evaluator.receive(op);
+          }
+        }
       }
   };
 
