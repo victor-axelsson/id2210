@@ -1,6 +1,5 @@
 package se.kth.app.sim;
 
-import se.kth.app.sim.behaviour.AdderBehaviour;
 import se.kth.app.sim.behaviour.Behaviour;
 import se.kth.system.HostMngrComp;
 import se.sics.kompics.network.Address;
@@ -8,7 +7,6 @@ import se.sics.kompics.simulator.adaptor.Operation1;
 import se.sics.kompics.simulator.events.system.StartNodeEvent;
 import se.sics.ktoolbox.util.network.KAddress;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 

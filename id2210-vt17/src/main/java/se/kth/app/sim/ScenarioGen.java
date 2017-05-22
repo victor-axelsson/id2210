@@ -17,14 +17,9 @@
  */
 package se.kth.app.sim;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import app.document.evaluator.Evaluator;
-import se.kth.app.sim.behaviour.AdderBehaviour;
-import se.kth.app.sim.behaviour.AssignBehaviour;
+import se.kth.app.sim.behaviour.multiple_register_sim.PBehaviour;
+import se.kth.app.sim.behaviour.multiple_register_sim.QBehaviour;
 import se.kth.sim.compatibility.SimNodeIdExtractor;
-import se.kth.system.HostMngrComp;
 import se.sics.kompics.network.Address;
 import se.sics.kompics.simulator.SimulationScenario;
 import se.sics.kompics.simulator.adaptor.Operation;
@@ -83,8 +78,8 @@ public class ScenarioGen {
     };
 
     static Operation1<StartNodeEvent, Integer> startNodeOp = new NodeStarter(null);
-    static Operation1<StartNodeEvent, Integer> startAdderNode = new NodeStarter(new AdderBehaviour());
-    static Operation1<StartNodeEvent, Integer> startAssignerNode = new NodeStarter(new AssignBehaviour());
+    static Operation1<StartNodeEvent, Integer> startAdderNode = new NodeStarter(new PBehaviour());
+    static Operation1<StartNodeEvent, Integer> startAssignerNode = new NodeStarter(new QBehaviour());
 
 
     public static SimulationScenario simpleBoot() {
@@ -119,7 +114,7 @@ public class ScenarioGen {
         return scen;
     }
 
-    public static SimulationScenario simpleAddDocItems() {
+    public static SimulationScenario multipleRegisterSimulation() {
         SimulationScenario scen = new SimulationScenario() {
             {
                 StochasticProcess systemSetup = new StochasticProcess() {
