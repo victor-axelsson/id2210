@@ -7,7 +7,7 @@ import scala.annotation.tailrec
 /**
   * Created by victoraxelsson on 2017-05-09.
   */
-class NodeList(name:String, pres:Map[Int, Operation]) extends Node(name, pres){
+class NodeList(theName:String, pres:Map[Int, Operation]) extends Node(theName, pres){
 
   var children : List[Node] = List.empty
 
@@ -69,55 +69,16 @@ class NodeList(name:String, pres:Map[Int, Operation]) extends Node(name, pres){
   }
 
   def reIndexChildren() = {
-
-
-    /*
-    @tailrec
-    def updateIndex(i:Int, counter:Int, childs:List[Node]):List[Node] = {
-
-      if(i >= childs.size){
-        return childs
-      }
-
-      if(!childs(i).isTombstone()){
-        childs(i).setName("["+counter+"]")
-      }
-
-
-    }
-
-    updateIndex(0, 0, children)
-    for(i <- 0 until children.size){
-      println(i)
-    }
-    */
-
-    var counter:Int = 0;
+    var counter:Int = 0
     children.foreach((n:Node) => {
-      println(n)
-
       if(!n.isTombstone()){
-
         if(n.isInstanceOf[NodeReg]){
           n.asInstanceOf[NodeReg].name = "["+counter+"]"
         }
-
-        //n.name = "["+counter+"]"
-
-
-        //n.setName("["+counter+"]")
         counter += 1
       }
     })
-    /*
-    for ((n:Node, i) <- children){
 
-      if(!n.isTombstone()){
-        n.setName("["+c+"]")
-        c += 1
-      }
-    }
-    */
     children
   }
 

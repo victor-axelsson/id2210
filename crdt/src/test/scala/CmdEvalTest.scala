@@ -119,18 +119,18 @@ class CmdEvalTest extends FlatSpec{
 
 
     s = eval.toJsonString()
-    expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex2\",\"[0]\":\"someIndex1\"]}}}"
+    expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex2\",\"[1]\":\"someIndex1\"]}}}"
     assert(s == expectedOutput)
 
     eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalCmd insertSomeIndex3
 
     s = eval.toJsonString()
-    expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex3\",\"[0]\":\"someIndex2\",\"[0]\":\"someIndex1\"]}}}"
+    expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex3\",\"[1]\":\"someIndex2\",\"[2]\":\"someIndex1\"]}}}"
     assert(s == expectedOutput)
 
     eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalCmd insertSomeIndex4
     s = eval.toJsonString()
-    expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex4\",\"[0]\":\"someIndex3\",\"[0]\":\"someIndex2\",\"[0]\":\"someIndex1\"]}}}"
+    expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex4\",\"[1]\":\"someIndex3\",\"[2]\":\"someIndex2\",\"[3]\":\"someIndex1\"]}}}"
     assert(s == expectedOutput)
   }
   "An insertAfter cmd with insertion in the middle" should " set the state of the eval Ap" in {
@@ -162,7 +162,7 @@ class CmdEvalTest extends FlatSpec{
 
     eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(1) evalCmd insertSomeIndex4
     s = eval.toJsonString()
-    expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex1\",\"[1]\":\"someIndex4\",\"[1]\":\"someIndex2\",\"[2]\":\"someIndex3\"]}}}"
+    expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex1\",\"[1]\":\"someIndex4\",\"[2]\":\"someIndex2\",\"[3]\":\"someIndex3\"]}}}"
     assert(s == expectedOutput)
   }
   "An insertAfter cmd with a mapT" should " set the state of the eval Ap" in {

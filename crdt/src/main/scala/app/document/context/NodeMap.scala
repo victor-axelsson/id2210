@@ -7,7 +7,7 @@ import scala.collection.mutable
 /**
   * Created by victoraxelsson on 2017-05-09.
   */
-class NodeMap(name:String, pres:Map[Int, Operation]) extends Node(name, pres){
+class NodeMap(theName:String, pres:Map[Int, Operation]) extends Node(theName, pres){
 
   var children:mutable.HashMap[String, Node] = new mutable.HashMap[String, Node]()
 
