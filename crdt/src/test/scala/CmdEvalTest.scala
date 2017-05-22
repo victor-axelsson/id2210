@@ -185,7 +185,7 @@ class CmdEvalTest extends FlatSpec{
     eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalCmd insertSomeIndex1 evalCmd insertSomeIndex2 evalCmd insertSomeIndex3
 
     var s:String = eval.toJsonString()
-    var expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":10,\"[0]\":[],\"[0]\":{}]}}}"
+    var expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":10,\"[1]\":[],\"[2]\":{}]}}}"
     assert(s == expectedOutput)
   }
   "An insertAfter cmd with a mapT" should " be able to grab an item and modify it" in {
@@ -194,10 +194,12 @@ class CmdEvalTest extends FlatSpec{
     val insertreg= Assign(new Str("someVal"))
 
     eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalCmd insertSomeIndex1
+    var s:String = eval.toJsonString()
+
     eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalExpr  Get("someVar3") evalCmd  insertreg
 
-    var s:String = eval.toJsonString()
-    var expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":10,\"[0]\":[],\"[0]\":{}]}}}"
+    s = eval.toJsonString()
+    var expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":{\"someVar3\":\"someVal\"}]}}}"
     assert(s == expectedOutput)
   }
   "A LET cmd " should " take a named snapshot of the eval and VAR should be able to return it" in {

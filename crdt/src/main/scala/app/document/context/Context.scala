@@ -246,7 +246,9 @@ class Context(var doc:Node) {
         return null
       }
 
-      if(childs.head.getName() == key.getKey()){
+      val s:String = "["+key.getKey()+"]"
+
+      if(childs.head.getName() == key.getKey() || childs.head.getName() == s){
         return childs.head
       }
 
@@ -316,8 +318,8 @@ class Context(var doc:Node) {
         }
       }
 
-      if(prev != null){
-        prev.addChild(node)
+      if(prev != null && !prev.isInstanceOf[NodeList]){
+          prev.addChild(node)
       }
 
       val newCursor = new Cursor(keys.tail, tail);
