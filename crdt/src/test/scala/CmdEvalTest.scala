@@ -1,7 +1,7 @@
 import app.document.evaluator.Evaluator
 import app.document.language.Cmd.{Assign, InsertAfter, Let}
 import app.document.language.Expr.{Doc, Get, Idx, Var}
-import app.document.language.Val.{EmptyList, EmptyMap, Str}
+import app.document.language.Val.{EmptyList, EmptyMap, Str, Number}
 import org.scalatest.FlatSpec
 
 /**
@@ -65,6 +65,141 @@ class CmdEvalTest extends FlatSpec{
     val s:String = eval.toJsonString()
     val expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex\"]}}}"
 
+    assert(s == expectedOutput)
+  }
+  "An insertAfter cmd with insertion at the tail" should " set the state of the eval Ap" in {
+
+
+    val eval = new Evaluator(1)
+    val insertSomeIndex1 = InsertAfter(new Str("someIndex1"))
+    val insertSomeIndex2 = InsertAfter(new Str("someIndex2"))
+    val insertSomeIndex3 = InsertAfter(new Str("someIndex3"))
+    val insertSomeIndex4 = InsertAfter(new Str("someIndex4"))
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalCmd insertSomeIndex1
+
+    var s:String = eval.toJsonString()
+    var expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex1\"]}}}"
+    assert(s == expectedOutput)
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(1) evalCmd insertSomeIndex2
+
+    s = eval.toJsonString()
+    expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex1\",\"[1]\":\"someIndex2\"]}}}"
+    assert(s == expectedOutput)
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(2) evalCmd insertSomeIndex3
+
+    s = eval.toJsonString()
+    expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex1\",\"[1]\":\"someIndex2\",\"[2]\":\"someIndex3\"]}}}"
+    assert(s == expectedOutput)
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(3) evalCmd insertSomeIndex4
+    s = eval.toJsonString()
+    expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex1\",\"[1]\":\"someIndex2\",\"[2]\":\"someIndex3\",\"[3]\":\"someIndex4\"]}}}"
+    assert(s == expectedOutput)
+  }
+  "An insertAfter cmd with insertion at the head" should " set the state of the eval Ap" in {
+
+
+    val eval = new Evaluator(1)
+    val insertSomeIndex1 = InsertAfter(new Str("someIndex1"))
+    val insertSomeIndex2 = InsertAfter(new Str("someIndex2"))
+    val insertSomeIndex3 = InsertAfter(new Str("someIndex3"))
+    val insertSomeIndex4 = InsertAfter(new Str("someIndex4"))
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalCmd insertSomeIndex1
+
+    var s:String = eval.toJsonString()
+    var expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex1\"]}}}"
+    assert(s == expectedOutput)
+    println(s)
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalCmd insertSomeIndex2
+
+
+    s = eval.toJsonString()
+    expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex2\",\"[1]\":\"someIndex1\"]}}}"
+    assert(s == expectedOutput)
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalCmd insertSomeIndex3
+
+    s = eval.toJsonString()
+    expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex3\",\"[1]\":\"someIndex2\",\"[2]\":\"someIndex1\"]}}}"
+    assert(s == expectedOutput)
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalCmd insertSomeIndex4
+    s = eval.toJsonString()
+    expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex4\",\"[1]\":\"someIndex3\",\"[2]\":\"someIndex2\",\"[3]\":\"someIndex1\"]}}}"
+    assert(s == expectedOutput)
+  }
+  "An insertAfter cmd with insertion in the middle" should " set the state of the eval Ap" in {
+
+
+    val eval = new Evaluator(1)
+    val insertSomeIndex1 = InsertAfter(new Str("someIndex1"))
+    val insertSomeIndex2 = InsertAfter(new Str("someIndex2"))
+    val insertSomeIndex3 = InsertAfter(new Str("someIndex3"))
+    val insertSomeIndex4 = InsertAfter(new Str("someIndex4"))
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalCmd insertSomeIndex1
+
+    var s:String = eval.toJsonString()
+    var expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex1\"]}}}"
+    assert(s == expectedOutput)
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(1) evalCmd insertSomeIndex2
+
+    s = eval.toJsonString()
+    expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex1\",\"[1]\":\"someIndex2\"]}}}"
+    assert(s == expectedOutput)
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(2) evalCmd insertSomeIndex3
+
+    s = eval.toJsonString()
+    expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex1\",\"[1]\":\"someIndex2\",\"[2]\":\"someIndex3\"]}}}"
+    assert(s == expectedOutput)
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(1) evalCmd insertSomeIndex4
+    s = eval.toJsonString()
+    expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":\"someIndex1\",\"[1]\":\"someIndex4\",\"[2]\":\"someIndex2\",\"[3]\":\"someIndex3\"]}}}"
+    assert(s == expectedOutput)
+  }
+  "An insertAfter cmd with a mapT" should " set the state of the eval Ap" in {
+    val eval = new Evaluator(1)
+    val insertSomeIndex1 = InsertAfter(EmptyMap)
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalCmd insertSomeIndex1
+
+    var s:String = eval.toJsonString()
+    var expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":{}]}}}"
+    assert(s == expectedOutput)
+
+  }
+  "An insertAfter cmd with a mixed types" should " set the state of the eval Ap" in {
+    val eval = new Evaluator(1)
+    val insertSomeIndex1 = InsertAfter(EmptyMap)
+    val insertSomeIndex2 = InsertAfter(EmptyList)
+    val insertSomeIndex3 = InsertAfter(new Number(10))
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalCmd insertSomeIndex1 evalCmd insertSomeIndex2 evalCmd insertSomeIndex3
+
+    var s:String = eval.toJsonString()
+    var expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":10,\"[1]\":[],\"[2]\":{}]}}}"
+    assert(s == expectedOutput)
+  }
+  "An insertAfter cmd with a mapT" should " be able to grab an item and modify it" in {
+    val eval = new Evaluator(1)
+    val insertSomeIndex1 = InsertAfter(EmptyMap)
+    val insertreg= Assign(new Str("someVal"))
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalCmd insertSomeIndex1
+    var s:String = eval.toJsonString()
+
+    eval evalExpr Doc() evalExpr Get("someVar") evalExpr Get("someVar2") evalExpr Idx(0) evalExpr  Get("someVar3") evalCmd  insertreg
+
+    s = eval.toJsonString()
+    var expectedOutput = "{\"doc\":{\"someVar\":{\"someVar2\":[\"[0]\":{\"someVar3\":\"someVal\"}]}}}"
     assert(s == expectedOutput)
   }
   "A LET cmd " should " take a named snapshot of the eval and VAR should be able to return it" in {

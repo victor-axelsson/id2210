@@ -5,7 +5,7 @@ import app.document.evaluator.Operation
 /**
   * Created by victoraxelsson on 2017-05-09.
   */
-abstract class Node(name:String, var pres:Map[Int, Operation]) {
+abstract class Node(var name:String, var pres:Map[Int, Operation]) {
   var tombstone = false
 
   def isTombstone() = tombstone
@@ -14,6 +14,10 @@ abstract class Node(name:String, var pres:Map[Int, Operation]) {
   def setTombstone(t: Boolean) = tombstone = t
 
   def getName() = name
+  def setName(n:String) = {
+    this.name = n
+  }
+
   def getPres() = pres
   def removeKeyPresence(id : Int) = {
     pres -= id

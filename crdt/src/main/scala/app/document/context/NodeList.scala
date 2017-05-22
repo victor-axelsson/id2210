@@ -7,7 +7,7 @@ import scala.annotation.tailrec
 /**
   * Created by victoraxelsson on 2017-05-09.
   */
-class NodeList(name:String, pres:Map[Int, Operation]) extends Node(name, pres){
+class NodeList(theName:String, pres:Map[Int, Operation]) extends Node(theName, pres){
 
   var children : List[Node] = List.empty
 
@@ -17,43 +17,67 @@ class NodeList(name:String, pres:Map[Int, Operation]) extends Node(name, pres){
     @tailrec
     def addAtIndex(i:Int, counter:Int, index:Int, n:Node, acc:List[Node], childs:List[Node]):List[Node] = {
 
-      //Base case
-      if(i >= childs.size){
-
-        if(i == 0){
+      //If its empty
+      if(childs.size == 0){
           return acc :+ n
-        }
+      }
 
+      //Base case
+      if(i > childs.size){
         return acc
       }
 
+      var curr:Node = null
+
+      if(i < childs.size){
+        curr = childs(i)
+      }
+
       //Get the current node
-      val curr:Node = childs(i)
       var nextI:Int = i
       var nextCounter:Int = counter
       var nextAcc:List[Node] = acc
 
       //if it's a tombstone, just continue
-      if(curr.isTombstone()){
+      if(curr != null && curr.isTombstone()){
          nextAcc = acc :+ curr
          nextI = i+1
       }else if(counter == index){
           //we found the index
          nextAcc = acc :+ n
-         nextAcc = acc :+ curr
+
+         if(curr != null){
+            nextAcc = nextAcc :+ curr
+         }
+
          nextI = i+1
          nextCounter = counter+1
       }else{
-        nextAcc = acc :+ curr
+        if(curr != null){
+          nextAcc = acc :+ curr
+        }
         nextI = i+1
         nextCounter = counter+1
       }
 
       //Just continue
-      return addAtIndex(nextI, nextCounter, index, n, acc, childs)
+      return addAtIndex(nextI, nextCounter, index, n, nextAcc, childs)
     }
 
     children = addAtIndex(0, 0, index, node, List.empty, children)
+    reIndexChildren()
+  }
+
+  def reIndexChildren() = {
+    var counter:Int = 0
+    children.foreach((n:Node) => {
+      if(!n.isTombstone()){
+          n.name = "["+counter+"]"
+          counter += 1
+      }
+    })
+
+    children
   }
 
   override def getChildren(): List[Node] = {

@@ -78,6 +78,8 @@ case class Evaluator(replicaId : Int) {
 
   private def getId() : Int = counter * replicaId
 
+  def isAllDigits(x: String) = x forall Character.isDigit
+
   def evalExpr(expr: Expr):Evaluator = {
 
     var eval:Evaluator = getClone()
@@ -138,7 +140,7 @@ case class Evaluator(replicaId : Int) {
             eval.cursor = eval.cursor.appendAsList(new identifierT(index + ""))
           }
           case listT(key) => {
-            throw new NotImplementedError("Don't know yet")
+            eval.cursor = eval.cursor.append(new identifierT(index + ""))
           }
         }
 
@@ -188,6 +190,8 @@ case class Evaluator(replicaId : Int) {
 
       }
     }
+
+    this
 
   }
 

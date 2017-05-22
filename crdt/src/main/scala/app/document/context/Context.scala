@@ -7,6 +7,7 @@ import app.document.evaluator.Operation
 import app.document.language.Val
 import app.document.language.Val.{EmptyList, EmptyMap}
 
+
 import scala.annotation.tailrec
 
 /**
@@ -50,7 +51,6 @@ class Context(var doc:Node) {
             assign(newContext)
           }
         }
-
       }
       case Insert(_) => {
         insert(newContext)
@@ -148,19 +148,6 @@ class Context(var doc:Node) {
   }
 
   private def insert(context: Context) = {
-    /*
-    var listT:listT = null
-
-    if(context.op.getCursor().getTail().isInstanceOf[listT]){
-      listT = context.op.getCursor().getTail().asInstanceOf[listT]
-    }else{
-      listT = new listT(context.op.getCursor().getId().getKey())
-    }
-    */
-
-
-
-    //clear(context.op.getDeps(), listT)
 
     val insert:Insert = context.op.getMutation().asInstanceOf[Insert]
     val index:Int = context.op.getCursor().getId().getKey().toInt
@@ -189,37 +176,44 @@ class Context(var doc:Node) {
 
     context.child.asInstanceOf[NodeList].insertAt(index, node)
     addId(key.getKey(), context.op, context.child)
-
-
-    /*
-    var nList = childGet(listT, context).asInstanceOf[NodeList]
-
-    if(nList == null){
-      nList = new NodeList(listT.key, new scala.collection.immutable.HashMap[Int, Operation]())
-      //nList.insertAfter(insert.value, )
-    }else{
-      throw new Exception("I'm not sure what to do here")
-    }
-
-    context.child.addChild(nList)
-    addId(listT.key, context.op, context.child)
-    */
   }
 
   private def assign(context: Context) = {
 
-    var regT:regT = null
+    /*
+    if(context.child.isInstanceOf[NodeList]){
+      val index:Int = context.op.getCursor().getId().getKey().toInt
+      context.child = context.child.getChildren()(index)
 
+      context.op.getMutation().asInstanceOf[Assign].value match {
+        case EmptyMap => {
+          emptyMap(context)
+        }
+        case EmptyList => {
+          emptyList(context)
+        }
+        case _ => {
+          doAssign(context)
+        }
+      }
+    }else{
+      doAssign(context)
+    }
+    */
+    doAssign(context)
+  }
+
+  private def doAssign(context: Context) = {
+
+    var regT:regT = null
     if(context.op.getCursor().getTail().isInstanceOf[regT]){
       regT = context.op.getCursor().getTail().asInstanceOf[regT]
     }else{
       regT = new regT(context.op.getCursor().getId().getKey())
     }
 
-    //var regT = context.op.getCursor().getTail().asInstanceOf[regT]
     clear(context.op.getDeps(), regT)
     val assign:Assign = context.op.getMutation().asInstanceOf[Assign]
-
 
     var nReg:NodeReg = childGet(regT, context).asInstanceOf[NodeReg]
 
@@ -252,7 +246,9 @@ class Context(var doc:Node) {
         return null
       }
 
-      if(childs.head.getName() == key.getKey()){
+      val s:String = "["+key.getKey()+"]"
+
+      if(childs.head.getName() == key.getKey() || childs.head.getName() == s){
         return childs.head
       }
 
@@ -322,8 +318,8 @@ class Context(var doc:Node) {
         }
       }
 
-      if(prev != null){
-        prev.addChild(node)
+      if(prev != null && !prev.isInstanceOf[NodeList]){
+          prev.addChild(node)
       }
 
       val newCursor = new Cursor(keys.tail, tail);
