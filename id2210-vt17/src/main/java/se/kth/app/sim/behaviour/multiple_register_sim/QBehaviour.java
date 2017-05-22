@@ -12,6 +12,8 @@ import se.kth.app.sim.behaviour.Behaviour;
 public class QBehaviour implements Behaviour {
     @Override
     public void actOnIt(Evaluator eval) {
+        setup(eval);
+
         //When used in conjunction with PBehaviour should produce a multiple register
         Cmd cmd = new Cmd.Assign(new Val.Str("C"));
         eval.evalExpr(new Expr.Doc()).evalExpr(new Expr.Get("key")).evalCmd(cmd);
@@ -19,5 +21,11 @@ public class QBehaviour implements Behaviour {
         String json = eval.toJsonString();
 
         System.out.println(json);
+    }
+
+    @Override
+    public void setup(Evaluator eval) {
+        Cmd setup = new Cmd.Assign(new Val.Str("A"));
+        eval.evalExpr(new Expr.Doc()).evalExpr(new Expr.Get("key")).evalCmd(setup);
     }
 }

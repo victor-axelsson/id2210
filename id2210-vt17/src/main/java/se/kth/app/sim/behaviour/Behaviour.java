@@ -9,4 +9,5 @@ import java.io.Serializable;
  */
 public interface Behaviour extends Serializable {
     void actOnIt(Evaluator eval);
+    void setup(Evaluator eval);
 }

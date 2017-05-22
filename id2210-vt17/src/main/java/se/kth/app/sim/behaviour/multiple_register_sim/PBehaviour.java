@@ -11,10 +11,19 @@ public class PBehaviour implements Behaviour {
 
     @Override
     public void actOnIt(Evaluator eval) {
+        setup(eval);
+
         Cmd cmd = new Cmd.Assign(new Val.Str("B"));
         eval.evalExpr(new Expr.Doc()).evalExpr(new Expr.Get("key")).evalCmd(cmd);
 
         String json = eval.toJsonString();
         System.out.println(json);
+    }
+
+    @Override
+    public void setup(Evaluator eval) {
+        Cmd setup = new Cmd.Assign(new Val.Str("A"));
+        eval.evalExpr(new Expr.Doc()).evalExpr(new Expr.Get("key")).evalCmd(setup);
+        System.out.println(eval.toJsonString());
     }
 }
