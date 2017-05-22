@@ -117,7 +117,7 @@ public class AppComp extends ComponentDefinition {
   protected final Handler<CB_Deliver> cb_deliverHandler = new Handler<CB_Deliver>() {
       @Override
       public void handle(CB_Deliver cb_deliver) {
-        System.out.println("Got deliver in app comp: " + selfAdr);
+        //System.out.println("Got deliver in app comp: " + selfAdr);
       }
   };
 

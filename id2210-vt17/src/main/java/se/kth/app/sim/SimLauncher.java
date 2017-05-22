@@ -26,7 +26,9 @@ import se.sics.kompics.simulator.run.LauncherComp;
 public class SimLauncher {
     public static void main(String[] args) {
         SimulationScenario.setSeed(ScenarioSetup.scenarioSeed);
-        SimulationScenario simpleBootScenario = ScenarioGen.simpleBoot();
-        simpleBootScenario.simulate(LauncherComp.class);
+        //SimulationScenario simpleBootScenario = ScenarioGen.simpleBoot();
+        SimulationScenario sc = ScenarioGen.simpleAddDocItems();
+        sc.simulate(LauncherComp.class);
+        //simpleBootScenario.simulate(LauncherComp.class);
     }
 }
