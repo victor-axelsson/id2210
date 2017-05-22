@@ -72,10 +72,8 @@ class NodeList(theName:String, pres:Map[Int, Operation]) extends Node(theName, p
     var counter:Int = 0
     children.foreach((n:Node) => {
       if(!n.isTombstone()){
-        if(n.isInstanceOf[NodeReg]){
-          n.asInstanceOf[NodeReg].name = "["+counter+"]"
-        }
-        counter += 1
+          n.name = "["+counter+"]"
+          counter += 1
       }
     })
 
