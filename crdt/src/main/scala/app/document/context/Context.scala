@@ -67,8 +67,15 @@ class Context(var doc: Node) {
   private def clearReg(deps: List[Int], regT: regT) = {
     val register = childGetFromList(regT, child.getChildren())
     if (register != null && register.isInstanceOf[NodeReg]) {
-      register.asInstanceOf[NodeReg].values = List.empty[Val]
+      var nodeReg = register.asInstanceOf[NodeReg]
       for (dep <- deps) {
+        if (child.getPres().get(dep).isDefined) {
+          var op: Operation = child.getPres()(dep)
+          if (op.getMutation().isInstanceOf[Assign]) {
+            var ass = op.getMutation().asInstanceOf[Assign]
+            nodeReg.values = nodeReg.values.filter(v => !v.eq(ass.value))
+          }
+        }
         child.removeKeyPresence(dep)
       }
     }
