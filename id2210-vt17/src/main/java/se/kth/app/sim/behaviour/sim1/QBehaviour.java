@@ -15,7 +15,7 @@ public class QBehaviour implements Behaviour {
     @Override
     public void setup(Evaluator eval) {
 
-        eval.receive(BehaviourCreator.getSimulation1Setup());
+        eval.receive(BehaviourCreator.EVAL_UNIQUE_ID, BehaviourCreator.getSimulation1Setup());
 
         //When used in conjunction with PBehaviour should produce a multiple register
         Cmd cmd = new Cmd.Assign(new Val.Str("C"));

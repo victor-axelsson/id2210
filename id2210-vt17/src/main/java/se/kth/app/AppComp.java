@@ -102,7 +102,7 @@ public class AppComp extends ComponentDefinition {
         trigger(msg, networkPort);
       }
 
-      trigger(new CB_Broadcast(new SendQueueEvent(evaluator.send(), selfAdr)), cb);
+      trigger(new CB_Broadcast(new SendQueueEvent(evaluator.send(), selfAdr, evaluator.replicaId())), cb);
 
     }
   };
@@ -115,7 +115,7 @@ public class AppComp extends ComponentDefinition {
           SendQueueEvent e = (SendQueueEvent) cb_deliver.m.getM();
           if (!selfAdr.equals(e.sender)) {
             for (Operation op : e.getOperations()) {
-              evaluator.receive(op);
+              evaluator.receive(e.replicaId, op);
             }
           }
         }

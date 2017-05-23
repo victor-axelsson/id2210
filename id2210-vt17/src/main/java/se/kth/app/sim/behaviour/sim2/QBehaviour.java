@@ -14,7 +14,7 @@ public class QBehaviour implements Behaviour {
 
     @Override
     public void setup(Evaluator eval) {
-        eval.receive(BehaviourCreator.getSimulation2Setup());
+        eval.receive(BehaviourCreator.EVAL_UNIQUE_ID, BehaviourCreator.getSimulation2Setup());
 
         eval.evalExpr(new Expr.Doc()).evalExpr(new Expr.Get("colors")).evalCmd(new Cmd.Assign(Val.EmptyMap$.EmptyMap$.MODULE$));
 

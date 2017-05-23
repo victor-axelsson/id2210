@@ -13,10 +13,12 @@ import java.util.List;
 public class SendQueueEvent implements KompicsEvent {
     private final List<Operation> operations;
     public final KAddress sender;
+    public final int replicaId;
 
-    public SendQueueEvent(List<Operation> operations, KAddress sender) {
+    public SendQueueEvent(List<Operation> operations, KAddress sender, int replicaId) {
         this.operations = operations;
         this.sender = sender;
+        this.replicaId = replicaId;
     }
 
     public List<Operation> getOperations() {

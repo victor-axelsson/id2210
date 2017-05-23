@@ -13,7 +13,7 @@ public class PBehaviour implements Behaviour {
     @Override
     public void setup(Evaluator eval) {
 
-        eval.receive(BehaviourCreator.getSimulation1Setup());
+        eval.receive(BehaviourCreator.EVAL_UNIQUE_ID, BehaviourCreator.getSimulation1Setup());
 
 
         Cmd cmd2 = new Cmd.Assign(new Val.Str("B"));

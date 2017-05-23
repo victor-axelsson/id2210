@@ -15,7 +15,7 @@ public class PBehaviour implements Behaviour {
 
     @Override
     public void setup(Evaluator eval) {
-        eval.receive(BehaviourCreator.getSimulation2Setup());
+        eval.receive(BehaviourCreator.EVAL_UNIQUE_ID, BehaviourCreator.getSimulation2Setup());
 
         eval.evalExpr(new Expr.Doc()).evalExpr(new Expr.Get("colors")).evalExpr(new Expr.Get("red")).evalCmd(new Cmd.Assign(new Val.Str("#ff0000")));
 

@@ -11,6 +11,7 @@ import app.document.language.Expr._
 import app.document.language.{Cmd, Expr, Val}
 
 import scala.annotation.tailrec
+import scala.collection.mutable
 
 /**
   * Created by Nick on 5/3/2017.
@@ -24,7 +25,7 @@ case class Evaluator(replicaId : Int) {
   private var variables = new scala.collection.mutable.HashMap[String, Evaluator]()
   private var root:Evaluator = this
 
-  private var receiveBuffer = List.empty[Operation]
+  private var receiveBuffer = mutable.ArrayBuffer.empty[Object]
   private var sendBuffer = List.empty[Operation]
 
   private var cursor:Cursor = getNewCursor()
@@ -205,9 +206,11 @@ case class Evaluator(replicaId : Int) {
 
   }
 
-  def receive(operation: Operation): Unit = {
-    receiveBuffer = receiveBuffer :+ operation
-    applyRemote()
+  def receive(id: Int, operation: Operation): Unit = {
+    if (!receiveBuffer.contains((id, operation))) {
+      receiveBuffer = receiveBuffer :+ (id, operation)
+      applyRemote()
+    }
   }
 
   def send(): java.util.List[Operation] = {
@@ -218,13 +221,69 @@ case class Evaluator(replicaId : Int) {
   }
 
   private def applyRemote(): Unit = {
-    for (op <- receiveBuffer) {
+    //For every list modification construct a tree map of replicaId to List of concurrent operations
+    var concurrentModifications : mutable.Map[listT, mutable.Map[Int, mutable.Set[Operation]]] = mutable.Map.empty
+    for ((id:Int, op:Operation) <- receiveBuffer) {
+      if (op.getMutation().isInstanceOf[Insert] && op.getCursor().getKeys().last.isInstanceOf[listT]) {
+        var modifiedList = op.getCursor().getKeys().last.asInstanceOf[listT]
+        for (execOp <- queue) {
+          if (execOp.getId() != op.getId() && execOp.getMutation().isInstanceOf[Insert] && execOp.getCursor().getKeys().last.getKey().eq(modifiedList.getKey())) {
+            // No causal relation <-> concurrent operations
+            if (!execOp.getDeps().contains(op.getId()) && !op.getDeps().contains(execOp.getId())) {
+              if (!concurrentModifications.contains(modifiedList)) {
+                concurrentModifications += modifiedList -> new mutable.HashMap[Int, mutable.Set[Operation]]()
+              }
+
+              //Add operation at current replica
+              if (!concurrentModifications(modifiedList).contains(getId())) {
+                concurrentModifications(modifiedList) += getId() -> new mutable.HashSet[Operation]()
+              }
+              concurrentModifications(modifiedList)(getId()) += execOp
+
+              //Add operation at remote replica
+              if (!concurrentModifications(modifiedList).contains(id)) {
+                concurrentModifications(modifiedList) += id -> new mutable.HashSet[Operation]()
+              }
+              concurrentModifications(modifiedList)(id) += op
+            }
+          }
+        }
+      }
+    }
+
+    // If there are concurrent modifications -> repairConflicts by modification of indexes of inserts
+    if (concurrentModifications.nonEmpty) {
+      for (conflictMap <- concurrentModifications.values) {
+        var keys = conflictMap.keySet.toList
+
+        for (first:Int <- 0 to keys.size - 1) {
+          var replicaKey = keys(first)
+          for (second:Int <- 0 to keys.size - 1) {
+            var otherReplicaKey = keys(second)
+            if (replicaKey < otherReplicaKey) {
+              for (i:Int <- 0 to receiveBuffer.length - 1) {
+                var (id:Int, opInReceived:Operation) = receiveBuffer(i)
+                if (conflictMap.contains(opInReceived.getId())) {
+                  receiveBuffer.remove(i)
+
+                  var cursor = opInReceived.getCursor()
+                  var oldId = cursor.id.asInstanceOf[identifierT]
+                  var newId = new identifierT(Integer.parseInt(oldId.key) + conflictMap(otherReplicaKey).size + "")
+
+                  cursor.id = newId
+
+                  receiveBuffer.insert(i, (id, new Operation(opInReceived.getId(), opInReceived.getDeps(), cursor
+                    , opInReceived.getMutation())))
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    for ((id:Int, op:Operation) <- receiveBuffer) {
       if (!executedOperations.contains(op.getId())) {
-        //1. determine if any concurrect insertAfter for a list
-        //2. determine priority for these inserts - either change received indexes or not
-
-
-
         applyLocal(op)
         println(getId() + " " +this.toJsonString())
       }

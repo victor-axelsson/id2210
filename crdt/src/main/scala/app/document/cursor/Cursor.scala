@@ -9,7 +9,7 @@ import scala.annotation.tailrec
 /**
   * Created by Nick on 5/3/2017.
   */
-class Cursor(keys : List[Key], id : Key) {
+class Cursor(keys : List[Key], var id : Key) {
 
 
   def getId() = id

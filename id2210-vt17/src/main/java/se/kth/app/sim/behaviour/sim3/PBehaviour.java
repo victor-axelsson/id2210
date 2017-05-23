@@ -14,7 +14,7 @@ public class PBehaviour implements Behaviour {
 
     @Override
     public void setup(Evaluator eval) {
-        eval.receive(BehaviourCreator.getSimulation3Setup());
+        eval.receive(BehaviourCreator.EVAL_UNIQUE_ID, BehaviourCreator.getSimulation3Setup());
 
         //Insert the eggs
         eval.evalExpr(new Expr.Doc())

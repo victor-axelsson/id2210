@@ -14,7 +14,7 @@ import scala.collection.immutable.List$;
  */
 public class BehaviourCreator {
 
-    private static final int EVAL_UNIQUE_ID = 999;
+    public static final int EVAL_UNIQUE_ID = 999;
 
     private static Cursor getEmptyCursor(){
         Expr.Doc doc = new Expr.Doc();
