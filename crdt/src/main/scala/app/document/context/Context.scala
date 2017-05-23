@@ -1,6 +1,6 @@
 package app.document.context
 
-import app.document.cursor.Key.{RootMapT, listT, mapT, regT}
+import app.document.cursor.Key._
 import app.document.cursor.{Cursor, Key}
 import app.document.evaluator.Mutation.{Assign, Delete, Insert}
 import app.document.evaluator.Operation
@@ -64,6 +64,7 @@ class Context(var doc: Node) {
   }
 
 
+  //CLEAR-REG
   private def clearReg(deps: List[Int], regT: regT) = {
     val register = childGetFromList(regT, child.getChildren())
     if (register != null && register.isInstanceOf[NodeReg]) {
@@ -76,24 +77,68 @@ class Context(var doc: Node) {
             nodeReg.values = nodeReg.values.filter(v => !v.eq(ass.value))
           }
         }
-        child.removeKeyPresence(dep)
       }
+      clearElem(deps, child)
     }
   }
 
-  def clearElem(ints: List[Int], key: Key) = {
-    //TODO: implement
+  //CLEAR-ELEM
+  def clearElem(deps: List[Int], node: Node) = {
+    for (dep <- deps) {
+      node.removeKeyPresence(dep)
+    }
   }
 
-  def clearMap(ints: List[Int], t: mapT) = {
-    //TODO: implement
+  //CLEAR-MAP
+  def clearMap(deps: List[Int], t: mapT) = {
+
+   /* @tailrec
+    def clearMapInner(deps: List[Int], t: Key) : Unit = {
+      val map = childGetFromList(t, child.getChildren())
+      if (map != null && map.isInstanceOf[NodeMap]) {
+        var nodeMap = map.asInstanceOf[NodeMap]
+        for (dep <- deps) {
+          if (child.getPres().get(dep).isDefined) {
+            var op: Operation = child.getPres()(dep)
+            if (op.getMutation().isInstanceOf[Assign] && nodeMap.children.contains(op.getCursor().getId().getKey())) { //CLEAR-NONE
+              clearAny(deps, op.getCursor().getId())
+            }
+          }
+        }
+        clearMapInner(List.empty, t)
+      }
+    } */
+
+    val map = childGetFromList(t, child.getChildren())
+    if (map != null && map.isInstanceOf[NodeMap]) {
+      var nodeMap = map.asInstanceOf[NodeMap]
+      for (dep <- deps) {
+        if (child.getPres().get(dep).isDefined) {
+          var op: Operation = child.getPres()(dep)
+          if (op.getMutation().isInstanceOf[Assign] && nodeMap.children.contains(op.getCursor().getId().getKey())) { //CLEAR-NONE
+            var node : Node =  nodeMap.children(op.getCursor().getId().getKey())
+            node match {
+              case _: NodeReg =>
+                clearAny(deps, regT(op.getCursor().getId().getKey()))
+              case _: NodeList =>
+                clearAny(deps, listT(op.getCursor().getId().getKey()))
+              case _: NodeMap =>
+                clearAny(deps, mapT(op.getCursor().getId().getKey()))
+            }
+          }
+        }
+      }
+    }
+    clearElem(deps, child)
   }
 
+  //CLEAR-LIST
   def clearList(ints: List[Int], t: listT) = {
     //TODO: implement
   }
 
-  def clear(deps: List[Int], key: Key) = {
+  //CLEAR-ANY
+  def clearAny(deps: List[Int], key: Key) : Unit = {
     key match {
       case RootMapT(_) => {
         throw new Exception("You cannot clear a doc")
@@ -106,6 +151,9 @@ class Context(var doc: Node) {
       }
       case regT(_) => {
         clearReg(deps, key.asInstanceOf[regT])
+      }
+      case identifierT(_) => {
+        //CLEAR-NONE
       }
     }
   }
@@ -120,7 +168,7 @@ class Context(var doc: Node) {
       mapT = new mapT(context.op.getCursor().getId().getKey())
     }
 
-    clear(context.op.getDeps(), mapT)
+    clearAny(context.op.getDeps(), mapT)
 
     var nMap: NodeMap = childGet(mapT, context).asInstanceOf[NodeMap]
 
@@ -143,7 +191,7 @@ class Context(var doc: Node) {
       listT = new listT(context.op.getCursor().getId().getKey())
     }
 
-    clear(context.op.getDeps(), listT)
+    clearAny(context.op.getDeps(), listT)
 
     var nList = childGet(listT, context).asInstanceOf[NodeList]
 
@@ -199,7 +247,7 @@ class Context(var doc: Node) {
       regT = new regT(context.op.getCursor().getId().getKey())
     }
 
-    clear(context.op.getDeps(), regT)
+    clearAny(context.op.getDeps(), regT)
     val assign: Assign = context.op.getMutation().asInstanceOf[Assign]
 
     var nReg: NodeReg = childGet(regT, context).asInstanceOf[NodeReg]

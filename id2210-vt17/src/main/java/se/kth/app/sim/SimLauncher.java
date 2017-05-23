@@ -27,7 +27,8 @@ public class SimLauncher {
     public static void main(String[] args) {
         SimulationScenario.setSeed(ScenarioSetup.scenarioSeed);
         //SimulationScenario simpleBootScenario = ScenarioGen.simpleBoot();
-        SimulationScenario sc = ScenarioGen.multipleRegisterSimulation();
+        //SimulationScenario sc = ScenarioGen.multipleRegisterSimulation();
+        SimulationScenario sc = ScenarioGen.modifyNestedMapSimulation();
         sc.simulate(LauncherComp.class);
         //simpleBootScenario.simulate(LauncherComp.class);
     }

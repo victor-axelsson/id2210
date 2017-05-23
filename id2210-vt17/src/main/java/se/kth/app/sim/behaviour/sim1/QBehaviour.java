@@ -1,13 +1,10 @@
-package se.kth.app.sim.behaviour.multiple_register_sim;
+package se.kth.app.sim.behaviour.sim1;
 
 import app.document.evaluator.Evaluator;
 import app.document.language.Cmd;
 import app.document.language.Expr;
 import app.document.language.Val;
 import se.kth.app.sim.behaviour.Behaviour;
-import se.sics.ktoolbox.util.network.KAddress;
-
-import java.util.List;
 
 /**
  * Created by Nick on 5/22/2017.

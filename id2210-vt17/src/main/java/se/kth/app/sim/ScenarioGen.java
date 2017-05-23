@@ -17,8 +17,8 @@
  */
 package se.kth.app.sim;
 
-import se.kth.app.sim.behaviour.multiple_register_sim.PBehaviour;
-import se.kth.app.sim.behaviour.multiple_register_sim.QBehaviour;
+import se.kth.app.sim.behaviour.sim1.PBehaviour;
+import se.kth.app.sim.behaviour.sim1.QBehaviour;
 import se.kth.sim.compatibility.SimNodeIdExtractor;
 import se.sics.kompics.network.Address;
 import se.sics.kompics.simulator.SimulationScenario;
@@ -78,8 +78,11 @@ public class ScenarioGen {
     };
 
     static Operation1<StartNodeEvent, Integer> startNodeOp = new NodeStarter(null);
-    static Operation1<StartNodeEvent, Integer> startAdderNode = new NodeStarter(new PBehaviour());
-    static Operation1<StartNodeEvent, Integer> startAssignerNode = new NodeStarter(new QBehaviour());
+    static Operation1<StartNodeEvent, Integer> startSim1PNode = new NodeStarter(new se.kth.app.sim.behaviour.sim1.PBehaviour());
+    static Operation1<StartNodeEvent, Integer> startSim1QNode = new NodeStarter(new se.kth.app.sim.behaviour.sim1.QBehaviour());
+
+    static Operation1<StartNodeEvent, Integer> startSim2PNode = new NodeStarter(new se.kth.app.sim.behaviour.sim2.PBehaviour());
+    static Operation1<StartNodeEvent, Integer> startSim2QNode = new NodeStarter(new se.kth.app.sim.behaviour.sim2.QBehaviour());
 
 
     public static SimulationScenario simpleBoot() {
@@ -129,31 +132,63 @@ public class ScenarioGen {
                         raise(1, startBootstrapServerOp);
                     }
                 };
-//                StochasticProcess startPeers = new StochasticProcess() {
-//                    {
-//                        eventInterArrivalTime(uniform(1000, 1100));
-//                        raise(100, startNodeOp, new BasicIntSequentialDistribution(1));
-//                    }
-//                };
                 StochasticProcess startAnAdder = new StochasticProcess() {
                     {
                         eventInterArrivalTime(uniform(1000, 1100));
-                        raise(1, startAdderNode, new BasicIntSequentialDistribution(1));
+                        raise(1, startSim1PNode, new BasicIntSequentialDistribution(1));
                     }
                 };
                 StochasticProcess startAnAssigner = new StochasticProcess() {
                     {
                         eventInterArrivalTime(uniform(1000, 1100));
-                        raise(1, startAssignerNode, new BasicIntSequentialDistribution(2));
+                        raise(1, startSim1QNode, new BasicIntSequentialDistribution(2));
                     }
                 };
 
                 systemSetup.start();
                 startBootstrapServer.startAfterTerminationOf(1000, systemSetup);
-             //   startPeers.startAfterTerminationOf(1000, startBootstrapServer);
                 startAnAdder.startAfterTerminationOf(1000, startBootstrapServer);
                 startAnAssigner.startAfterTerminationOf(1000, startBootstrapServer);
                 terminateAfterTerminationOf(1000*1000, startAnAssigner);
+            }
+        };
+
+        return scen;
+    }
+
+    public static SimulationScenario modifyNestedMapSimulation() {
+        SimulationScenario scen = new SimulationScenario() {
+            {
+                StochasticProcess systemSetup = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(constant(1000));
+                        raise(1, systemSetupOp);
+                    }
+                };
+                StochasticProcess startBootstrapServer = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(constant(1000));
+                        raise(1, startBootstrapServerOp);
+                    }
+                };
+                StochasticProcess startPNode = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(uniform(1000, 1100));
+                        raise(1, startSim2PNode, new BasicIntSequentialDistribution(1));
+                    }
+                };
+                StochasticProcess startQNode = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(uniform(1000, 1100));
+                        raise(1, startSim2QNode, new BasicIntSequentialDistribution(2));
+                    }
+                };
+
+                systemSetup.start();
+                startBootstrapServer.startAfterTerminationOf(1000, systemSetup);
+                startPNode.startAfterTerminationOf(1000, startBootstrapServer);
+                startQNode.startAfterTerminationOf(1000, startBootstrapServer);
+                terminateAfterTerminationOf(1000*1000, startQNode);
             }
         };
 
