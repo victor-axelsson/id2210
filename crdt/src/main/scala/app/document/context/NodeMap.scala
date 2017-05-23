@@ -12,7 +12,7 @@ class NodeMap(theName:String, pres:mutable.Map[Int, Operation]) extends Node(the
   var children:mutable.HashMap[String, Node] = new mutable.HashMap[String, Node]()
 
   override def getChildren(): List[Node] = {
-    children.values.toSeq.toList
+    children.values.toSeq.toList.filter((n:Node) => {!n.isTombstone()})
   }
 
   override def toString: String = {

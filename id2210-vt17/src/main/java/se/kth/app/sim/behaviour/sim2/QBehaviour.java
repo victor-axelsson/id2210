@@ -6,6 +6,8 @@ import app.document.language.Expr;
 import app.document.language.Val;
 import se.kth.app.sim.behaviour.Behaviour;
 
+import static se.kth.app.sim.behaviour.sim2.PBehaviour.operation;
+
 /**
  * Created by Nick on 5/22/2017.
  */
@@ -13,7 +15,7 @@ public class QBehaviour implements Behaviour {
 
     @Override
     public void setup(Evaluator eval) {
-        eval.evalExpr(new Expr.Doc()).evalExpr(new Expr.Get("colors")).evalExpr(new Expr.Get("blue")).evalCmd(new Cmd.Assign(new Val.Str("#0000ff")));
+        eval.receive(operation);
 
         eval.evalExpr(new Expr.Doc()).evalExpr(new Expr.Get("colors")).evalCmd(new Cmd.Assign(Val.EmptyMap$.EmptyMap$.MODULE$));
 

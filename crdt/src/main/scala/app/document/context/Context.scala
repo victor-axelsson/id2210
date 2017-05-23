@@ -69,16 +69,23 @@ class Context(var doc: Node) {
     val register = childGetFromList(regT, child.getChildren())
     if (register != null && register.isInstanceOf[NodeReg]) {
       var nodeReg = register.asInstanceOf[NodeReg]
-      for (dep <- deps) {
-        if (child.getPres().get(dep).isDefined) {
-          var op: Operation = child.getPres()(dep)
-          if (op.getMutation().isInstanceOf[Assign]) {
-            var ass = op.getMutation().asInstanceOf[Assign]
-            nodeReg.values = nodeReg.values.filter(v => !v.eq(ass.value))
-          }
+      clearNodeReg(deps, nodeReg)
+      clearElem(deps, child)
+    }
+  }
+
+  private def clearNodeReg(deps: List[Int], nodeReg: NodeReg) = {
+    for (dep <- deps) {
+      if (child.getPres().get(dep).isDefined) {
+        var op: Operation = child.getPres()(dep)
+        if (op.getMutation().isInstanceOf[Assign]) {
+          var ass = op.getMutation().asInstanceOf[Assign]
+          nodeReg.values = nodeReg.values.filter(v => !v.eq(ass.value))
         }
       }
-      clearElem(deps, child)
+    }
+    if (nodeReg.values.isEmpty) {
+      nodeReg.setTombstone(true)
     }
   }
 
@@ -112,29 +119,38 @@ class Context(var doc: Node) {
     val map = childGetFromList(t, child.getChildren())
     if (map != null && map.isInstanceOf[NodeMap]) {
       var nodeMap = map.asInstanceOf[NodeMap]
-      for (dep <- deps) {
-        if (child.getPres().get(dep).isDefined) {
-          var op: Operation = child.getPres()(dep)
-          if (op.getMutation().isInstanceOf[Assign] && nodeMap.children.contains(op.getCursor().getId().getKey())) { //CLEAR-NONE
-            var node : Node =  nodeMap.children(op.getCursor().getId().getKey())
-            node match {
-              case _: NodeReg =>
-                clearAny(deps, regT(op.getCursor().getId().getKey()))
-              case _: NodeList =>
-                clearAny(deps, listT(op.getCursor().getId().getKey()))
-              case _: NodeMap =>
-                clearAny(deps, mapT(op.getCursor().getId().getKey()))
-            }
+      clearNodeMap(deps, nodeMap)
+    }
+    clearElem(deps, child)
+  }
+
+  private def clearNodeMap(deps: List[Int], nodeMap: NodeMap) : Unit = {
+    for (dep <- deps) {
+      if (child.getPres().get(dep).isDefined) {
+        var op: Operation = child.getPres()(dep)
+        if (op.getMutation().isInstanceOf[Assign] && nodeMap.children.contains(op.getCursor().getId().getKey())) { //CLEAR-NONE
+          var node : Node =  nodeMap.children(op.getCursor().getId().getKey())
+          //Recursive clear
+          node match {
+            case nodeReg: NodeReg =>
+              clearNodeReg(deps, nodeReg)
+            case nodeList: NodeList =>
+              clearNodeList(deps, nodeList)
+            case nodeMap: NodeMap =>
+              clearNodeMap(deps, nodeMap)
           }
         }
       }
     }
-    clearElem(deps, child)
   }
 
   //CLEAR-LIST
   def clearList(ints: List[Int], t: listT) = {
     //TODO: implement
+  }
+
+  private def clearNodeList(deps: List[Int], nodeList: NodeList) = {
+    //TODO implement
   }
 
   //CLEAR-ANY
@@ -175,7 +191,9 @@ class Context(var doc: Node) {
     if (nMap == null) {
       nMap = new NodeMap(mapT.key, new scala.collection.mutable.HashMap[Int, Operation]())
     } else {
-      throw new Exception("I'm not sure what to do here")
+      if (!nMap.getChildren().isEmpty) {
+        //throw new Exception("Map was not properly emptied")
+      }
     }
 
     context.child.addChild(nMap)
@@ -258,6 +276,7 @@ class Context(var doc: Node) {
       nReg = new NodeReg(regT.key, values, new scala.collection.mutable.HashMap[Int, Operation]());
     } else {
       nReg.addValues(assign.value)
+      nReg.setTombstone(false)
     }
 
     context.child.addChild(nReg)
@@ -282,7 +301,7 @@ class Context(var doc: Node) {
     def find(childs: List[Node]): Node = {
 
       if (childs.size <= 0) {
-        return null
+        return null;
       }
 
       val s: String = "[" + key.getKey() + "]"

@@ -45,6 +45,8 @@ case class Evaluator(replicaId : Int) {
     eval.node = this.node
     eval.variables = this.variables
     eval.root = this.root
+    eval.receiveBuffer = this.receiveBuffer
+    eval.sendBuffer = this.sendBuffer
     eval
   }
 

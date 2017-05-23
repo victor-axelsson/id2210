@@ -82,7 +82,7 @@ class NodeList(theName:String, pres:mutable.Map[Int, Operation]) extends Node(th
   }
 
   override def getChildren(): List[Node] = {
-    children
+    children.filter((n:Node) => {!n.isTombstone()})
   }
 
   override def toString() = {
