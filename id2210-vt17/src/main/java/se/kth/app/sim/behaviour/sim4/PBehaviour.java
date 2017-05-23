@@ -32,8 +32,5 @@ public class PBehaviour implements Behaviour {
                 .evalExpr(new Expr.Get("items"))
                 .evalExpr(new Expr.Idx(1))
                 .evalCmd(new Cmd.InsertAfter(new Val.Str("x")));
-
-        System.out.println(eval.toJsonString());
-
     }
 }

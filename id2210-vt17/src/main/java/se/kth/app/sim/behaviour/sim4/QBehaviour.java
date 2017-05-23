@@ -31,7 +31,5 @@ public class QBehaviour implements Behaviour {
                 .evalExpr(new Expr.Get("items"))
                 .evalExpr(new Expr.Idx(2))
                 .evalCmd(new Cmd.InsertAfter(new Val.Str("z")));
-
-        System.out.println(eval.toJsonString());
     }
 }
