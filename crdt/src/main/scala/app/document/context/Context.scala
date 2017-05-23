@@ -98,24 +98,6 @@ class Context(var doc: Node) {
 
   //CLEAR-MAP
   def clearMap(deps: List[Int], t: mapT) = {
-
-   /* @tailrec
-    def clearMapInner(deps: List[Int], t: Key) : Unit = {
-      val map = childGetFromList(t, child.getChildren())
-      if (map != null && map.isInstanceOf[NodeMap]) {
-        var nodeMap = map.asInstanceOf[NodeMap]
-        for (dep <- deps) {
-          if (child.getPres().get(dep).isDefined) {
-            var op: Operation = child.getPres()(dep)
-            if (op.getMutation().isInstanceOf[Assign] && nodeMap.children.contains(op.getCursor().getId().getKey())) { //CLEAR-NONE
-              clearAny(deps, op.getCursor().getId())
-            }
-          }
-        }
-        clearMapInner(List.empty, t)
-      }
-    } */
-
     val map = childGetFromList(t, child.getChildren())
     if (map != null && map.isInstanceOf[NodeMap]) {
       var nodeMap = map.asInstanceOf[NodeMap]
@@ -190,10 +172,6 @@ class Context(var doc: Node) {
 
     if (nMap == null) {
       nMap = new NodeMap(mapT.key, new scala.collection.mutable.HashMap[Int, Operation]())
-    } else {
-      if (!nMap.getChildren().isEmpty) {
-        //throw new Exception("Map was not properly emptied")
-      }
     }
 
     context.child.addChild(nMap)
