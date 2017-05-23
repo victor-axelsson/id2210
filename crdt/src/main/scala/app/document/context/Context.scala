@@ -203,7 +203,16 @@ class Context(var doc: Node) {
 
 
   private def delete(context: Context) = {
-    //TODO: shiet
+
+    var key:Key = context.op.getCursor().getId()
+    var node:Node = childGetFromList(key, context.child.getChildren())
+    node.setTombstone(true)
+    clearAny(context.op.getDeps(), key)
+    addId(key.getKey(), context.op, node)
+
+    if(context.child.isInstanceOf[NodeList]){
+      context.child.asInstanceOf[NodeList].reIndexChildren()
+    }
   }
 
   private def insert(context: Context) = {

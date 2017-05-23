@@ -1,7 +1,7 @@
 import app.document.evaluator.Evaluator
-import app.document.language.Cmd.{Assign, InsertAfter, Let}
+import app.document.language.Cmd.{Assign, Delete, InsertAfter, Let}
 import app.document.language.Expr.{Doc, Get, Idx, Var}
-import app.document.language.Val.{EmptyList, EmptyMap, Str, Number}
+import app.document.language.Val.{EmptyList, EmptyMap, Number, Str}
 import org.scalatest.FlatSpec
 
 /**
@@ -222,5 +222,30 @@ class CmdEvalTest extends FlatSpec{
 
     assert(s == expectedOutput)
   }
-}
+  "A DELETE cmd " should " remove any items from a list" in {
 
+    val eval = new Evaluator(1)
+
+    val insertA = InsertAfter(Str("a"))
+    val insertB = InsertAfter(Str("b"))
+    val insertC = InsertAfter(Str("c"))
+    val insertX = InsertAfter(Str("x"))
+
+    //Execute the let command
+    eval evalExpr Doc() evalExpr Get("items") evalExpr Idx(0) evalCmd insertA
+    eval evalExpr Doc() evalExpr Get("items") evalExpr Idx(1) evalCmd insertB
+    eval evalExpr Doc() evalExpr Get("items") evalExpr Idx(2) evalCmd insertC
+
+    var expectedOutput = "{\"doc\":{\"items\":[\"[0]\":\"a\",\"[1]\":\"b\",\"[2]\":\"c\"]}}"
+
+    var s:String = eval.toJsonString()
+    assert(s == expectedOutput)
+
+    eval evalExpr Doc() evalExpr Get("items") evalExpr Idx(1) evalCmd Delete()
+
+    s = eval.toJsonString()
+    expectedOutput = "{\"doc\":{\"items\":[\"[0]\":\"a\",\"[1]\":\"c\"]}}"
+
+    assert(s == expectedOutput)
+  }
+}

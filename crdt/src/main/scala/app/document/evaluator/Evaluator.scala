@@ -193,10 +193,10 @@ case class Evaluator(replicaId : Int) {
         makeInsert(cursor, value)
       }
       case Cmd.Delete() => {
-
+        makeDelete(cursor)
       }
       case Cmd.Yield() => {
-
+        throw new NotImplementedError("Not implemented")
       }
     }
     transferStateToRoot()
