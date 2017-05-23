@@ -220,6 +220,11 @@ case class Evaluator(replicaId : Int) {
   private def applyRemote(): Unit = {
     for (op <- receiveBuffer) {
       if (!executedOperations.contains(op.getId())) {
+        //1. determine if any concurrect insertAfter for a list
+        //2. determine priority for these inserts - either change received indexes or not
+
+
+
         applyLocal(op)
         println(getId() + " " +this.toJsonString())
       }

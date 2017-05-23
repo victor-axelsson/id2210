@@ -26,10 +26,11 @@ public class PBehaviour implements Behaviour {
         //Insert the ham
         eval.evalExpr(new Expr.Doc())
                 .evalExpr(new Expr.Get("grocery"))
-                .evalExpr(new Expr.Idx(0))
+                .evalExpr(new Expr.Idx(1))
                 .evalCmd(new Cmd.InsertAfter(new Val.Str("ham")));
 
 
+        System.out.println(eval.toJsonString());
 
     }
 }

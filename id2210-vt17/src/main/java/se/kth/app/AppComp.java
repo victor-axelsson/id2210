@@ -68,7 +68,7 @@ public class AppComp extends ComponentDefinition {
     LOG.info("{}initiating...", logPrefix);
 
     this.behaviour = init.behaviour;
-    this.evaluator = new Evaluator(Integer.parseInt(selfAdr.getId().toString())); //should be unique
+    this.evaluator = new Evaluator(selfAdr.hashCode()); //should be unique
 
     subscribe(handleStart, control);
     subscribe(handleCroupierSample, croupierPort);
