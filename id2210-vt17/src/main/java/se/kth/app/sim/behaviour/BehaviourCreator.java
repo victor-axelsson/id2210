@@ -43,4 +43,12 @@ public class BehaviourCreator {
 
         return new Evaluator(EVAL_UNIQUE_ID).makeAssign(curs, new Val.Str("#0000ff"));
     }
+
+    public static Operation getSimulation3Setup() {
+        Cursor curs = getEmptyCursor();
+        Key.listT addList = new Key.listT("grocery");
+        curs = curs.append(addList);
+
+        return new Evaluator(EVAL_UNIQUE_ID).makeAssign(curs, Val.EmptyList$.MODULE$);
+    }
 }
