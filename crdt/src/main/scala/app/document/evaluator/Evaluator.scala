@@ -226,6 +226,13 @@ case class Evaluator(replicaId : Int) {
         //2. determine priority for these inserts - either change received indexes or not
 
 
+        if(queue.size > 0){
+          val lastOp:Operation = queue(queue.size -1)
+
+          if(op.getId().isLessThan(lastOp.getId())){
+            println("Ok, so now we need to re evaluate some shiet")
+          }
+        }
 
         applyLocal(op)
         println(getId() + " " +this.toJsonString())
@@ -244,13 +251,16 @@ case class Evaluator(replicaId : Int) {
 
 
   private def makeOperation(cursor : Cursor, mutation: Mutation) : Operation = {
-    counter += 1
+    //counter += 1
     val op = new Operation(getId(), executedOperations, cursor, mutation)
     applyLocal(op)
     op
   }
 
   private def applyLocal(op:Operation) = {
+    //Increase Lamport TS
+    counter = Math.max(op.getId().getC(), counter) + 1
+
     //1, modify local state
     val newLocalStateApPrime:Context = localStateAp.apply(op)
     localStateAp = newLocalStateApPrime

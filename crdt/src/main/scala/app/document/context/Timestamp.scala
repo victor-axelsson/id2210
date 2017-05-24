@@ -9,19 +9,19 @@ class Timestamp(c:Int, p:Int){
   def getP() = p
 
    def isGreaterThan(ts:Timestamp): Boolean= {
-    if(p == ts.getP()){
-      return c > ts.getC()
-    }
+     if(c == ts.getC()){
+       return ts.getP() > p
+     }
 
-    return c > ts.getC()
+     return p > ts.getP()
   }
 
   def isLessThan(ts:Timestamp): Boolean= {
-    if(p == ts.getP()){
-      return c < ts.getC()
+    if(c == ts.getC()){
+      return ts.getP() < p
     }
 
-    return c < ts.getC()
+    return p < ts.getP()
   }
 
   override def equals(obj: scala.Any): Boolean = {
