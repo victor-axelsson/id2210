@@ -8,8 +8,6 @@ class Timestamp(c:Int, p:Int){
   def getC() = c
   def getP() = p
 
-
-
    def isGreaterThan(ts:Timestamp): Boolean= {
     if(p == ts.getP()){
       return c > ts.getC()
@@ -25,7 +23,6 @@ class Timestamp(c:Int, p:Int){
 
     return c < ts.getC()
   }
-
 
   override def equals(obj: scala.Any): Boolean = {
     if(!obj.isInstanceOf[Timestamp]){
