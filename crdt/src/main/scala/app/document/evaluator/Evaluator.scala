@@ -18,8 +18,8 @@ import scala.annotation.tailrec
 case class Evaluator(replicaId : Int) {
 
   private var counter = 0
-  private var executedOperations = List.empty[Int]
-  private var localStateAp:Context = new Context(new NodeDoc(new scala.collection.mutable.HashMap[Int, Operation]()))
+  private var executedOperations = List.empty[Timestamp]
+  private var localStateAp:Context = new Context(new NodeDoc(new scala.collection.mutable.HashMap[Timestamp, Operation]()))
   private var queue = List.empty[Operation]
   private var variables = new scala.collection.mutable.HashMap[String, Evaluator]()
   private var root:Evaluator = this
@@ -85,7 +85,9 @@ case class Evaluator(replicaId : Int) {
     node.asInstanceOf[NodeReg].getValues()
   }
 
-  private def getId() : Int = counter * replicaId
+  private def getId() : Timestamp = {
+    new Timestamp(counter, replicaId)
+  }
 
   def isAllDigits(x: String) = x forall Character.isDigit
 

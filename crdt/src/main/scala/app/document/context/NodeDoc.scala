@@ -7,7 +7,7 @@ import scala.collection.mutable
 /**
   * Created by victoraxelsson on 2017-05-09.
   */
-class NodeDoc(pres:mutable.Map[Int, Operation]) extends Node("doc", pres){
+class NodeDoc(pres:mutable.Map[Timestamp, Operation]) extends Node("doc", pres){
 
   var children:mutable.HashMap[String, Node] = new mutable.HashMap[String, Node]()
 

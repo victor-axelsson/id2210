@@ -65,7 +65,7 @@ class Context(var doc: Node) {
 
 
   //CLEAR-REG
-  private def clearReg(deps: List[Int], regT: regT) = {
+  private def clearReg(deps: List[Timestamp], regT: regT) = {
     val register = childGetFromList(regT, child.getChildren())
     if (register != null && register.isInstanceOf[NodeReg]) {
       var nodeReg = register.asInstanceOf[NodeReg]
@@ -74,7 +74,7 @@ class Context(var doc: Node) {
     }
   }
 
-  private def clearNodeReg(deps: List[Int], nodeReg: NodeReg) = {
+  private def clearNodeReg(deps: List[Timestamp], nodeReg: NodeReg) = {
     for (dep <- deps) {
       if (child.getPres().get(dep).isDefined) {
         var op: Operation = child.getPres()(dep)
@@ -90,14 +90,14 @@ class Context(var doc: Node) {
   }
 
   //CLEAR-ELEM
-  def clearElem(deps: List[Int], node: Node) = {
+  def clearElem(deps: List[Timestamp], node: Node) = {
     for (dep <- deps) {
       node.removeKeyPresence(dep)
     }
   }
 
   //CLEAR-MAP
-  def clearMap(deps: List[Int], t: mapT) = {
+  def clearMap(deps: List[Timestamp], t: mapT) = {
     val map = childGetFromList(t, child.getChildren())
     if (map != null && map.isInstanceOf[NodeMap]) {
       var nodeMap = map.asInstanceOf[NodeMap]
@@ -106,7 +106,7 @@ class Context(var doc: Node) {
     clearElem(deps, child)
   }
 
-  private def clearNodeMap(deps: List[Int], nodeMap: NodeMap) : Unit = {
+  private def clearNodeMap(deps: List[Timestamp], nodeMap: NodeMap) : Unit = {
     for (dep <- deps) {
       if (child.getPres().get(dep).isDefined) {
         var op: Operation = child.getPres()(dep)
@@ -127,16 +127,16 @@ class Context(var doc: Node) {
   }
 
   //CLEAR-LIST
-  def clearList(ints: List[Int], t: listT) = {
+  def clearList(ints: List[Timestamp], t: listT) = {
     //TODO: implement
   }
 
-  private def clearNodeList(deps: List[Int], nodeList: NodeList) = {
+  private def clearNodeList(deps: List[Timestamp], nodeList: NodeList) = {
     //TODO implement
   }
 
   //CLEAR-ANY
-  def clearAny(deps: List[Int], key: Key) : Unit = {
+  def clearAny(deps: List[Timestamp], key: Key) : Unit = {
     key match {
       case RootMapT(_) => {
         throw new Exception("You cannot clear a doc")
@@ -171,7 +171,7 @@ class Context(var doc: Node) {
     var nMap: NodeMap = childGet(mapT, context).asInstanceOf[NodeMap]
 
     if (nMap == null) {
-      nMap = new NodeMap(mapT.key, new scala.collection.mutable.HashMap[Int, Operation]())
+      nMap = new NodeMap(mapT.key, new scala.collection.mutable.HashMap[Timestamp, Operation]())
     }
 
     context.child.addChild(nMap)
@@ -192,7 +192,7 @@ class Context(var doc: Node) {
     var nList = childGet(listT, context).asInstanceOf[NodeList]
 
     if (nList == null) {
-      nList = new NodeList(listT.key, new scala.collection.mutable.HashMap[Int, Operation]())
+      nList = new NodeList(listT.key, new scala.collection.mutable.HashMap[Timestamp, Operation]())
     } else {
       throw new Exception("I'm not sure what to do here")
     }
@@ -226,17 +226,17 @@ class Context(var doc: Node) {
     val node: Node = insert.value match {
       case s@EmptyMap => {
         key = mapT(name)
-        new NodeMap(name, new scala.collection.mutable.HashMap[Int, Operation]())
+        new NodeMap(name, new scala.collection.mutable.HashMap[Timestamp, Operation]())
       }
       case s@EmptyList => {
         key = listT(name)
-        new NodeList(name, new scala.collection.mutable.HashMap[Int, Operation]())
+        new NodeList(name, new scala.collection.mutable.HashMap[Timestamp, Operation]())
       }
       case s@_ => {
         key = regT(name)
         var values = List[Val]()
         values = values :+ s
-        new NodeReg(name, values, new scala.collection.mutable.HashMap[Int, Operation]())
+        new NodeReg(name, values, new scala.collection.mutable.HashMap[Timestamp, Operation]())
       }
     }
 
@@ -260,7 +260,7 @@ class Context(var doc: Node) {
     if (nReg == null) {
       var values = List[Val]()
       values = values :+ assign.value
-      nReg = new NodeReg(regT.key, values, new scala.collection.mutable.HashMap[Int, Operation]());
+      nReg = new NodeReg(regT.key, values, new scala.collection.mutable.HashMap[Timestamp, Operation]());
     } else {
       nReg.addValues(assign.value)
       nReg.setTombstone(false)
@@ -324,7 +324,7 @@ class Context(var doc: Node) {
   }
 
   //PRESENCE
-  def presence(context: Context, id: Int): Context = {
+  def presence(context: Context, id: Timestamp): Context = {
     val node = context.child
     if (node.getPres().contains(id)) {
       context

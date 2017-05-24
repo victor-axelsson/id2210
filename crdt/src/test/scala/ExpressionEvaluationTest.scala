@@ -14,7 +14,7 @@ class ExpressionEvaluationTest extends FlatSpec{
   "A get expression" should " create a cursor without side effects" in {
 
     //// Build up the document ////
-    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Int, Operation]())
+    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Timestamp, Operation]())
     var context = new Context(nodeDoc)
     var eval:Evaluator = new Evaluator(1)
 
@@ -56,7 +56,7 @@ class ExpressionEvaluationTest extends FlatSpec{
   "A KEY1 expression" should " return the keys in a given map" in {
 
     //// Build up the document ////
-    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Int, Operation]())
+    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Timestamp, Operation]())
     var context = new Context(nodeDoc)
     var eval:Evaluator = new Evaluator(1)
 
@@ -94,7 +94,7 @@ class ExpressionEvaluationTest extends FlatSpec{
   "A KEY2 expression" should " return the keys in a given map from a size = 0 cursor, given a context" in {
 
     //// Build up the document ////
-    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Int, Operation]())
+    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Timestamp, Operation]())
     var context = new Context(nodeDoc)
     var eval:Evaluator = new Evaluator(1)
 
@@ -130,7 +130,7 @@ class ExpressionEvaluationTest extends FlatSpec{
   "A KEY3 expression" should " return the keys in a given map from a size > 0 cursor, given a context" in {
 
     //// Build up the document ////
-    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Int, Operation]())
+    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Timestamp, Operation]())
     var context = new Context(nodeDoc)
     var eval:Evaluator = new Evaluator(1)
 
@@ -176,7 +176,7 @@ class ExpressionEvaluationTest extends FlatSpec{
   "A VAL1 expression" should " return the value in a given regT" in {
 
     //// Build up the document ////
-    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Int, Operation]())
+    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Timestamp, Operation]())
     var context = new Context(nodeDoc)
     var eval:Evaluator = new Evaluator(1)
 
@@ -211,7 +211,7 @@ class ExpressionEvaluationTest extends FlatSpec{
   "A VAL2 expression" should " return the values in a given regT from a cursor with only a key" in {
 
     //// Build up the document ////
-    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Int, Operation]())
+    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Timestamp, Operation]())
     var context = new Context(nodeDoc)
     var eval:Evaluator = new Evaluator(1)
 
@@ -247,7 +247,7 @@ class ExpressionEvaluationTest extends FlatSpec{
 
 
     //// Build up the document ////
-    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Int, Operation]())
+    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Timestamp, Operation]())
     var context = new Context(nodeDoc)
     var eval:Evaluator = new Evaluator(1)
 
@@ -283,7 +283,7 @@ class ExpressionEvaluationTest extends FlatSpec{
   "An IDx expression" should " return null for empty listT" in {
 
     //// Build up the document ////
-    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Int, Operation]())
+    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Timestamp, Operation]())
     var context = new Context(nodeDoc)
     var eval:Evaluator = new Evaluator(1)
 
@@ -312,7 +312,7 @@ class ExpressionEvaluationTest extends FlatSpec{
   "An IDx expression" should " return the corresponding element by index" in {
 
     //// Build up the document ////
-    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Int, Operation]())
+    var nodeDoc:NodeDoc = new NodeDoc(new scala.collection.mutable.HashMap[Timestamp, Operation]())
     var context = new Context(nodeDoc)
     var eval:Evaluator = new Evaluator(1)
 

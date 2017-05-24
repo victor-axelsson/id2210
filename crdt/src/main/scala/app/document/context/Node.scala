@@ -7,7 +7,7 @@ import scala.collection.mutable
 /**
   * Created by victoraxelsson on 2017-05-09.
   */
-abstract class Node(var name:String, var pres:mutable.Map[Int, Operation]) {
+abstract class Node(var name:String, var pres:mutable.Map[Timestamp, Operation]) {
   var tombstone = false
 
   def isTombstone() = tombstone
@@ -21,7 +21,7 @@ abstract class Node(var name:String, var pres:mutable.Map[Int, Operation]) {
   }
 
   def getPres() = pres
-  def removeKeyPresence(id : Int) = {
+  def removeKeyPresence(id : Timestamp) = {
     pres -= id
   }
   def addKeyPresence(op : Operation) = {
