@@ -219,6 +219,49 @@ case class Evaluator(replicaId : Int) {
     return ops
   }
 
+  private def revertAndApplyOperations(op:Operation) = {
+
+
+    //Start by resetting the local state
+    counter = 0
+    executedOperations = List.empty[Timestamp]
+    localStateAp = new Context(new NodeDoc(new scala.collection.mutable.HashMap[Timestamp, Operation]()))
+    //private var queue = List.empty[Operation]
+    //private var variables = new scala.collection.mutable.HashMap[String, Evaluator]()
+    //private var root:Evaluator = this
+
+    //private var receiveBuffer = List.empty[Operation]
+    //private var sendBuffer = List.empty[Operation]
+
+    cursor = getNewCursor()
+    node = null
+
+    var haveExecuted:Boolean = false
+
+    queue.foreach((operation:Operation) => {
+      if(operation.getId().isGreaterThan(op.getId()) && !haveExecuted){
+        haveExecuted = true
+        applyLocal(op)
+      }
+
+      applyLocal(operation)
+    })
+
+    /*
+    for(operation <- queue){
+      if(operation.getId().isGreaterThan(op.getId()) && !haveExecuted){
+        haveExecuted = true
+        applyLocal(op)
+      }
+
+      applyLocal(operation)
+    }
+    */
+
+    println("OK, so I need to revert");
+
+  }
+
   private def applyRemote(): Unit = {
     for (op <- receiveBuffer) {
       if (!executedOperations.contains(op.getId())) {
@@ -230,11 +273,15 @@ case class Evaluator(replicaId : Int) {
           val lastOp:Operation = queue(queue.size -1)
 
           if(op.getId().isLessThan(lastOp.getId())){
-            println("Ok, so now we need to re evaluate some shiet")
+            revertAndApplyOperations(op)
+          }else{
+            applyLocal(op)
           }
+        }else{
+          applyLocal(op)
         }
 
-        applyLocal(op)
+
         println(getId() + " " +this.toJsonString())
       }
     }
