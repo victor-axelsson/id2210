@@ -75,4 +75,27 @@ public class BehaviourCreator {
 
         return eval.send();
     }
+
+    public static java.util.List<Operation> getSimulation6Setup() {
+
+        Evaluator eval = new Evaluator(EVAL_UNIQUE_ID);
+        eval.evalExpr(new Expr.Doc())
+                .evalExpr(new Expr.Get("todo"))
+                .evalExpr(new Expr.Idx(0))
+                .evalCmd(new Cmd.InsertAfter(Val.EmptyMap$.MODULE$));
+
+        eval.evalExpr(new Expr.Doc())
+                .evalExpr(new Expr.Get("todo"))
+                .evalExpr(new Expr.Idx(0))
+                .evalExpr(new Expr.Get("title"))
+                .evalCmd(new Cmd.Assign(new Val.Str("buy milk")));
+
+        eval.evalExpr(new Expr.Doc())
+                .evalExpr(new Expr.Get("todo"))
+                .evalExpr(new Expr.Idx(0))
+                .evalExpr(new Expr.Get("done"))
+                .evalCmd(new Cmd.Assign(Val.False$.MODULE$));
+
+        return eval.send();
+    }
 }

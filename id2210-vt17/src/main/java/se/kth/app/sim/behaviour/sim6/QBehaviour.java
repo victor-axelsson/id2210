@@ -1,4 +1,4 @@
-package se.kth.app.sim.behaviour.sim4;
+package se.kth.app.sim.behaviour.sim6;
 
 import app.document.evaluator.Evaluator;
 import app.document.evaluator.Operation;
@@ -16,20 +16,15 @@ import java.util.List;
 public class QBehaviour implements Behaviour {
     @Override
     public void setup(Evaluator eval) {
-        List<Operation> ops =  BehaviourCreator.getSimulation4Setup();
+        List<Operation> ops =  BehaviourCreator.getSimulation6Setup();
 
         for(int i = 0; i < ops.size(); i++){
             eval.receive(ops.get(i));
         }
-
         eval.evalExpr(new Expr.Doc())
-                .evalExpr(new Expr.Get("items"))
+                .evalExpr(new Expr.Get("todo"))
                 .evalExpr(new Expr.Idx(0))
-                .evalCmd(new Cmd.InsertAfter(new Val.Str("y")));
-
-        eval.evalExpr(new Expr.Doc())
-                .evalExpr(new Expr.Get("items"))
-                .evalExpr(new Expr.Idx(2))
-                .evalCmd(new Cmd.InsertAfter(new Val.Str("z")));
+                .evalExpr(new Expr.Get("done"))
+                .evalCmd(new Cmd.Assign(Val.True$.MODULE$));
     }
 }

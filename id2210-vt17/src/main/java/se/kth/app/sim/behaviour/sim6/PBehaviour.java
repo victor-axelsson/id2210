@@ -1,4 +1,4 @@
-package se.kth.app.sim.behaviour.sim4;
+package se.kth.app.sim.behaviour.sim6;
 
 import app.document.evaluator.Evaluator;
 import app.document.evaluator.Operation;
@@ -17,20 +17,17 @@ public class PBehaviour implements Behaviour {
     @Override
     public void setup(Evaluator eval) {
 
-        List<Operation> ops =  BehaviourCreator.getSimulation4Setup();
+        List<Operation> ops =  BehaviourCreator.getSimulation6Setup();
 
         for(int i = 0; i < ops.size(); i++){
             eval.receive(ops.get(i));
         }
 
         eval.evalExpr(new Expr.Doc())
-                .evalExpr(new Expr.Get("items"))
-                .evalExpr(new Expr.Idx(1))
+                .evalExpr(new Expr.Get("todo"))
+                .evalExpr(new Expr.Idx(0))
                 .evalCmd(new Cmd.Delete());
+        eval.evalExpr(new Expr.Doc());
 
-        eval.evalExpr(new Expr.Doc())
-                .evalExpr(new Expr.Get("items"))
-                .evalExpr(new Expr.Idx(1))
-                .evalCmd(new Cmd.InsertAfter(new Val.Str("x")));
     }
 }
