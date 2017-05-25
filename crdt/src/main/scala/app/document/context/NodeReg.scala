@@ -9,12 +9,16 @@ import scala.collection.mutable
 /**
   * Created by victoraxelsson on 2017-05-09.
   */
-class NodeReg(theName:String, var values : List[Val], pres:mutable.Map[Timestamp, Operation]) extends Node(theName, pres){
+class NodeReg(theName: String, var values: List[Val], pres: mutable.Map[Timestamp, Operation]) extends Node(theName, pres) {
 
 
   def getValues() = values
-  def addValues(newVal:Val) = {
-   values = values :+ newVal
+
+  def addValues(newVal: Val) = {
+    values = values :+ newVal
+    values = values.sortWith((l: Val, r: Val) => {
+      l.toString < r.toString
+    })
   }
 
   override def getChildren(): List[Node] = {
@@ -22,7 +26,7 @@ class NodeReg(theName:String, var values : List[Val], pres:mutable.Map[Timestamp
   }
 
   override def toString: String = {
-    val builder : mutable.StringBuilder = new mutable.StringBuilder()
+    val builder: mutable.StringBuilder = new mutable.StringBuilder()
     builder.append('"').append(name).append('"').append(":")
     for (value <- values) {
 
@@ -45,7 +49,7 @@ class NodeReg(theName:String, var values : List[Val], pres:mutable.Map[Timestamp
           builder.append("null")
         }
         case _ => {
-         throw new Exception("Node reg should noe be able to be anything else")
+          throw new Exception("Node reg should noe be able to be anything else")
         }
       }
 
