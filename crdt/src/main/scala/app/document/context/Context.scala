@@ -66,7 +66,7 @@ class Context(var doc: Node) {
 
   //CLEAR-REG
   private def clearReg(deps: List[Timestamp], regT: regT) = {
-    val register = childGetFromList(regT, child.getChildren(), classOf[NodeReg])
+    val register = childGetFromListWithType(regT, child.getChildren(), classOf[NodeReg])
     if (register != null && register.isInstanceOf[NodeReg]) {
       var nodeReg = register.asInstanceOf[NodeReg]
       clearNodeReg(deps, nodeReg)
@@ -98,7 +98,7 @@ class Context(var doc: Node) {
 
   //CLEAR-MAP
   def clearMap(deps: List[Timestamp], t: mapT) = {
-    val map = childGetFromList(t, child.getChildren(), classOf[NodeMap])
+    val map = childGetFromListWithType(t, child.getChildren(), classOf[NodeMap])
     if (map != null && map.isInstanceOf[NodeMap]) {
       var nodeMap = map.asInstanceOf[NodeMap]
       clearNodeMap(deps, nodeMap)
@@ -168,7 +168,7 @@ class Context(var doc: Node) {
 
     clearAny(context.op.getDeps(), mapT)
 
-    var nMap: NodeMap = childGet(mapT, context, classOf[NodeMap]).asInstanceOf[NodeMap]
+    var nMap: NodeMap = childGetWithType(mapT, context, classOf[NodeMap]).asInstanceOf[NodeMap]
 
     if (nMap == null) {
       nMap = new NodeMap(mapT.key, new scala.collection.mutable.HashMap[Timestamp, Operation]())
@@ -188,25 +188,37 @@ class Context(var doc: Node) {
     }
 
 
-    var nList = childGet(listT, context, classOf[NodeList]).asInstanceOf[NodeList]
+    var node = childGet(listT, context)
 
-    if (nList == null) {
-      nList = new NodeList(listT.key, new scala.collection.mutable.HashMap[Timestamp, Operation]())
-    } else {
+    if (node == null) {
+      node = new NodeList(listT.key, new scala.collection.mutable.HashMap[Timestamp, Operation]())
       clearAny(context.op.getDeps(), listT)
-      nList = new NodeList(listT.key, new scala.collection.mutable.HashMap[Timestamp, Operation]())
+      context.child.addChild(node)
+    } else {
+
+      node match {
+        case _:NodeList => {
+          throw new Exception("I dunno")
+        }
+        case _ : NodeMap => {
+          val node2 = new NodeList(listT.key, new scala.collection.mutable.HashMap[Timestamp, Operation]())
+          context.child.addChild(node2)
+
+        }
+      }
+
+      addId(listT.key, context.op, context.child)
       //throw new Exception("I'm not sure what to do here")
     }
 
-    context.child.addChild(nList)
-    addId(listT.key, context.op, context.child)
+
   }
 
 
   private def delete(context: Context) = {
 
     var key:Key = context.op.getCursor().getId()
-    var node:Node = childGetFromList(key, context.child.getChildren(), classOf[Node])
+    var node:Node = childGetFromListWithType(key, context.child.getChildren(), classOf[Node])
     node.setTombstone(true)
     clearAny(context.op.getDeps(), key)
     addId(key.getKey(), context.op, node)
@@ -256,7 +268,7 @@ class Context(var doc: Node) {
     clearAny(context.op.getDeps(), regT)
     val assign: Assign = context.op.getMutation().asInstanceOf[Assign]
 
-    var nReg: NodeReg = childGet(regT, context, classOf[NodeReg]).asInstanceOf[NodeReg]
+    var nReg: NodeReg = childGetWithType(regT, context, classOf[NodeReg]).asInstanceOf[NodeReg]
 
     if (nReg == null) {
       var values = List[Val]()
@@ -279,11 +291,16 @@ class Context(var doc: Node) {
   }
 
 
-  def childGet(key: Key, context: Context, searchType : Class[_]): Node = {
-    return childGetFromList(key, context.getDoc().getChildren(), searchType)
+  def childGetWithType(key: Key, context: Context, searchType : Class[_]): Node = {
+    return childGetFromListWithType(key, context.getDoc().getChildren(), searchType)
   }
 
-  def childGetFromList(key: Key, children : List[Node], searchType : Class[_]): Node = {
+
+  def childGet(key: Key, context: Context): Node = {
+    return childGetFromList(key, context.getDoc().getChildren())
+  }
+
+  def childGetFromListWithType(key: Key, children : List[Node], searchType : Class[_]): Node = {
 
     @tailrec
     def find(childs: List[Node]): Node = {
@@ -295,6 +312,28 @@ class Context(var doc: Node) {
       val s: String = "[" + key.getKey() + "]"
 
       if ((childs.head.getName() == key.getKey() || childs.head.getName() == s) && (searchType.isAssignableFrom(childs.head.getClass))) {
+        return childs.head
+      }
+
+      find(childs.tail)
+    }
+
+    return find(children)
+  }
+
+
+  def childGetFromList(key: Key, children : List[Node]): Node = {
+
+    @tailrec
+    def find(childs: List[Node]): Node = {
+
+      if (childs.size <= 0) {
+        return null;
+      }
+
+      val s: String = "[" + key.getKey() + "]"
+
+      if ((childs.head.getName() == key.getKey() || childs.head.getName() == s)) {
         return childs.head
       }
 
@@ -341,7 +380,15 @@ class Context(var doc: Node) {
 
     var node: Node = null
     if (keys.size > 0) {
-      node = childGet(keys.head, context: Context, classOf[Node])
+
+      val T = keys.head match {
+        case mapT(_) => {classOf[NodeMap]}
+        case listT(_) => {classOf[NodeList]}
+        case regT(_) => {classOf[NodeReg]}
+        case _ => { classOf[Node]}
+      }
+
+      node = childGetWithType(keys.head, context: Context, T)
     }
 
     if (keys.size > 0) {
@@ -384,7 +431,14 @@ class Context(var doc: Node) {
     var node: Node = null
 
     if (keys.size > 0) {
-      node = childGet(keys.head, context, classOf[Node])
+      val T = keys.head match {
+        case mapT(_) => {classOf[NodeMap]}
+        case listT(_) => {classOf[NodeList]}
+        case regT(_) => {classOf[NodeReg]}
+        case _ => { classOf[Node]}
+      }
+
+      node = childGetWithType(keys.head, context: Context, T)
     }
 
     if (keys.size > 0) {
