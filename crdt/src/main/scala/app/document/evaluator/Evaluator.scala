@@ -239,13 +239,30 @@ case class Evaluator(replicaId : Int) {
   }
 
   private def resolveConcurrentConflicts(localQueue : List[Operation]) : List[Operation] = {
+    val concurrentModifications : mutable.Map[listT, mutable.Map[Int, mutable.Set[Operation]]] = generateConflictMap(localQueue)
+    val offsets = generateOffsets(concurrentModifications)
+
+    var result : List[Operation] = List.empty
+    for (operation <- localQueue) {
+      if (!offsets.contains(operation.getId())) {
+        result = result :+ operation
+      } else {
+        var nTimestamp = new Timestamp(operation.getId().getC() + offsets(operation.getId()), operation.getId().getP())
+        nTimestamp.preserveHashCode(operation.getId())
+        var nOp = new Operation(nTimestamp, operation.getDeps(), operation.getCursor(), operation.getMutation())
+        result = result :+ nOp
+      }
+    }
+    return result
+  }
+
+  private def generateConflictMap(localQueue : List[Operation]) : mutable.Map[listT, mutable.Map[Int, mutable.Set[Operation]]] = {
     var concurrentModifications : mutable.Map[listT, mutable.Map[Int, mutable.Set[Operation]]] = mutable.Map.empty
     for (op:Operation <- localQueue) {
       if (op.getMutation().isInstanceOf[Insert] && op.getCursor().getKeys().last.isInstanceOf[listT]) {
         var modifiedList = op.getCursor().getKeys().last.asInstanceOf[listT]
         for (execOp <- localQueue) {
 
-          //TODO: refactor to own function
           if (execOp.getId() != op.getId() && execOp.getMutation().isInstanceOf[Insert] && execOp.getCursor().getKeys().last.getKey().eq(modifiedList.getKey())) {
             // No causal relation <-> concurrent operations
             if (!execOp.getDeps().contains(op.getId()) && !op.getDeps().contains(execOp.getId())) {
@@ -269,8 +286,10 @@ case class Evaluator(replicaId : Int) {
         }
       }
     }
+    concurrentModifications
+  }
 
-    // TODO: refactor into own function
+  private def generateOffsets(concurrentModifications : mutable.Map[listT, mutable.Map[Int, mutable.Set[Operation]]]) : mutable.Map[Timestamp, Int] = {
     var offsets : mutable.Map[Timestamp, Int] = mutable.Map.empty
     if (concurrentModifications.nonEmpty) {
       for (modificationMap <- concurrentModifications.values) {
@@ -290,19 +309,7 @@ case class Evaluator(replicaId : Int) {
         }
       }
     }
-
-    var result : List[Operation] = List.empty
-    for (operation <- localQueue) {
-      if (!offsets.contains(operation.getId())) {
-        result = result :+ operation
-      } else {
-        var nTimestamp = new Timestamp(operation.getId().getC() + offsets(operation.getId()), operation.getId().getP())
-        nTimestamp.preserveHashCode(operation.getId())
-        var nOp = new Operation(nTimestamp, operation.getDeps(), operation.getCursor(), operation.getMutation())
-        result = result :+ nOp
-      }
-    }
-    return result
+    offsets
   }
 
   private def isConcurrent(op1:Operation, op2:Operation): Boolean = {
