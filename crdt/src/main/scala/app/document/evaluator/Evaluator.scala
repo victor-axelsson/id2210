@@ -204,8 +204,6 @@ case class Evaluator(replicaId : Int) {
     }
     transferStateToRoot()
     this
-
-
   }
 
   def receive(operation: Operation): Unit = {
@@ -221,8 +219,6 @@ case class Evaluator(replicaId : Int) {
   }
 
   private def revertAndApplyOperations(op:Operation) = {
-
-
     //Start by resetting the local state
     counter = 0
     executedOperations = List.empty[Timestamp]
@@ -233,17 +229,6 @@ case class Evaluator(replicaId : Int) {
     var tmpQueue:List[Operation] = queue
     queue = List.empty[Operation]
 
-//    var haveExecuted:Boolean = false
-//
-//    tmpQueue.foreach((operation:Operation) => {
-//      if(op.getId().isGreaterThan(operation.getId()) && !haveExecuted){
-//        haveExecuted = true
-//        applyLocal(op)
-//      }
-//
-//      applyLocal(operation)
-//    })
-
     tmpQueue = tmpQueue :+ op
 
     //Offsets
@@ -251,7 +236,6 @@ case class Evaluator(replicaId : Int) {
 
     tmpQueue = tmpQueue.sortWith((l:Operation, r:Operation) => {l.getId().isGreaterThan(r.getId())})
     tmpQueue.foreach((operation:Operation) => {applyLocal(operation)})
-    println("OK, so I need to revert");
   }
 
   private def resolveConcurrentConflicts(localQueue : List[Operation]) : List[Operation] = {
@@ -260,6 +244,8 @@ case class Evaluator(replicaId : Int) {
       if (op.getMutation().isInstanceOf[Insert] && op.getCursor().getKeys().last.isInstanceOf[listT]) {
         var modifiedList = op.getCursor().getKeys().last.asInstanceOf[listT]
         for (execOp <- localQueue) {
+
+          //TODO: refactor to own function
           if (execOp.getId() != op.getId() && execOp.getMutation().isInstanceOf[Insert] && execOp.getCursor().getKeys().last.getKey().eq(modifiedList.getKey())) {
             // No causal relation <-> concurrent operations
             if (!execOp.getDeps().contains(op.getId()) && !op.getDeps().contains(execOp.getId())) {
@@ -284,6 +270,7 @@ case class Evaluator(replicaId : Int) {
       }
     }
 
+    // TODO: refactor into own function
     var offsets : mutable.Map[Timestamp, Int] = mutable.Map.empty
     if (concurrentModifications.nonEmpty) {
       for (modificationMap <- concurrentModifications.values) {
@@ -297,7 +284,6 @@ case class Evaluator(replicaId : Int) {
                 } else {
                   offsets += operation.getId() -> modificationMap(otherReplicaId).size
                 }
-
               }
             }
           }
