@@ -27,10 +27,28 @@ public class SimLauncher {
     public static void main(String[] args) {
         SimulationScenario.setSeed(ScenarioSetup.scenarioSeed);
         //SimulationScenario simpleBootScenario = ScenarioGen.simpleBoot();
+
+        //SIM 1
         //SimulationScenario sc = ScenarioGen.multipleRegisterSimulation();
+
+        //SIM 2
         //SimulationScenario sc = ScenarioGen.modifyNestedMapSimulation();
+
+        //SIM 3
         //SimulationScenario sc = ScenarioGen.editSameListSimulation();
-        SimulationScenario sc = ScenarioGen.editConcurrentListSimulation();
+
+        //SIM 4
+        //SimulationScenario sc = ScenarioGen.editConcurrentListSimulation();
+
+        //SIM 5
+        //SimulationScenario sc = ScenarioGen.assigningDifferentTypesSimulation();
+
+        //SIM 6
+        //SimulationScenario sc = ScenarioGen.concurrentMapEdit();
+
+        //Nested maps
+        SimulationScenario sc = ScenarioGen.nestedMapSimulation();
+
         sc.simulate(LauncherComp.class);
         //simpleBootScenario.simulate(LauncherComp.class);
     }

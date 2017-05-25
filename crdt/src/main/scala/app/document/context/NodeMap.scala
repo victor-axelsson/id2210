@@ -21,10 +21,12 @@ class NodeMap(theName:String, pres:mutable.Map[Timestamp, Operation]) extends No
     var counter = 0
     for (child <- children.values) {
       counter += 1
+      if (!child.isTombstone()) {
 
-      builder.append(child.toString())
+        builder.append(child.toString())
 
-      if (counter < children.size) builder.append(",")
+        if (counter < getChildren().size) builder.append(",")
+      }
     }
     builder.append("}")
     builder.toString()
