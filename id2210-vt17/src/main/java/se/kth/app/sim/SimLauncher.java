@@ -29,7 +29,7 @@ public class SimLauncher {
         //SimulationScenario simpleBootScenario = ScenarioGen.simpleBoot();
 
         //SIM 1
-        SimulationScenario sc = ScenarioGen.multipleRegisterSimulation();
+        //SimulationScenario sc = ScenarioGen.multipleRegisterSimulation();
 
         //SIM 2
         //SimulationScenario sc = ScenarioGen.modifyNestedMapSimulation();
@@ -45,6 +45,9 @@ public class SimLauncher {
 
         //SIM 6
         //SimulationScenario sc = ScenarioGen.concurrentMapEdit();
+
+        //Nested maps
+        SimulationScenario sc = ScenarioGen.nestedMapSimulation();
 
         sc.simulate(LauncherComp.class);
         //simpleBootScenario.simulate(LauncherComp.class);
