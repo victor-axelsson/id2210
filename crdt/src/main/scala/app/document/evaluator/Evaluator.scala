@@ -250,12 +250,33 @@ case class Evaluator(replicaId : Int) {
     println("OK, so I need to revert");
   }
 
+  private def isConcurrent(op1:Operation, op2:Operation): Boolean = {
+    op1.getId().isConcurrent(op2.getId())
+  }
+
+  private def isConcurrentWithAny(op:Operation):Boolean = {
+
+    var isC:Boolean = false
+
+    queue.foreach((operation:Operation)  => {
+      if(isConcurrent(op, operation)){
+        isC = true
+      }
+    })
+
+    isC
+  }
+
   private def applyRemote(): Unit = {
     for (op <- receiveBuffer) {
       if (!executedOperations.contains(op.getId())) {
         //1. determine if any concurrect insertAfter for a list
         //2. determine priority for these inserts - either change received indexes or not
 
+
+        if(isConcurrentWithAny(op)){
+          println("Do shiet")
+        }
 
         if(queue.size > 0){
           val lastOp:Operation = queue(queue.size -1)

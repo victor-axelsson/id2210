@@ -16,12 +16,16 @@ class Timestamp(c:Int, p:Int){
      return ts.getC() > c
   }
 
-  def isLessThan(ts:Timestamp): Boolean= {
+  def isLessThan(ts:Timestamp): Boolean = {
     if(c == ts.getC()){
       return ts.getP() < p
     }
 
     return ts.getC() < c
+  }
+
+  def isConcurrent(ts:Timestamp): Boolean = {
+    return c == ts.getC()
   }
 
   override def equals(obj: scala.Any): Boolean = {
