@@ -75,4 +75,9 @@ public class BehaviourCreator {
 
         return eval.send();
     }
+
+
+    public static java.util.List<Operation> getSimulation5Setup() {
+        throw new RuntimeException("There is no pre setup for this scenario");
+    }
 }

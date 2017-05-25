@@ -30,7 +30,8 @@ public class SimLauncher {
         //SimulationScenario sc = ScenarioGen.multipleRegisterSimulation();
         //SimulationScenario sc = ScenarioGen.modifyNestedMapSimulation();
         //SimulationScenario sc = ScenarioGen.editSameListSimulation();
-        SimulationScenario sc = ScenarioGen.editConcurrentListSimulation();
+        //SimulationScenario sc = ScenarioGen.editConcurrentListSimulation();
+        SimulationScenario sc = ScenarioGen.assigningDifferentTypesSimulation();
         sc.simulate(LauncherComp.class);
         //simpleBootScenario.simulate(LauncherComp.class);
     }
