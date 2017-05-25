@@ -13,7 +13,7 @@ class Timestamp(c:Int, p:Int){
        return ts.getP() > p
      }
 
-     return p > ts.getP()
+     return ts.getC() > c
   }
 
   def isLessThan(ts:Timestamp): Boolean= {
@@ -21,7 +21,7 @@ class Timestamp(c:Int, p:Int){
       return ts.getP() < p
     }
 
-    return p < ts.getP()
+    return ts.getC() < c
   }
 
   override def equals(obj: scala.Any): Boolean = {

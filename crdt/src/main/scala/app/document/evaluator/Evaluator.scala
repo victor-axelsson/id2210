@@ -229,20 +229,24 @@ case class Evaluator(replicaId : Int) {
     sendBuffer = List.empty[Operation]
     cursor = getNewCursor()
     node = null
-    val tmpQueue:List[Operation] = queue
+    var tmpQueue:List[Operation] = queue
     queue = List.empty[Operation]
 
-    var haveExecuted:Boolean = false
+//    var haveExecuted:Boolean = false
+//
+//    tmpQueue.foreach((operation:Operation) => {
+//      if(op.getId().isGreaterThan(operation.getId()) && !haveExecuted){
+//        haveExecuted = true
+//        applyLocal(op)
+//      }
+//
+//      applyLocal(operation)
+//    })
 
-    tmpQueue.foreach((operation:Operation) => {
-      if(operation.getId().isGreaterThan(op.getId()) && !haveExecuted){
-        haveExecuted = true
-        applyLocal(op)
-      }
+    tmpQueue = tmpQueue :+ op
+    tmpQueue = tmpQueue.sortWith((l:Operation, r:Operation) => {l.getId().isGreaterThan(r.getId())})
 
-      applyLocal(operation)
-    })
-
+    tmpQueue.foreach((operation:Operation) => {applyLocal(operation)})
     println("OK, so I need to revert");
   }
 
