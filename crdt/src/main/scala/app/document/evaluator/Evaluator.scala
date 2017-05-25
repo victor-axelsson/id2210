@@ -11,6 +11,7 @@ import app.document.language.Expr._
 import app.document.language.{Cmd, Expr, Val}
 
 import scala.annotation.tailrec
+import scala.collection.mutable
 
 /**
   * Created by Nick on 5/3/2017.
@@ -244,10 +245,78 @@ case class Evaluator(replicaId : Int) {
 //    })
 
     tmpQueue = tmpQueue :+ op
-    tmpQueue = tmpQueue.sortWith((l:Operation, r:Operation) => {l.getId().isGreaterThan(r.getId())})
 
+    //Offsets
+    tmpQueue = resolveConcurrentConflicts(tmpQueue)
+
+    tmpQueue = tmpQueue.sortWith((l:Operation, r:Operation) => {l.getId().isGreaterThan(r.getId())})
     tmpQueue.foreach((operation:Operation) => {applyLocal(operation)})
     println("OK, so I need to revert");
+  }
+
+  private def resolveConcurrentConflicts(localQueue : List[Operation]) : List[Operation] = {
+    var concurrentModifications : mutable.Map[listT, mutable.Map[Int, mutable.Set[Operation]]] = mutable.Map.empty
+    for (op:Operation <- localQueue) {
+      if (op.getMutation().isInstanceOf[Insert] && op.getCursor().getKeys().last.isInstanceOf[listT]) {
+        var modifiedList = op.getCursor().getKeys().last.asInstanceOf[listT]
+        for (execOp <- localQueue) {
+          if (execOp.getId() != op.getId() && execOp.getMutation().isInstanceOf[Insert] && execOp.getCursor().getKeys().last.getKey().eq(modifiedList.getKey())) {
+            // No causal relation <-> concurrent operations
+            if (!execOp.getDeps().contains(op.getId()) && !op.getDeps().contains(execOp.getId())) {
+              if (!concurrentModifications.contains(modifiedList)) {
+                concurrentModifications += modifiedList -> new mutable.HashMap[Int, mutable.Set[Operation]]()
+              }
+
+              //Add operation at current replica
+              if (!concurrentModifications(modifiedList).contains(execOp.getId().getP())) {
+                concurrentModifications(modifiedList) += execOp.getId().getP() -> new mutable.HashSet[Operation]()
+              }
+              concurrentModifications(modifiedList)(execOp.getId().getP()) += execOp
+
+              //Add operation at remote replica
+              if (!concurrentModifications(modifiedList).contains(op.getId().getP())) {
+                concurrentModifications(modifiedList) += op.getId().getP() -> new mutable.HashSet[Operation]()
+              }
+              concurrentModifications(modifiedList)(op.getId().getP()) += op
+            }
+          }
+        }
+      }
+    }
+
+    var offsets : mutable.Map[Timestamp, Int] = mutable.Map.empty
+    if (concurrentModifications.nonEmpty) {
+      for (modificationMap <- concurrentModifications.values) {
+        for (replicaId <- modificationMap.keys) {
+          for (otherReplicaId <- modificationMap.keys) {
+            if (replicaId > otherReplicaId) {
+              for (operation <- modificationMap(replicaId)) {
+
+                if (offsets.contains(operation.getId())) {
+                  offsets(operation.getId()) = offsets(operation.getId()) + modificationMap(otherReplicaId).size
+                } else {
+                  offsets += operation.getId() -> modificationMap(otherReplicaId).size
+                }
+
+              }
+            }
+          }
+        }
+      }
+    }
+
+    var result : List[Operation] = List.empty
+    for (operation <- localQueue) {
+      if (!offsets.contains(operation.getId())) {
+        result = result :+ operation
+      } else {
+        var nTimestamp = new Timestamp(operation.getId().getC() + offsets(operation.getId()), operation.getId().getP())
+        nTimestamp.preserveHashCode(operation.getId())
+        var nOp = new Operation(nTimestamp, operation.getDeps(), operation.getCursor(), operation.getMutation())
+        result = result :+ nOp
+      }
+    }
+    return result
   }
 
   private def isConcurrent(op1:Operation, op2:Operation): Boolean = {
@@ -269,14 +338,9 @@ case class Evaluator(replicaId : Int) {
 
   private def applyRemote(): Unit = {
     for (op <- receiveBuffer) {
-      if (!executedOperations.contains(op.getId())) {
+      if (!(executedOperations.contains(op.getId()) || executedOperations.contains(op.getId().saved))) {
         //1. determine if any concurrect insertAfter for a list
         //2. determine priority for these inserts - either change received indexes or not
-
-
-        if(isConcurrentWithAny(op)){
-          println("Do shiet")
-        }
 
         if(queue.size > 0){
           val lastOp:Operation = queue(queue.size -1)
@@ -294,6 +358,7 @@ case class Evaluator(replicaId : Int) {
         println(getId() + " " +this.toJsonString())
       }
     }
+    receiveBuffer = List.empty
   }
 
   private def transferStateToRoot(): Unit = {

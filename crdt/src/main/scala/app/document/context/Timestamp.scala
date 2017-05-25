@@ -5,6 +5,12 @@ package app.document.context
   */
 class Timestamp(c:Int, p:Int){
 
+  var saved:Timestamp = null
+
+  def preserveHashCode(timestamp: Timestamp) = {
+    saved = timestamp
+  }
+
   def getC() = c
   def getP() = p
 
@@ -33,10 +39,18 @@ class Timestamp(c:Int, p:Int){
       return false
     }
 
-    return (obj.asInstanceOf[Timestamp].getP() == p) && (obj.asInstanceOf[Timestamp].getC() == c)
+
+    if (saved == null)
+      (obj.asInstanceOf[Timestamp].getP() == p) && (obj.asInstanceOf[Timestamp].getC() == c)
+    else
+      saved.equals(obj)
+
   }
 
   override def hashCode(): Int = {
-    (c + ":" + p).hashCode
+    if (saved == null)
+      (c + ":" + p).hashCode
+    else
+      saved.hashCode()
   }
 }
