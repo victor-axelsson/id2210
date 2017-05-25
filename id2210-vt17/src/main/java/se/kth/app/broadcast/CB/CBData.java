@@ -1,7 +1,6 @@
 package se.kth.app.broadcast.CB;
 
 import se.sics.kompics.KompicsEvent;
-import se.sics.ktoolbox.util.network.KAddress;
 
 import java.util.List;
 

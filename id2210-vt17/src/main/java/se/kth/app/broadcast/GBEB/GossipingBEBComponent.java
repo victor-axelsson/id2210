@@ -10,8 +10,6 @@ import se.sics.ktoolbox.croupier.event.CroupierSample;
 import se.sics.ktoolbox.util.network.KAddress;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**

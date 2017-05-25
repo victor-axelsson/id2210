@@ -4,7 +4,6 @@ import se.sics.kompics.KompicsEvent;
 import se.sics.ktoolbox.util.network.KAddress;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by victoraxelsson on 2017-04-26.

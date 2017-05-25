@@ -17,9 +17,11 @@
  */
 package se.kth.system;
 
+import app.document.evaluator.Evaluator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.kth.app.mngr.AppMngrComp;
+import se.kth.app.sim.behaviour.Behaviour;
 import se.sics.kompics.Channel;
 import se.sics.kompics.Component;
 import se.sics.kompics.ComponentDefinition;
@@ -58,6 +60,8 @@ public class HostMngrComp extends ComponentDefinition {
     private Component overlayMngrComp;
     private Component appMngrComp;
 
+    private Behaviour behaviour;
+
     public HostMngrComp(Init init) {
         selfAdr = init.selfAdr;
         logPrefix = "<nid:" + selfAdr.getId() + ">";
@@ -65,6 +69,7 @@ public class HostMngrComp extends ComponentDefinition {
 
         bootstrapServer = init.bootstrapServer;
         croupierId = init.croupierId;
+        behaviour = init.behaviour;
 
         subscribe(handleStart, control);
     }
@@ -98,7 +103,7 @@ public class HostMngrComp extends ComponentDefinition {
     private void connectApp() {
         AppMngrComp.ExtPort extPorts = new AppMngrComp.ExtPort(timerPort, networkPort,
                 overlayMngrComp.getPositive(CroupierPort.class), overlayMngrComp.getNegative(OverlayViewUpdatePort.class));
-        appMngrComp = create(AppMngrComp.class, new AppMngrComp.Init(extPorts, selfAdr, croupierId));
+        appMngrComp = create(AppMngrComp.class, new AppMngrComp.Init(extPorts, selfAdr, croupierId, behaviour));
         connect(appMngrComp.getNegative(OverlayMngrPort.class), overlayMngrComp.getPositive(OverlayMngrPort.class), Channel.TWO_WAY);
     }
 
@@ -107,11 +112,17 @@ public class HostMngrComp extends ComponentDefinition {
         public final KAddress selfAdr;
         public final KAddress bootstrapServer;
         public final OverlayId croupierId;
+        private final Behaviour behaviour;
 
         public Init(KAddress selfAdr, KAddress bootstrapServer, OverlayId croupierId) {
+            this(selfAdr, bootstrapServer, croupierId, null);
+        }
+
+        public Init(KAddress selfAdr, KAddress bootstrapServer, OverlayId croupierId, Behaviour behaviour) {
             this.selfAdr = selfAdr;
             this.bootstrapServer = bootstrapServer;
             this.croupierId = croupierId;
+            this.behaviour = behaviour;
         }
     }
 }

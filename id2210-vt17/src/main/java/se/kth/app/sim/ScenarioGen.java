@@ -17,10 +17,9 @@
  */
 package se.kth.app.sim;
 
-import java.util.HashMap;
-import java.util.Map;
+import se.kth.app.sim.behaviour.sim1.PBehaviour;
+import se.kth.app.sim.behaviour.sim1.QBehaviour;
 import se.kth.sim.compatibility.SimNodeIdExtractor;
-import se.kth.system.HostMngrComp;
 import se.sics.kompics.network.Address;
 import se.sics.kompics.simulator.SimulationScenario;
 import se.sics.kompics.simulator.adaptor.Operation;
@@ -78,44 +77,18 @@ public class ScenarioGen {
         }
     };
 
-    static Operation1<StartNodeEvent, Integer> startNodeOp = new Operation1<StartNodeEvent, Integer>() {
+    static Operation1<StartNodeEvent, Integer> startNodeOp = new NodeStarter(null);
+    static Operation1<StartNodeEvent, Integer> startSim1PNode = new NodeStarter(new se.kth.app.sim.behaviour.sim1.PBehaviour());
+    static Operation1<StartNodeEvent, Integer> startSim1QNode = new NodeStarter(new se.kth.app.sim.behaviour.sim1.QBehaviour());
 
-        @Override
-        public StartNodeEvent generate(final Integer nodeId) {
-            return new StartNodeEvent() {
-                KAddress selfAdr;
+    static Operation1<StartNodeEvent, Integer> startSim2PNode = new NodeStarter(new se.kth.app.sim.behaviour.sim2.PBehaviour());
+    static Operation1<StartNodeEvent, Integer> startSim2QNode = new NodeStarter(new se.kth.app.sim.behaviour.sim2.QBehaviour());
 
-                {
-                    String nodeIp = "193.0.0." + nodeId;
-                    selfAdr = ScenarioSetup.getNodeAdr(nodeIp, nodeId);
-                }
+    static Operation1<StartNodeEvent, Integer> startSim3PNode = new NodeStarter(new se.kth.app.sim.behaviour.sim3.PBehaviour());
+    static Operation1<StartNodeEvent, Integer> startSim3QNode = new NodeStarter(new se.kth.app.sim.behaviour.sim3.QBehaviour());
 
-                @Override
-                public Address getNodeAddress() {
-                    return selfAdr;
-                }
-
-                @Override
-                public Class getComponentDefinition() {
-                    return HostMngrComp.class;
-                }
-
-                @Override
-                public HostMngrComp.Init getComponentInit() {
-                    return new HostMngrComp.Init(selfAdr, ScenarioSetup.bootstrapServer, ScenarioSetup.croupierOId);
-                }
-
-                @Override
-                public Map<String, Object> initConfigUpdate() {
-                    Map<String, Object> nodeConfig = new HashMap<>();
-                    nodeConfig.put("system.id", nodeId);
-                    nodeConfig.put("system.seed", ScenarioSetup.getNodeSeed(nodeId));
-                    nodeConfig.put("system.port", ScenarioSetup.appPort);
-                    return nodeConfig;
-                }
-            };
-        }
-    };
+    static Operation1<StartNodeEvent, Integer> startSim4PNode = new NodeStarter(new se.kth.app.sim.behaviour.sim4.PBehaviour());
+    static Operation1<StartNodeEvent, Integer> startSim4QNode = new NodeStarter(new se.kth.app.sim.behaviour.sim4.QBehaviour());
 
     public static SimulationScenario simpleBoot() {
         SimulationScenario scen = new SimulationScenario() {
@@ -143,6 +116,162 @@ public class ScenarioGen {
                 startBootstrapServer.startAfterTerminationOf(1000, systemSetup);
                 startPeers.startAfterTerminationOf(1000, startBootstrapServer);
                 terminateAfterTerminationOf(1000*1000, startPeers);
+            }
+        };
+
+        return scen;
+    }
+
+    public static SimulationScenario multipleRegisterSimulation() {
+        SimulationScenario scen = new SimulationScenario() {
+            {
+                StochasticProcess systemSetup = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(constant(1000));
+                        raise(1, systemSetupOp);
+                    }
+                };
+                StochasticProcess startBootstrapServer = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(constant(1000));
+                        raise(1, startBootstrapServerOp);
+                    }
+                };
+                StochasticProcess startAnAdder = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(uniform(1000, 1100));
+                        raise(1, startSim1PNode, new BasicIntSequentialDistribution(1));
+                    }
+                };
+                StochasticProcess startAnAssigner = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(uniform(1000, 1100));
+                        raise(1, startSim1QNode, new BasicIntSequentialDistribution(2));
+                    }
+                };
+
+                systemSetup.start();
+                startBootstrapServer.startAfterTerminationOf(1000, systemSetup);
+                startAnAdder.startAfterTerminationOf(1000, startBootstrapServer);
+                startAnAssigner.startAfterTerminationOf(1000, startBootstrapServer);
+                terminateAfterTerminationOf(1000*1000, startAnAssigner);
+            }
+        };
+
+        return scen;
+    }
+
+    public static SimulationScenario modifyNestedMapSimulation() {
+        SimulationScenario scen = new SimulationScenario() {
+            {
+                StochasticProcess systemSetup = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(constant(1000));
+                        raise(1, systemSetupOp);
+                    }
+                };
+                StochasticProcess startBootstrapServer = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(constant(1000));
+                        raise(1, startBootstrapServerOp);
+                    }
+                };
+                StochasticProcess startPNode = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(uniform(1000, 1100));
+                        raise(1, startSim2PNode, new BasicIntSequentialDistribution(1));
+                    }
+                };
+                StochasticProcess startQNode = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(uniform(1000, 1100));
+                        raise(1, startSim2QNode, new BasicIntSequentialDistribution(2));
+                    }
+                };
+
+                systemSetup.start();
+                startBootstrapServer.startAfterTerminationOf(1000, systemSetup);
+                startPNode.startAfterTerminationOf(1000, startBootstrapServer);
+                startQNode.startAfterTerminationOf(1000, startBootstrapServer);
+                terminateAfterTerminationOf(1000*1000, startQNode);
+            }
+        };
+
+        return scen;
+    }
+
+    public static SimulationScenario editSameListSimulation() {
+        SimulationScenario scen = new SimulationScenario() {
+            {
+                StochasticProcess systemSetup = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(constant(1000));
+                        raise(1, systemSetupOp);
+                    }
+                };
+                StochasticProcess startBootstrapServer = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(constant(1000));
+                        raise(1, startBootstrapServerOp);
+                    }
+                };
+                StochasticProcess startPNode = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(uniform(1000, 1100));
+                        raise(1, startSim3PNode, new BasicIntSequentialDistribution(1));
+                    }
+                };
+                StochasticProcess startQNode = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(uniform(1000, 1100));
+                        raise(1, startSim3QNode, new BasicIntSequentialDistribution(2));
+                    }
+                };
+
+                systemSetup.start();
+                startBootstrapServer.startAfterTerminationOf(1000, systemSetup);
+                startPNode.startAfterTerminationOf(1000, startBootstrapServer);
+                startQNode.startAfterTerminationOf(1000, startBootstrapServer);
+                terminateAfterTerminationOf(1000*1000, startQNode);
+            }
+        };
+
+        return scen;
+    }
+
+    public static SimulationScenario editConcurrentListSimulation() {
+        SimulationScenario scen = new SimulationScenario() {
+            {
+                StochasticProcess systemSetup = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(constant(1000));
+                        raise(1, systemSetupOp);
+                    }
+                };
+                StochasticProcess startBootstrapServer = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(constant(1000));
+                        raise(1, startBootstrapServerOp);
+                    }
+                };
+                StochasticProcess startPNode = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(uniform(1000, 1100));
+                        raise(1, startSim4PNode, new BasicIntSequentialDistribution(1));
+                    }
+                };
+                StochasticProcess startQNode = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(uniform(1000, 1100));
+                        raise(1, startSim4QNode, new BasicIntSequentialDistribution(2));
+                    }
+                };
+
+                systemSetup.start();
+                startBootstrapServer.startAfterTerminationOf(1000, systemSetup);
+                startPNode.startAfterTerminationOf(1000, startBootstrapServer);
+                startQNode.startAfterTerminationOf(1000, startBootstrapServer);
+                terminateAfterTerminationOf(1000*1000, startQNode);
             }
         };
 

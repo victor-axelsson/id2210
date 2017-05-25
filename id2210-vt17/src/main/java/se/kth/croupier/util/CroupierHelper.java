@@ -17,11 +17,12 @@
  */
 package se.kth.croupier.util;
 
-import java.util.LinkedList;
-import java.util.List;
 import se.sics.ktoolbox.croupier.event.CroupierSample;
 import se.sics.ktoolbox.util.network.KAddress;
 import se.sics.ktoolbox.util.other.AgingAdrContainer;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

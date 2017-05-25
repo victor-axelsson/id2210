@@ -9,7 +9,7 @@ import scala.collection.mutable
 /**
   * Created by victoraxelsson on 2017-05-09.
   */
-class NodeReg(theName:String, var values : List[Val], pres:Map[Int, Operation]) extends Node(theName, pres){
+class NodeReg(theName:String, var values : List[Val], pres:mutable.Map[Timestamp, Operation]) extends Node(theName, pres){
 
 
   def getValues() = values
